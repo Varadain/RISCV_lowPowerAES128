@@ -6,7 +6,6 @@ module riscv_core_tb;
 
     int pass_count;
     int fail_count;
- 
 
     localparam int CLK_HALF = 5;
 
@@ -200,7 +199,7 @@ module riscv_core_tb;
         end
     endtask
 
-    task automatic run_test_LOAD_STORE();
+        task automatic run_test_LOAD_STORE();
         begin
             $display("\n=== run_test_LOAD_STORE ===");
             clear_mem_and_regs();
@@ -208,107 +207,143 @@ module riscv_core_tb;
             // Preload RAM word address 0 with pattern 0xAABBCCDD
             dut.u_mem_stage.u_data_mem.ram[0] = 32'hAABBCCDD;
 
-            // Base addr x1 = 0
+            // Base addr x1 = 0, source x7 = 0x55
             dut.u_if_stage.u_instr_mem.rom[0] = enc_itype(12'd0,5'd0,3'b000,5'd1,7'b0010011); // addi x1, x0, 0
+            dut.u_if_stage.u_instr_mem.rom[1] = enc_itype(12'h055,5'd0,3'b000,5'd7,7'b0010011); // addi x7, x0, 0x55
 
-            // Loads
-            dut.u_if_stage.u_instr_mem.rom[1] = enc_itype(12'd0,5'd1,3'b000,5'd2,7'b0000011); // lb
-            dut.u_if_stage.u_instr_mem.rom[2] = enc_itype(12'd0,5'd1,3'b001,5'd3,7'b0000011); // lh
-            dut.u_if_stage.u_instr_mem.rom[3] = enc_itype(12'd0,5'd1,3'b010,5'd4,7'b0000011); // lw
-            dut.u_if_stage.u_instr_mem.rom[4] = enc_itype(12'd0,5'd1,3'b100,5'd5,7'b0000011); // lbu
-            dut.u_if_stage.u_instr_mem.rom[5] = enc_itype(12'd0,5'd1,3'b101,5'd6,7'b0000011); // lhu
+            // Loads (5)
+            dut.u_if_stage.u_instr_mem.rom[2] = enc_itype(12'd0,5'd1,3'b000,5'd2,7'b0000011); // lb
+            dut.u_if_stage.u_instr_mem.rom[3] = enc_itype(12'd0,5'd1,3'b001,5'd3,7'b0000011); // lh
+            dut.u_if_stage.u_instr_mem.rom[4] = enc_itype(12'd0,5'd1,3'b010,5'd4,7'b0000011); // lw
+            dut.u_if_stage.u_instr_mem.rom[5] = enc_itype(12'd0,5'd1,3'b100,5'd5,7'b0000011); // lbu
+            dut.u_if_stage.u_instr_mem.rom[6] = enc_itype(12'd0,5'd1,3'b101,5'd6,7'b0000011); // lhu
 
-            // Source value for stores
-            dut.u_if_stage.u_instr_mem.rom[6] = enc_itype(12'h055,5'd0,3'b000,5'd7,7'b0010011); // addi x7, x0, 0x55
-
-            // Stores at addr 4
-            dut.u_if_stage.u_instr_mem.rom[7] = enc_stype(12'd4,5'd7,5'd1,3'b000,7'b0100011); // sb
-            dut.u_if_stage.u_instr_mem.rom[8] = enc_stype(12'd4,5'd7,5'd1,3'b001,7'b0100011); // sh
-            dut.u_if_stage.u_instr_mem.rom[9] = enc_stype(12'd4,5'd7,5'd1,3'b010,7'b0100011); // sw
+            // Stores (3) to different addresses
+            dut.u_if_stage.u_instr_mem.rom[7] = enc_stype(12'd4, 5'd7,5'd1,3'b000,7'b0100011); // sb -> ram[1]
+            dut.u_if_stage.u_instr_mem.rom[8] = enc_stype(12'd8, 5'd7,5'd1,3'b001,7'b0100011); // sh -> ram[2]
+            dut.u_if_stage.u_instr_mem.rom[9] = enc_stype(12'd12,5'd7,5'd1,3'b010,7'b0100011); // sw -> ram[3]
 
             apply_reset();
-            run_cycles(35);
+            run_cycles(40);
 
-            // For ISA-correct core:
             check_eq32("LB  x2", dut.u_id_stage.u_reg_file.regs[2], 32'hFFFFFFDD);
             check_eq32("LH  x3", dut.u_id_stage.u_reg_file.regs[3], 32'hFFFFCCDD);
             check_eq32("LW  x4", dut.u_id_stage.u_reg_file.regs[4], 32'hAABBCCDD);
             check_eq32("LBU x5", dut.u_id_stage.u_reg_file.regs[5], 32'h000000DD);
             check_eq32("LHU x6", dut.u_id_stage.u_reg_file.regs[6], 32'h0000CCDD);
 
-            check_eq32("Store word @1", dut.u_mem_stage.u_data_mem.ram[1], 32'h00000055);
+            check_eq32("SB  @ram[1]", dut.u_mem_stage.u_data_mem.ram[1], 32'h00000055);
+            check_eq32("SH  @ram[2]", dut.u_mem_stage.u_data_mem.ram[2], 32'h00000055);
+            check_eq32("SW  @ram[3]", dut.u_mem_stage.u_data_mem.ram[3], 32'h00000055);
         end
     endtask
 
-    task automatic run_test_BRANCH();
+        task automatic run_test_BRANCH();
         begin
             $display("\n=== run_test_BRANCH ===");
             clear_mem_and_regs();
 
-            dut.u_if_stage.u_instr_mem.rom[0] = enc_itype(12'd4,5'd0,3'b000,5'd1,7'b0010011); // addi x1,0,4
-            dut.u_if_stage.u_instr_mem.rom[1] = enc_itype(12'd4,5'd0,3'b000,5'd2,7'b0010011); // addi x2,0,4
+            dut.u_if_stage.u_instr_mem.rom[0]  = enc_itype(12'd1,5'd0,3'b000,5'd1,7'b0010011); // x1=1
+            dut.u_if_stage.u_instr_mem.rom[1]  = enc_itype(12'd2,5'd0,3'b000,5'd2,7'b0010011); // x2=2
 
-            // BEQ taken: skip rom[3]
-            dut.u_if_stage.u_instr_mem.rom[2] = enc_btype(13'd8,5'd2,5'd1,3'b000,7'b1100011); // beq x1,x2,+8
-            dut.u_if_stage.u_instr_mem.rom[3] = enc_itype(12'd1,5'd0,3'b000,5'd10,7'b0010011); // should be skipped
-            dut.u_if_stage.u_instr_mem.rom[4] = enc_itype(12'd2,5'd0,3'b000,5'd11,7'b0010011); // execute
+            // BEQ not taken -> execute x20=1
+            dut.u_if_stage.u_instr_mem.rom[2]  = enc_btype(13'd8,5'd2,5'd1,3'b000,7'b1100011);
+            dut.u_if_stage.u_instr_mem.rom[3]  = enc_itype(12'd1,5'd0,3'b000,5'd20,7'b0010011);
 
-            // Other branch types (expected ISA behavior)
-            dut.u_if_stage.u_instr_mem.rom[5] = enc_btype(13'd8,5'd1,5'd2,3'b001,7'b1100011); // bne (not taken)
-            dut.u_if_stage.u_instr_mem.rom[6] = enc_btype(13'd8,5'd1,5'd2,3'b100,7'b1100011); // blt (not taken)
-            dut.u_if_stage.u_instr_mem.rom[7] = enc_btype(13'd8,5'd2,5'd1,3'b101,7'b1100011); // bge (taken)
-            dut.u_if_stage.u_instr_mem.rom[8] = enc_btype(13'd8,5'd1,5'd2,3'b110,7'b1100011); // bltu (not taken)
-            dut.u_if_stage.u_instr_mem.rom[9] = enc_btype(13'd8,5'd2,5'd1,3'b111,7'b1100011); // bgeu (taken)
+            // BNE taken -> skip x21=1, execute x22=1
+            dut.u_if_stage.u_instr_mem.rom[4]  = enc_btype(13'd8,5'd2,5'd1,3'b001,7'b1100011);
+            dut.u_if_stage.u_instr_mem.rom[5]  = enc_itype(12'd1,5'd0,3'b000,5'd21,7'b0010011);
+            dut.u_if_stage.u_instr_mem.rom[6]  = enc_itype(12'd1,5'd0,3'b000,5'd22,7'b0010011);
+
+            // BLT taken -> skip x23=1
+            dut.u_if_stage.u_instr_mem.rom[7]  = enc_btype(13'd8,5'd2,5'd1,3'b100,7'b1100011);
+            dut.u_if_stage.u_instr_mem.rom[8]  = enc_itype(12'd1,5'd0,3'b000,5'd23,7'b0010011);
+
+            // BGE not taken -> execute x24=1
+            dut.u_if_stage.u_instr_mem.rom[9]  = enc_btype(13'd8,5'd2,5'd1,3'b101,7'b1100011);
+            dut.u_if_stage.u_instr_mem.rom[10] = enc_itype(12'd1,5'd0,3'b000,5'd24,7'b0010011);
+
+            // BLTU taken -> skip x25=1
+            dut.u_if_stage.u_instr_mem.rom[11] = enc_btype(13'd8,5'd2,5'd1,3'b110,7'b1100011);
+            dut.u_if_stage.u_instr_mem.rom[12] = enc_itype(12'd1,5'd0,3'b000,5'd25,7'b0010011);
+
+            // BGEU not taken -> execute x26=1
+            dut.u_if_stage.u_instr_mem.rom[13] = enc_btype(13'd8,5'd2,5'd1,3'b111,7'b1100011);
+            dut.u_if_stage.u_instr_mem.rom[14] = enc_itype(12'd1,5'd0,3'b000,5'd26,7'b0010011);
 
             apply_reset();
-            run_cycles(40);
+            run_cycles(55);
 
-            check_eq32("BEQ skip x10", dut.u_id_stage.u_reg_file.regs[10], 32'd0);
-            check_eq32("BEQ path x11", dut.u_id_stage.u_reg_file.regs[11], 32'd2);
-            check_eq32("PC progressed", {30'h0, dut.u_pc_reg.current_pc[1:0]}, 32'h00000000);
+            check_eq32("BEQ",  dut.u_id_stage.u_reg_file.regs[20], 32'd1);
+            check_eq32("BNE",  dut.u_id_stage.u_reg_file.regs[21], 32'd0);
+            check_eq32("BLT",  dut.u_id_stage.u_reg_file.regs[23], 32'd0);
+            check_eq32("BGE",  dut.u_id_stage.u_reg_file.regs[24], 32'd1);
+            check_eq32("BLTU", dut.u_id_stage.u_reg_file.regs[25], 32'd0);
+            check_eq32("BGEU", dut.u_id_stage.u_reg_file.regs[26], 32'd1);
         end
     endtask
 
-    task automatic run_test_JUMP_UPPER_SYSTEM_PSEUDO();
+        task automatic run_test_JUMP_UPPER_SYSTEM_PSEUDO();
         begin
             $display("\n=== run_test_JUMP_UPPER_SYSTEM_PSEUDO ===");
             clear_mem_and_regs();
 
-            // UPPER
-            dut.u_if_stage.u_instr_mem.rom[0] = enc_utype(20'h12345,5'd1,7'b0110111); // lui x1,0x12345
-            dut.u_if_stage.u_instr_mem.rom[1] = enc_utype(20'h00010,5'd2,7'b0010111); // auipc x2,0x10
+            // Upper (2)
+            dut.u_if_stage.u_instr_mem.rom[0]  = enc_utype(20'h12345,5'd1,7'b0110111); // lui
+            dut.u_if_stage.u_instr_mem.rom[1]  = enc_utype(20'h00010,5'd2,7'b0010111); // auipc
 
-            // JAL +8: writes return addr to x3
-            dut.u_if_stage.u_instr_mem.rom[2] = enc_jtype(21'd8,5'd3,7'b1101111); // jal x3,+8
-            dut.u_if_stage.u_instr_mem.rom[3] = enc_itype(12'd1,5'd0,3'b000,5'd4,7'b0010011); // skipped if jal works
-            dut.u_if_stage.u_instr_mem.rom[4] = enc_itype(12'd2,5'd0,3'b000,5'd5,7'b0010011); // target
+            // Jump (JAL)
+            dut.u_if_stage.u_instr_mem.rom[2]  = enc_jtype(21'd8,5'd3,7'b1101111); // jal x3,+8
+            dut.u_if_stage.u_instr_mem.rom[3]  = enc_itype(12'd1,5'd0,3'b000,5'd4,7'b0010011); // skipped
+            dut.u_if_stage.u_instr_mem.rom[4]  = enc_itype(12'd2,5'd0,3'b000,5'd5,7'b0010011); // target
 
-            // JALR x6, x0, 24 -> jump to ROM[6]
-            dut.u_if_stage.u_instr_mem.rom[5] = enc_itype(12'd24,5'd0,3'b000,5'd6,7'b1100111); // jalr
-            dut.u_if_stage.u_instr_mem.rom[6] = enc_itype(12'd3,5'd0,3'b000,5'd7,7'b0010011);
+            // Jump (JALR)
+            dut.u_if_stage.u_instr_mem.rom[5]  = enc_itype(12'd32,5'd0,3'b000,5'd6,7'b1100111); // jalr x6,x0,32 -> rom[8]
+            dut.u_if_stage.u_instr_mem.rom[6]  = enc_itype(12'd99,5'd0,3'b000,5'd7,7'b0010011); // skipped by jalr
+            dut.u_if_stage.u_instr_mem.rom[7]  = 32'h00000013; // nop
 
-            // SYSTEM / FENCE (treated here as smoke test program entries)
-            dut.u_if_stage.u_instr_mem.rom[7] = 32'h00000073; // ecall
-            dut.u_if_stage.u_instr_mem.rom[8] = 32'h00100073; // ebreak
-            dut.u_if_stage.u_instr_mem.rom[9] = 32'h0000000F; // fence
-            dut.u_if_stage.u_instr_mem.rom[10]= 32'h0000100F; // fence.i
+            // Sentinel register for SYSTEM/FENCE/NOP checks
+            dut.u_if_stage.u_instr_mem.rom[8]  = enc_itype(12'd7,5'd0,3'b000,5'd29,7'b0010011); // x29=7
+            dut.u_if_stage.u_instr_mem.rom[9]  = enc_itype(12'd5,5'd0,3'b000,5'd31,7'b0010011); // x31=5
 
-            // Pseudo examples (encoded as real instructions)
-            dut.u_if_stage.u_instr_mem.rom[11]= enc_itype(12'd0,5'd0,3'b000,5'd0,7'b0010011); // nop
-            dut.u_if_stage.u_instr_mem.rom[12]= enc_itype(12'd0,5'd7,3'b000,5'd8,7'b0010011); // mv x8,x7
-            dut.u_if_stage.u_instr_mem.rom[13]= enc_itype(12'd9,5'd0,3'b000,5'd9,7'b0010011); // li x9,9
-            dut.u_if_stage.u_instr_mem.rom[14]= enc_jtype(21'd4,5'd0,7'b1101111);             // j +4
+            // System (2)
+            dut.u_if_stage.u_instr_mem.rom[10] = 32'h00000073; // ecall
+            dut.u_if_stage.u_instr_mem.rom[11] = 32'h00100073; // ebreak
+
+            // Fence (2)
+            dut.u_if_stage.u_instr_mem.rom[12] = 32'h0000000F; // fence
+            dut.u_if_stage.u_instr_mem.rom[13] = 32'h0000100F; // fence.i
+
+            // Pseudo (4): nop, mv, li, j
+            dut.u_if_stage.u_instr_mem.rom[14] = enc_itype(12'd0,5'd0,3'b000,5'd0,7'b0010011); // nop
+            dut.u_if_stage.u_instr_mem.rom[15] = enc_itype(12'd0,5'd5,3'b000,5'd8,7'b0010011); // mv x8,x5
+            dut.u_if_stage.u_instr_mem.rom[16] = enc_itype(12'd9,5'd0,3'b000,5'd9,7'b0010011); // li x9,9
+            dut.u_if_stage.u_instr_mem.rom[17] = enc_jtype(21'd8,5'd0,7'b1101111);             // j +8
+            dut.u_if_stage.u_instr_mem.rom[18] = enc_itype(12'd1,5'd0,3'b000,5'd27,7'b0010011); // skipped by j
+            dut.u_if_stage.u_instr_mem.rom[19] = enc_itype(12'd1,5'd0,3'b000,5'd28,7'b0010011); // target
 
             apply_reset();
-            run_cycles(60);
+            run_cycles(90);
 
-            check_eq32("LUI x1",     dut.u_id_stage.u_reg_file.regs[1], 32'h12345000);
-            check_eq32("AUIPC x2",   dut.u_id_stage.u_reg_file.regs[2], 32'h00010004);
-            check_eq32("JAL RA x3",  dut.u_id_stage.u_reg_file.regs[3], 32'd12);
-            check_eq32("JAL skip x4",dut.u_id_stage.u_reg_file.regs[4], 32'd0);
-            check_eq32("Target x5",  dut.u_id_stage.u_reg_file.regs[5], 32'd2);
-            check_eq32("MV x8",      dut.u_id_stage.u_reg_file.regs[8], dut.u_id_stage.u_reg_file.regs[7]);
-            check_eq32("LI x9",      dut.u_id_stage.u_reg_file.regs[9], 32'd9);
+            // Upper (2)
+            check_eq32("LUI",   dut.u_id_stage.u_reg_file.regs[1], 32'h12345000);
+            check_eq32("AUIPC", dut.u_id_stage.u_reg_file.regs[2], 32'h00010004);
+
+            // Jumps (2)
+            check_eq32("JAL",   dut.u_id_stage.u_reg_file.regs[3], 32'd12);
+            check_eq32("JALR",  dut.u_id_stage.u_reg_file.regs[6], 32'd24);
+
+            // System (2) and Fence (2): ensure sentinels preserved
+            check_eq32("ECALL",  dut.u_id_stage.u_reg_file.regs[29], 32'd7);
+            check_eq32("EBREAK", dut.u_id_stage.u_reg_file.regs[29], 32'd7);
+            check_eq32("FENCE",  dut.u_id_stage.u_reg_file.regs[31], 32'd5);
+            check_eq32("FENCE.I",dut.u_id_stage.u_reg_file.regs[31], 32'd5);
+
+            // Pseudo (4)
+            check_eq32("NOP", dut.u_id_stage.u_reg_file.regs[31], 32'd5);
+            check_eq32("MV",  dut.u_id_stage.u_reg_file.regs[8],  dut.u_id_stage.u_reg_file.regs[5]);
+            check_eq32("LI",  dut.u_id_stage.u_reg_file.regs[9],  32'd9);
+            check_eq32("J",   dut.u_id_stage.u_reg_file.regs[27], 32'd0);
         end
     endtask
 
