@@ -1,0 +1,59 @@
+- V e r i l a t i o n   R e p o r t: Verilator 5.044 2026-01-01 rev v5.044
+- Verilator: Built from 0.092 MB sources in 18 modules, into 0.429 MB in 10 C++ files needing 0.001 MB
+- Verilator: Walltime 9.122 s (elab=0.013, cvt=0.111, bld=8.946); cpu 0.176 s on 8 threads; alloced 35.277 MB
+
+=== run_test_RTYPE ===
+[PASS] ADD  x3 = 0x0000001a
+[PASS] SUB  x4 = 0x0000000e
+[PASS] SLL  x5 = 0x00000500
+[PASS] SLT  x6 = 0x00000001
+[PASS] SLTU x7 = 0x00000001
+[PASS] XOR  x8 = 0x00000012
+[PASS] SRL  x9 = 0x00000000
+[PASS] SRA  x10 = 0x00000000
+[PASS] OR   x11 = 0x00000016
+[PASS] AND  x12 = 0x00000004
+
+=== run_test_ITYPE ===
+[PASS] ADDI  x1 = 0x00000009
+[PASS] SLTI  x2 = 0x00000000
+[PASS] SLTIU x3 = 0x00000000
+[PASS] XORI  x4 = 0x000000f9
+[PASS] ORI   x5 = 0x0000000b
+[PASS] ANDI  x6 = 0x00000001
+[PASS] SLLI  x7 = 0x00000024
+[PASS] SRLI  x8 = 0x00000004
+[PASS] SRAI  x9 = 0x00000004
+
+=== run_test_LOAD_STORE ===
+[PASS] LB  x2 = 0xffffffdd
+[PASS] LH  x3 = 0xffffccdd
+[PASS] LW  x4 = 0xaabbccdd
+[PASS] LBU x5 = 0x000000dd
+[PASS] LHU x6 = 0x0000ccdd
+[PASS] Store word @1 = 0x00000055
+
+=== run_test_BRANCH ===
+[PASS] BEQ skip x10 = 0x00000000
+[PASS] BEQ path x11 = 0x00000002
+[PASS] PC progressed = 0x00000000
+
+=== run_test_JUMP_UPPER_SYSTEM_PSEUDO ===
+[PASS] LUI x1 = 0x12345000
+[PASS] AUIPC x2 = 0x00010004
+[PASS] JAL RA x3 = 0x0000000c
+[PASS] JAL skip x4 = 0x00000000
+[PASS] Target x5 = 0x00000002
+[PASS] MV x8 = 0x00000003
+[PASS] LI x9 = 0x00000009
+
+==============================
+TEST SUMMARY: PASS=35 FAIL=0
+==============================
+
+ALL TESTS PASSED
+- testbench.sv:342: Verilog $finish
+- S i m u l a t i o n   R e p o r t: Verilator 5.044 2026-01-01
+- Verilator: $finish at 2us; walltime 0.001 s; speed 1.447 ms/s
+- Verilator: cpu 0.001 s on 1 threads; alloced 7 MB
+Done
