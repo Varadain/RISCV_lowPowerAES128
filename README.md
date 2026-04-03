@@ -76,15 +76,6 @@ Waveform used to validate:
 
 ---
 
-## Run
-
-```
-verilator --trace-vcd design.sv testbench.sv
-./obj_dir/Vsim
-```
-
----
-
 ## Notes
 
 - fully self-checking testbench  
