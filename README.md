@@ -227,14 +227,14 @@ Testbench checks:
 
 
 if (rtl_output == expected)
-PASS
+  PASS
 else
-FAIL
+  FAIL
 
 
 ---
 
-# 9. Real simulation output (what you achieved)
+# 9. Real simulation output 
 
 
 [R-TYPE] ADD → PASS
