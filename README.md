@@ -286,11 +286,7 @@ This allows **cycle-by-cycle debugging of the processor**.
 
 ---
 
-# 11. Why this project is important
-
-This is not just a “toy CPU”.
-
-It demonstrates:
+# 11. It demonstrates:
 
 - Real pipeline behavior
 - Hazard handling (forwarding + stalls)
