@@ -3,12 +3,74 @@
 // This module connects all pipeline stages:
 // IF → ID → EX → MEM → WB
 // ============================================================
+// ============================================================
+// 5-STAGE PIPELINED RISC-V CORE (TOP MODULE)
+// ============================================================
+//
+//                 PIPELINE OVERVIEW
+//
+//   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐
+//   │   IF   │→→│   ID   │→→│   EX   │→→│   MEM  │→→│   WB   │
+//   └────────┘   └────────┘   └────────┘   └────────┘   └────────┘
+//
+//   IF  : Instruction Fetch (PC + Instruction Memory)
+//   ID  : Decode + Register Read + Immediate Generation
+//   EX  : ALU Operations + Branch Decision
+//   MEM : Data Memory Access (Load/Store)
+//   WB  : Write Back to Register File
+//
+// ------------------------------------------------------------
+// DATA FLOW (Forward Direction):
+//
+//   PC → Instruction → Decode → Execute → Memory → Writeback
+//
+// ------------------------------------------------------------
+// HAZARD HANDLING:
+//
+//   1. Data Hazards:
+//      - Forwarding Unit (EX/MEM/WB → EX)
+//      - Avoids unnecessary stalls
+//
+//   2. Load-Use Hazard:
+//      - Hazard Unit inserts stall
+//
+//   3. Control Hazards:
+//      - Branch resolved in EX stage
+//      - Flush IF/ID pipeline on branch taken
+//
+// ------------------------------------------------------------
+// FORWARDING PATHS:
+//
+//         MEM/WB ───────┐
+//                       ↓
+//   ID → EX → ALU → MEM → WB
+//        ↑        ↑
+//        └────────┘
+//          Forwarding
+//
+// ------------------------------------------------------------
+// PIPELINE REGISTERS:
+//
+//   IF/ID → ID/EX → EX/MEM → MEM/WB
+//
+// Each stage stores:
+//   - Data signals
+//   - Control signals
+//
+// ------------------------------------------------------------
+// KEY DESIGN FEATURES:
+//
+//   - 5-stage classic RISC pipeline
+//   - Hazard detection + forwarding
+//   - Branch handling with flush
+//   - Fully synthesizable RTL
+//
+// ============================================================
 
 module riscv_core_top (
-    input  logic clk,     // System clock
-    input  logic rst_n    // Active-low reset
+    input  logic clk,     // System clock driving all pipeline stages
+    input  logic rst_n    // Active-low reset (clears pipeline)
 );
-
     // ========================================================
     // IF (Instruction Fetch) Stage Signals
     // ========================================================
