@@ -238,14 +238,15 @@ else
 
 
 [R-TYPE] ADD → PASS
+
 [R-TYPE] SUB → PASS
-...
+
 [I-TYPE] XORI → PASS
-...
+
 [LOAD] LB → PASS
-...
+
 [BRANCH] BEQ → PASS
-...
+
 [JUMP] JAL → PASS
 ...
 
