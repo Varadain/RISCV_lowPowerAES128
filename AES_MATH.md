@@ -367,71 +367,47 @@ This implementation:
 - Optimized for low power using clock gating
 
 ---
-# 10. Complete NIST AES-128 Execution (Detailed Explanation)
+# 10. Complete NIST AES-128 Execution (Step-by-Step Explanation)
 
-This section provides a complete, step-by-step execution of the AES-128 encryption algorithm using a standard NIST test vector. The goal is to explain how each transformation operates mathematically and how it is reflected in the RTL implementation.
+This section explains how AES-128 encryption is performed using a standard NIST test vector.  
+Each transformation is explained clearly and mapped to hardware (RTL) behavior.
 
 ---
 
 ## 10.1 Test Vector (NIST Standard)
 
-The following input values are used:
-
 Plaintext:
-
-00112233445566778899aabbccddeeff
-
+`00112233445566778899aabbccddeeff`
 
 Key:
-
-000102030405060708090a0b0c0d0e0f
-
+`000102030405060708090a0b0c0d0e0f`
 
 Expected Ciphertext:
+`69c4e0d86a7b0430d8cdb78070b4c55a`
 
-69c4e0d86a7b0430d8cdb78070b4c55a
-
-
-AES operates on a 128-bit block arranged as a 4×4 byte matrix called the **state**.
+AES operates on a 128-bit block arranged as a 4 × 4 byte matrix called the **state**.
 
 ---
 
 ## 10.2 Step 0: Initial AddRoundKey
 
-Before any transformation, the plaintext is XORed with the initial key.
-
 Operation:
+`State = Plaintext XOR Key`
 
-State = Plaintext ⊕ Key
+Byte-wise result:
 
+| Plaintext | Key | Output |
+|----------|-----|--------|
+| 00       | 00  | 00     |
+| 11       | 01  | 10     |
+| 22       | 02  | 20     |
+| 33       | 03  | 30     |
+| ...      | ... | ...    |
 
-Byte-wise computation:
+Final state:
+`00102030405060708090a0b0c0d0e0f0`
 
-
-00 ⊕ 00 = 00
-11 ⊕ 01 = 10
-22 ⊕ 02 = 20
-33 ⊕ 03 = 30
-44 ⊕ 04 = 40
-55 ⊕ 05 = 50
-66 ⊕ 06 = 60
-77 ⊕ 07 = 70
-88 ⊕ 08 = 80
-99 ⊕ 09 = 90
-aa ⊕ 0a = a0
-bb ⊕ 0b = b0
-cc ⊕ 0c = c0
-dd ⊕ 0d = d0
-ee ⊕ 0e = e0
-ff ⊕ 0f = f0
-
-
-Resulting state:
-
-00102030405060708090a0b0c0d0e0f0
-
-
-This forms the input to Round 1.
+This becomes input to Round 1.
 
 RTL mapping:
 - Implemented using XOR logic in the top module
@@ -440,11 +416,9 @@ RTL mapping:
 
 ## 10.3 Round 1 Execution
 
-Each AES round (except final) consists of four steps:
-1. SubBytes
-2. ShiftRows
-3. MixColumns
-4. AddRoundKey
+Each round performs:
+
+SubBytes → ShiftRows → MixColumns → AddRoundKey
 
 ---
 
@@ -452,55 +426,43 @@ Each AES round (except final) consists of four steps:
 
 Each byte is replaced using the AES S-box.
 
-Example:
-
-S(00) = 63
-S(10) = ca
-S(20) = b7
-...
-
-
-After applying S-box to all 16 bytes:
-
-
+Result:
 63 ca b7 04
 09 53 d0 51
 cd 60 e0 e7
 ba 70 e1 8c
 
-
 Explanation:
-- This step introduces non-linearity
-- Prevents simple algebraic attacks
+- Introduces non-linearity
+- Prevents predictable patterns
 
 RTL mapping:
-- Implemented using 16 parallel S-box modules
+- Implemented using parallel S-box modules
 
 ---
 
 ### 10.3.2 ShiftRows
 
-Each row is shifted left by its row index:
+Rows are shifted left:
 
-Row 0: no shift  
-Row 1: shift left by 1  
-Row 2: shift left by 2  
-Row 3: shift left by 3  
+| Row | Shift |
+|-----|------|
+| 0   | 0    |
+| 1   | 1    |
+| 2   | 2    |
+| 3   | 3    |
 
 Result:
-
-
 63 53 e0 8c
 09 60 e1 04
 cd 70 b7 51
 ba ca d0 e7
 
-
 Explanation:
-- This step provides diffusion across columns
+- Spreads data across columns
 
 RTL mapping:
-- Implemented using fixed wiring (no arithmetic)
+- Implemented using fixed wiring
 
 ---
 
@@ -508,88 +470,58 @@ RTL mapping:
 
 Each column is transformed using matrix multiplication in GF(2^8).
 
-For one column:
+Equation:
+`y0 = (2*s0) XOR (3*s1) XOR s2 XOR s3`
 
-
-|02 03 01 01| |s0|
-|01 02 03 01| x |s1|
-|01 01 02 03| |s2|
-|03 01 01 02| |s3|
-
-
-Example equation:
-
-y0 = (2 × s0) ⊕ (3 × s1) ⊕ s2 ⊕ s3
-
-
-Where:
-- Multiplication is done in GF(2^8)
-- xtime is used for multiplication by 2
-
-Result after MixColumns:
-
-
+Result:
 5f 72 64 15
 57 f5 bc 92
 f7 be 3b 29
 1d b9 f9 1a
 
-
 Explanation:
-- This step spreads information across all bytes
+- Provides diffusion across all bytes
 
 RTL mapping:
-- Implemented using combinational logic and xtime function
+- Implemented using combinational logic and xtime
 
 ---
 
 ### 10.3.4 AddRoundKey
 
-The state is XORed with the round key generated from key expansion.
+State is XORed with round key.
 
 Result after Round 1:
-
 
 89 d8 10 e8
 85 5a ce 68
 2d 18 43 d8
 cb 12 8f e4
 
-
 ---
 
 ## 10.4 Rounds 2 to 9
 
-Each of these rounds repeats the same sequence:
-
+Each round repeats:
 
 SubBytes → ShiftRows → MixColumns → AddRoundKey
 
-
 During these rounds:
-- Data becomes increasingly diffused
-- Each output byte depends on all input bytes
-- Security strength increases with each round
-
-The intermediate values are not shown here fully, but the transformation pattern remains identical.
+- Data becomes highly mixed
+- Each output depends on all input bits
 
 ---
 
-## 10.5 Round 10 (Final Round)
-
-The final round differs slightly.
+## 10.5 Final Round (Round 10)
 
 Operations:
-1. SubBytes
-2. ShiftRows
-3. AddRoundKey
+
+SubBytes → ShiftRows → AddRoundKey
 
 Note:
-- MixColumns is NOT performed in the final round
+- MixColumns is NOT used in final round
 
 Final state:
-
-
 69 c4 e0 d8
 6a 7b 04 30
 d8 cd b7 80
@@ -600,56 +532,42 @@ d8 cd b7 80
 
 ## 10.6 Final Ciphertext
 
-The state matrix is converted back to a 128-bit output:
+Flattened output:
 
+`69c4e0d86a7b0430d8cdb78070b4c55a`
 
-69c4e0d86a7b0430d8cdb78070b4c55a
-
-
-This matches the expected NIST output exactly.
+This matches the NIST reference output.
 
 ---
 
 ## 10.7 RTL Execution Flow
 
-In an iterative hardware implementation:
+Cycle-wise execution:
 
-Cycle 0:
-- Initial AddRoundKey
-
-Cycles 1–9:
-- One round per clock cycle
-
-Cycle 10:
-- Final round (no MixColumns)
-
-This ensures:
-- Controlled execution
-- Reduced switching activity
-- Lower power consumption
+| Cycle | Operation |
+|------|----------|
+| 0    | Initial AddRoundKey |
+| 1–9  | Main rounds |
+| 10   | Final round |
 
 ---
 
 ## 10.8 Key Observations
 
-- AES combines linear and non-linear operations
-- Security is achieved through:
-  - SubBytes (non-linearity)
-  - ShiftRows (permutation)
-  - MixColumns (diffusion)
-- Each round increases complexity of data transformation
-- RTL implementation directly follows mathematical steps
+- SubBytes provides non-linearity
+- ShiftRows provides permutation
+- MixColumns provides diffusion
+- AddRoundKey integrates key material
+- Each round increases security strength
 
 ---
 
 ## 10.9 Conclusion
 
-This example demonstrates that:
+This example verifies that:
 
-- The AES algorithm is correctly implemented
-- Finite field arithmetic operations are accurate
-- Key expansion is functioning properly
-- All transformations follow the AES standard
-- The final output matches the NIST reference
-
-This validates both the correctness of the algorithm and the RTL implementation.
+- AES transformations are correctly implemented
+- Finite field arithmetic is accurate
+- Key expansion works correctly
+- RTL matches mathematical model
+- Output matches NIST standard
