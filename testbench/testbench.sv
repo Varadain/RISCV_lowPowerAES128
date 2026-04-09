@@ -1,5 +1,30 @@
 `timescale 1ns/1ps
-
+// ============================================================
+// RISC-V 5-STAGE PIPELINE OVERVIEW
+// ============================================================
+//
+// Each instruction flows through 5 stages:
+//
+//   ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐   ┌──────┐
+//   │  IF  │→→ │  ID   │→→│  EX  │→→ │ MEM  │→→ │  WB  │
+//   └──────┘   └──────┘   └──────┘   └──────┘   └──────┘
+//
+// IF  (Instruction Fetch)   : Fetch instruction from memory
+// ID  (Instruction Decode)  : Decode + read registers
+// EX  (Execute)             : Perform ALU operation
+// MEM (Memory Access)       : Load/store memory
+// WB  (Write Back)          : Write result to register
+//
+// Example (ADD x3, x1, x2):
+//
+// Cycle 1: IF  → fetch ADD
+// Cycle 2: ID  → read x1, x2
+// Cycle 3: EX  → compute x1 + x2
+// Cycle 4: MEM → (not used)
+// Cycle 5: WB  → write result into x3
+//
+// Multiple instructions run in parallel (pipeline overlap)
+// ============================================================
 module riscv_core_tb;
 `ifdef SYNTHESIS
     // Quartus-friendly stub (no behavioral stimulus in synthesis/elaboration mode).
