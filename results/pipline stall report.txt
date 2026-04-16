@@ -1,0 +1,16 @@
+- V e r i l a t i o n   R e p o r t: Verilator 5.044 2026-01-01 rev v5.044
+- Verilator: Built from 0.081 MB sources in 18 modules, into 0.278 MB in 10 C++ files needing 0.000 MB
+- Verilator: Walltime 7.762 s (elab=0.006, cvt=0.048, bld=7.682); cpu 0.080 s on 8 threads; alloced 33.273 MB
+[65000]  STALL DETECTED (cycle 7)
+[65000]  FLUSH DETECTED (cycle 7)
+
+==============================
+     HAZARD TEST SUMMARY
+==============================
+STALL_IF  : PASS (1 events)
+FLUSH_IFID: PASS (1 events)
+
+ OVERALL: PASS
+==============================
+
+- testbench.sv:100: Verilog $finish
