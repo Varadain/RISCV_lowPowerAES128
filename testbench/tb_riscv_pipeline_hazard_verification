@@ -1,0 +1,183 @@
+/*
+===============================================================================
+TESTBENCH: Hazard Verification (STALL + FLUSH)
+PURPOSE:
+---------
+This testbench verifies correct operation of pipeline hazard control logic
+in the RISC-V core, specifically:
+
+  1. stall_if   → Load-use data hazard handling
+  2. flush_ifid → Control hazard (branch misprediction / taken branch)
+
+WHY THIS TEST:
+---------------
+A pipelined CPU must:
+- STALL when a dependent instruction needs data not yet available
+- FLUSH incorrect instructions when a branch is taken
+
+If either mechanism fails:
+- Incorrect register values will propagate
+- Pipeline corruption occurs
+
+TEST STRATEGY:
+---------------
+We inject a small program directly into instruction memory:
+
+1) LOAD-USE HAZARD (STALL EXPECTED)
+   ------------------------------------------------
+   LW  x5, 0(x1)
+   ADD x6, x5, x2   <-- depends on LW result
+
+   → ADD must be stalled 1 cycle
+   → Expect: stall_if = 1 for at least one cycle
+
+2) BRANCH HAZARD (FLUSH EXPECTED)
+   ------------------------------------------------
+   ADDI x1, 1
+   ADDI x2, 1
+   BEQ  x1, x2      <-- branch taken
+   ADD  x0, x0, x0  <-- MUST BE FLUSHED
+
+   → Wrong-path instruction must be killed
+   → Expect: flush_ifid = 1
+
+HOW WE VERIFY:
+---------------
+- Monitor stall_if and flush_ifid every clock
+- Count number of times each signal is asserted
+- Track whether each event occurred at least once
+
+PASS CONDITIONS:
+----------------
+- stall_if asserted ≥ 1 time
+- flush_ifid asserted ≥ 1 time
+
+FAIL CONDITIONS:
+----------------
+- Either signal never asserts
+
+EXPECTED RESULT:
+----------------
+Both events should trigger at least once.
+Example observed:
+  STALL_IF  : PASS (1 events)
+  FLUSH_IFID: PASS (1 events)
+
+NOTE:
+-----
+In this specific program, stall and flush may occur in the SAME cycle
+because:
+- Branch depends on recently produced values
+- Hazard + control resolution overlap
+
+===============================================================================
+*/
+`timescale 1ns/1ps
+
+module simple_tb;
+
+  logic clk;
+  logic rst_n;
+
+  wire stall_if;
+  wire flush_ifid;
+
+  int stall_count = 0;
+  int flush_count = 0;
+
+  int cycle = 0;
+  int stall_seen = 0;
+  int flush_seen = 0;
+
+  // DUT
+  riscv_core_top dut (
+    .clk(clk),
+    .rst_n(rst_n)
+  );
+
+  assign stall_if   = dut.stall_if;
+  assign flush_ifid = dut.flush_ifid;
+
+  // Clock
+  always #5 clk = ~clk;
+
+  initial clk = 0;
+
+  // Reset
+  initial begin
+    rst_n = 0;
+    repeat (5) @(posedge clk);
+    rst_n = 1;
+  end
+
+  // Program ROM
+  initial begin
+    wait(rst_n);
+
+    // LOAD-USE → STALL
+    dut.u_if_stage.u_instr_mem.rom[0] = 32'h0000A283; // LW
+    dut.u_if_stage.u_instr_mem.rom[1] = 32'h00228333; // ADD (hazard)
+
+    // BRANCH → FLUSH
+    dut.u_if_stage.u_instr_mem.rom[2] = 32'h00100093;
+    dut.u_if_stage.u_instr_mem.rom[3] = 32'h00100113;
+    dut.u_if_stage.u_instr_mem.rom[4] = 32'h00208663; // BEQ
+    dut.u_if_stage.u_instr_mem.rom[5] = 32'h00000033; // flushed
+    dut.u_if_stage.u_instr_mem.rom[6] = 32'h00500213;
+
+    for (int i = 7; i < 32; i++)
+      dut.u_if_stage.u_instr_mem.rom[i] = 32'h00000013;
+  end
+
+  // Monitor
+  always @(posedge clk) begin
+    cycle++;
+
+    if (stall_if) begin
+      stall_count++;
+      stall_seen = 1;
+      $display("[%0t]  STALL DETECTED (cycle %0d)", $time, cycle);
+    end
+
+    if (flush_ifid) begin
+      flush_count++;
+      flush_seen = 1;
+      $display("[%0t]  FLUSH DETECTED (cycle %0d)", $time, cycle);
+    end
+  end
+
+  // Final check (replaces SVA)
+  initial begin
+    #500;
+
+    $display("\n==============================");
+    $display("     HAZARD TEST SUMMARY");
+    $display("==============================");
+
+    if (stall_seen)
+      $display("STALL_IF  : PASS (%0d events)", stall_count);
+    else
+      $display("STALL_IF  : FAIL (never triggered)");
+
+    if (flush_seen)
+      $display("FLUSH_IFID: PASS (%0d events)", flush_count);
+    else
+      $display("FLUSH_IFID: FAIL (never triggered)");
+
+    if (stall_seen && flush_seen)
+      $display("\n OVERALL: PASS");
+    else
+      $display("\n OVERALL: FAIL");
+
+    $display("==============================\n");
+
+    $finish;
+  end
+
+  // Wave dump
+  initial begin
+    $dumpfile("wave.vcd");
+    $dumpvars(0, simple_tb);
+  end
+
+endmodule
