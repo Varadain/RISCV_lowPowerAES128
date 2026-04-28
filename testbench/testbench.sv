@@ -392,6 +392,7 @@ module riscv_core_tb;
             dut.u_if_stage.u_instr_mem.rom[6]  = enc_itype(12'd0,5'd0,3'b000,5'd0,7'b0010011); // NOP
             dut.u_if_stage.u_instr_mem.rom[7]  = enc_itype(12'd2,5'd0,3'b000,5'd5,7'b0010011); // seed x5=2
             dut.u_if_stage.u_instr_mem.rom[8]  = enc_itype(12'd0,5'd5,3'b000,5'd8,7'b0010011); // MV x8,x5
+            dut.u_if_stage.u_instr_mem.rom[8]  = enc_itype(12'd0,5'd5,3'b000,5'd8,7'b0010011); // MV x8,x5
             dut.u_if_stage.u_instr_mem.rom[9]  = enc_itype(12'd9,5'd0,3'b000,5'd9,7'b0010011); // LI x9,9
             dut.u_if_stage.u_instr_mem.rom[10] = enc_jtype(21'd8,5'd0,7'b1101111);             // J +8
             dut.u_if_stage.u_instr_mem.rom[11] = enc_itype(12'd1,5'd0,3'b000,5'd27,7'b0010011); // skipped
@@ -416,10 +417,67 @@ module riscv_core_tb;
         end
     endtask
 
+
+
+    // -------------------------------------------------------------------------
+    // AES-128 MMIO NIST test vector
+    // NIST SP 800-38A F.1 ECB-AES128:
+    //   KEY = 000102030405060708090A0B0C0D0E0F
+    //   PT  = 00112233445566778899AABBCCDDEEFF
+    //   CT  = 69C4E0D86A7B0430D8CDB78070B4C55A
+    // -------------------------------------------------------------------------
+    task automatic run_aes_nist_tests();
+        int timeout;
+        begin
+            $display("\n=== AES-128 NIST MMIO tests ===");
+
+            clear_mem_and_regs();
+            apply_reset();
+
+            // Program key words (little-endian word map into [127:0])
+            dut.u_mem_stage.u_aes_mmio.key_reg[31:0]    = 32'h0C0D0E0F; // KEY0
+            dut.u_mem_stage.u_aes_mmio.key_reg[63:32]   = 32'h08090A0B; // KEY1
+            dut.u_mem_stage.u_aes_mmio.key_reg[95:64]   = 32'h04050607; // KEY2
+            dut.u_mem_stage.u_aes_mmio.key_reg[127:96]  = 32'h00010203; // KEY3
+
+            // Program plaintext words
+            dut.u_mem_stage.u_aes_mmio.pt_reg[31:0]     = 32'hCCDDEEFF; // PT0
+            dut.u_mem_stage.u_aes_mmio.pt_reg[63:32]    = 32'h8899AABB; // PT1
+            dut.u_mem_stage.u_aes_mmio.pt_reg[95:64]    = 32'h44556677; // PT2
+            dut.u_mem_stage.u_aes_mmio.pt_reg[127:96]   = 32'h00112233; // PT3
+
+            // Start pulse through control path equivalent
+            @(posedge clk);
+            dut.u_mem_stage.u_aes_mmio.aes_start_pulse = 1'b1;
+            dut.u_mem_stage.u_aes_mmio.busy_reg        = 1'b1;
+            dut.u_mem_stage.u_aes_mmio.done_reg        = 1'b0;
+            @(posedge clk);
+            dut.u_mem_stage.u_aes_mmio.aes_start_pulse = 1'b0;
+
+            // Wait for done with timeout
+            timeout = 0;
+            while ((dut.u_mem_stage.u_aes_mmio.done_reg !== 1'b1) && (timeout < 40)) begin
+                @(posedge clk);
+                timeout++;
+            end
+
+            check_and_report("AES", "DONE",   "done asserted within 40 cycles", {31'h0, dut.u_mem_stage.u_aes_mmio.done_reg}, 32'h1);
+            check_and_report("AES", "BUSY",   "busy deasserted after completion", {31'h0, dut.u_mem_stage.u_aes_mmio.busy_reg}, 32'h0);
+
+            // Check ciphertext against NIST expected vector
+            check_and_report("AES", "CT0", "ciphertext[31:0]",    dut.u_mem_stage.u_aes_mmio.ct_reg[31:0],    32'h70B4C55A);
+            check_and_report("AES", "CT1", "ciphertext[63:32]",   dut.u_mem_stage.u_aes_mmio.ct_reg[63:32],   32'hD8CDB780);
+            check_and_report("AES", "CT2", "ciphertext[95:64]",   dut.u_mem_stage.u_aes_mmio.ct_reg[95:64],   32'h6A7B0430);
+            check_and_report("AES", "CT3", "ciphertext[127:96]",  dut.u_mem_stage.u_aes_mmio.ct_reg[127:96],  32'h69C4E0D8);
+        end
+    endtask
+
     // -------------------------------------------------------------------------
     // Main test sequence
     // 47 checks total:
     // 10 (R) + 9 (I) + 8 (Load/Store) + 6 (B) + 4 (U/J) + 10 (System/Fence/Pseudo)
+    // 53 checks total:
+    // 10 (R) + 9 (I) + 8 (Load/Store) + 6 (B) + 4 (U/J) + 10 (System/Fence/Pseudo) + 6 (AES)
     // -------------------------------------------------------------------------
     initial begin
         pass_count = 0;
@@ -434,11 +492,13 @@ module riscv_core_tb;
         run_branch_tests();
         run_u_jtype_tests();
         run_system_fence_pseudo_tests();
+        run_aes_nist_tests();
 
         run_cycles(PIPE_DRAIN);
 
         $display("\n================================================");
         $display("RV32I-style directed verification summary: PASS=%0d FAIL=%0d", pass_count, fail_count);
+        $display("RV32I + AES directed verification summary: PASS=%0d FAIL=%0d", pass_count, fail_count);
         $display("================================================\n");
 
         if (fail_count == 0) begin
