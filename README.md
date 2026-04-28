@@ -1,363 +1,187 @@
-# RISC-V RV32I Processor – RTL Design and 47 Instruction Verification
+# RISC-V RV32I Core with Low-Power AES Integration
 
-This project implements and verifies a **5-stage pipelined RISC-V processor (RV32I subset)** using SystemVerilog.
+## Overview
+This project implements a 32-bit RISC-V (RV32I) pipelined processor with an integrated low-power AES-128 hardware accelerator. The design is written in Verilog and verified using Verilator.
 
-The focus is not just on building the processor, but on **proving its correctness** through a structured, self-checking testbench that validates **47 different instructions** across all instruction formats.
+It combines:
+- A standard RISC-V CPU core
+- A hardware AES encryption engine
+- A memory-mapped interface (MMIO) for CPU–AES communication
 
----
-
-# 1. What is happening in this project (intuitive view)
-
-Think of this processor like a factory assembly line.
-
-Each instruction (ADD, LOAD, BRANCH, etc.) enters the pipeline and moves through 5 stages:
-
-
-FETCH → DECODE → EXECUTE → MEMORY → WRITEBACK
-
-
-At every clock cycle:
-- A new instruction enters
-- Older instructions move forward
-- Multiple instructions are processed simultaneously
-
-This is called **pipelining**, and it is what makes modern processors fast.
+This can be viewed as a small CPU with a built-in encryption co-processor optimized for low power.
 
 ---
 
-# 2. Pipeline – visual intuition
+## High-Level Architecture
 
+          +----------------------+
+          |   RISC-V CPU Core    |
+          | (5-stage pipeline)   |
+          +----------+-----------+
+                     |
+                     | Memory-Mapped Interface (MMIO)
+                     |
+      +--------------v--------------+
+      |     AES-128 Accelerator     |
+      |    (Low-Power Design)      |
+      +--------------+--------------+
+                     |
+              +------v------+
+              |   Memory    |
+              | (Instr/Data)|
+              +-------------+
 
-Cycle 1: ADD
-Cycle 2: SUB ADD
-Cycle 3: AND SUB ADD
-Cycle 4: OR AND SUB ADD
-...
-
-
-Each instruction is at a different stage at the same time.
-
----
-
-# 3. What does one instruction actually do?
-
-Let’s take a real example:
-
-
-ADD x3, x1, x2
-
-
-Assume:
-
-x1 = 20
-x2 = 6
-
-
-### Step-by-step inside hardware:
-
-### IF (Fetch)
-- PC points to instruction memory
-- Instruction `ADD x3, x1, x2` is fetched
-
-### ID (Decode)
-- Instruction fields are decoded
-- Registers read:
-  - rs1 → x1 → 20
-  - rs2 → x2 → 6
-
-### EX (Execute)
-- ALU performs:
-
-20 + 6 = 26
-
-
-### MEM (Memory)
-- Not used for ADD (just passes value)
-
-### WB (Write Back)
-- Result written:
-
-x3 = 26
-
-
-This entire process is verified in the testbench.
+### Description
+- The CPU executes instructions normally
+- AES is accessed through memory-mapped registers
+- Encryption is offloaded to dedicated hardware
+- Results are read back by the CPU
 
 ---
 
-# 4. RTL Design – How hardware is structured
+## Pipeline Architecture
 
-Top module:
-
-
-riscv_core_top.sv
+The processor uses a standard 5-stage pipeline:
 
 
-Internally, the processor is divided into clear modules:
-
-## Instruction Fetch
-
-pc_reg.sv → holds program counter
-instr_mem.sv → stores instructions
-if_stage.sv → fetch logic
+[IF] → [ID] → [EX] → [MEM] → [WB]
 
 
-## Instruction Decode
+| Stage | Description |
+|------|-------------|
+| IF   | Instruction Fetch |
+| ID   | Decode + Register Read |
+| EX   | Execute (ALU operations) |
+| MEM  | Memory access |
+| WB   | Write result back |
 
-reg_file.sv → register storage (x0–x31)
-control_unit.sv → decides what operation to perform
-imm_gen.sv → generates immediate values
-
-
-## Execution
-
-alu.sv → performs math/logic
-ex_stage.sv → selects operands, computes results
-
-
-## Memory
-
-data_mem.sv → RAM
-load_store_unit.sv → byte/halfword handling
-mem_stage.sv → memory interface
-
-
-## Writeback
-
-wb_stage.sv → selects final result (ALU vs memory)
-
-
-## Pipeline Control
-
-hazard_unit.sv → prevents incorrect execution
-forwarding_unit.sv → avoids stalls using bypassing
-
+### Key Idea
+Multiple instructions are processed in parallel, each in a different stage.
 
 ---
 
-# 5. Why hazards matter (real processor behavior)
+## Pipeline Stall (Hazard Handling)
 
-Example problem:
-
-
-ADD x1, x2, x3
-SUB x4, x1, x5 ← needs result of ADD immediately
-
-
-Without handling:
-- SUB reads old value of x1 → WRONG RESULT
-
-Solution:
-- **Forwarding unit** sends result directly from EX stage
-- No waiting needed
-
-If forwarding is not possible:
-- **Hazard unit inserts stall**
-
-This is implemented and verified in this design.
-
----
-
-# 6. Instruction Verification (core of this project)
-
-This project verifies **47 instructions**, grouped as:
-
-## Arithmetic / Logic (R-type)
-
-ADD SUB SLL SLT SLTU XOR SRL SRA OR AND
-
-
-## Immediate operations (I-type)
-
-ADDI SLTI SLTIU XORI ORI ANDI SLLI SRLI SRAI
-
-
-## Memory operations
-
-LB LH LW LBU LHU
-SB SH SW
-
-
-## Control flow
-
-BEQ BNE BLT BGE BLTU BGEU
-JAL JALR
-
-
-## Upper instructions
-
-LUI AUIPC
-
-
-## System / pseudo
-
-ECALL EBREAK FENCE FENCE.I NOP MV LI J
-
-
----
-
-# 7. How the testbench verifies correctness
-
-The testbench is **self-checking**.
-
-It does NOT just run simulation — it **evaluates correctness automatically**.
-
-## Flow:
-
-Load instructions into instruction memory
-Initialize registers and memory
-Run clock cycles
-Read results from register file / memory
-Compare with expected values
-
----
-
-# 8. How expected values are computed
+A pipeline stall occurs when an instruction depends on a result that is not yet available.
 
 Example:
 
-
-XORI x4, x1, 0xF0
-x1 = 0x09
-
-Expected:
-0x09 ^ 0xF0 = 0xF9
+lw x1, 0(x0)
+add x2, x1, x1
 
 
-Testbench checks:
+- `add` depends on `lw`
+- `lw` has not completed
+- Pipeline inserts a stall cycle
+
+### Observable Behavior
+- Program counter (PC) stops advancing temporarily
+- Pipeline registers hold values
+- Ensures correct execution
+
+---
+
+## AES Accelerator
+
+AES is a standard encryption algorithm. Instead of software implementation, this design uses a hardware AES module.
+
+Advantages:
+- Faster execution
+- Lower power consumption (due to reduced switching activity)
+
+---
+
+## MMIO Interface (CPU ↔ AES)
+
+The CPU interacts with AES using memory-mapped registers.
+
+### Flow
+
+CPU:
+Write KEY
+Write PLAINTEXT
+Set START = 1
+
+AES:
+Processes data
+Sets DONE = 1
+
+CPU:
+Reads CIPHERTEXT
 
 
-if (rtl_output == expected)
-  PASS
-else
-  FAIL
+### Control Signals
+- `start` : begin encryption  
+- `busy`  : AES is processing  
+- `done`  : encryption complete  
+
+---
+
+## Low-Power Design Strategy
+
+Power consumption in digital circuits is largely due to signal switching.
+
+This design reduces power by:
+- Activating AES only when required
+- Avoiding unnecessary toggling
+- Using enable-controlled logic instead of always-active blocks
+
+---
+
+## Repository Structure
+
+
+rtl/ → Processor and AES RTL (Verilog)
+testbench/ → Simulation environment and directed tests
+results/ → Simulation logs and waveform outputs
 
 
 ---
 
-# 9. Real simulation output 
+## Verification
 
+### Tool
+- Verilator
 
-[R-TYPE] ADD → PASS
+### Coverage
+- Full RV32I instruction set
+- Load/store operations
+- Branch instructions
+- System instructions
+- AES-128 (NIST test vectors)
 
-[R-TYPE] SUB → PASS
+### Results
 
-[I-TYPE] XORI → PASS
-
-[LOAD] LB → PASS
-
-[BRANCH] BEQ → PASS
-
-[JUMP] JAL → PASS
-...
-
-================================================
-
-PASS = 47
+PASS = 53
 FAIL = 0
 
-ALL TESTS PASSED
 
-
-This means:
-
-- Every instruction behaves exactly as per RISC-V specification
-- No functional bugs remain
+Detailed simulation log is available in the `results/` directory.
 
 ---
 
-# 10. Waveform (how to visually verify)
 
-Simulation generates:
-
-
-riscv_core_tb.vcd
-
-
-When opened in waveform viewer:
-
-You can observe:
-
-- `pc` → instruction flow
-- `instr` → current instruction
-- `alu_result` → computation
-- `reg_write` → register updates
-- `mem_read/write` → memory activity
-
-This allows **cycle-by-cycle debugging of the processor**.
+### Key Signals to Observe
+- Program Counter (PC)
+- Pipeline stage registers
+- Register write-back
+- AES control signals (`start`, `busy`, `done`)
 
 ---
 
-# 11. It demonstrates:
+## Key Highlights
 
-- Real pipeline behavior
-- Hazard handling (forwarding + stalls)
-- Memory access correctness
-- Branch control logic
-- Full instruction validation
-
-This is the **foundation of real processor design and verification**.
-
+- RV32I pipelined processor
+- Low-power AES-128 integration
+- MMIO-based hardware interface
+- Directed verification (53/53 tests passed)
+- Waveform-based validation
 ---
 
-# 12. Final Result
+## Summary
 
-
-Total instructions verified : 47
-All tests passed : YES
-Functional correctness : VERIFIED
-
-
----
-
-# 13. One-line summary
-
-
-A fully verified 5-stage pipelined RISC-V processor with complete functional validation of 47 RV32I instructions using a self-checking SystemVerilog testbench.
-
-----
-- Real pipeline behavior
-- Hazard handling (forwarding + stalls)
-- Memory access correctness
-- Branch control logic
-- Full instruction validation
-
-This is the **foundation of real processor design and verification**.
-
----
-
-# 12. Final Result
-
-
-Total instructions verified : 47
-All tests passed : YES
-Functional correctness : VERIFIED
-
-
----
-
-# 13. One-line summary
-
-
-A fully verified 5-stage pipelined RISC-V processor with complete functional validation of 47 RV32I instructions using a self-checking SystemVerilog testbench.
-
-## AES-128 Low-Power MMIO Integration
-
-A low-power AES-128 accelerator is integrated through the MEM stage as a memory-mapped peripheral.
-
-### MMIO base address
-- `AES_BASE = 0x00000300`
-
-### Register map (word offsets)
-- `+0x00` CTRL/STATUS: bit0=`busy`, bit1=`done`; write bit0=`start`, write bit1=`clear done`
-- `+0x08..+0x14` KEY0..KEY3 (128-bit key, little-endian words)
-- `+0x18..+0x24` PT0..PT3 (128-bit plaintext, little-endian words)
-- `+0x28..+0x34` CT0..CT3 (128-bit ciphertext output)
-
-### Programming sequence
-1. Write KEY0..KEY3
-2. Write PT0..PT3
-3. Write `1` to CTRL (`AES_BASE + 0x00`) to start
-4. Poll CTRL bit1 (`done`) or bit0 (`busy`)
-5. Read CT0..CT3 when done
-
-The AES core clock enable is active only while busy, minimizing switching activity in idle periods.
+This project demonstrates:
+- Integration of a hardware accelerator with a CPU
+- Efficient pipeline-based execution
+- Practical low-power design techniques
+- Complete functional verification
