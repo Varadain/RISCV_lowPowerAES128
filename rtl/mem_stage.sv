@@ -8,8 +8,9 @@
 //
 // It also handles:
 //   - Subword accesses (byte, halfword)
-//   - Sign/zero extension for loads
+//   - Sign/zero extension for load
 //   - Store data merging for SB/SH
+//   - Memory-mapped AES accelerator accesses
 //
 // ------------------------------------------------------------
 // DATA FLOW DIAGRAM:
@@ -59,6 +60,7 @@
 
 module mem_stage (
     input  logic        clk,            // System clock
+    input  logic        rst_n,          // Active-low reset for peripherals
     input  logic [31:0] addr_i,         // Address from EX stage (ALU result)
     input  logic [31:0] write_data_i,   // Data to be written (for store)
     input  logic        mem_read_i,     // Load enable signal
@@ -75,7 +77,16 @@ module mem_stage (
 
     logic [31:0] raw_mem_word;        // Raw 32-bit word read from memory
     logic [31:0] merged_store_word;   // Modified word for partial store (SB/SH)
+    logic [31:0] mem_read_data;       // Data path for normal data memory
 
+    // AES MMIO decode/control signals
+    logic        aes_sel;
+    logic        aes_write_en;
+    logic        aes_read_en;
+    logic [31:0] aes_read_data;
+
+    logic        data_mem_read_en;
+    logic        data_mem_write_en;
     // --------------------------------------------------------
     // Address Decoding
     // --------------------------------------------------------
@@ -84,7 +95,11 @@ module mem_stage (
 
     assign ls_tag   = addr_i[31:29];          // Extract operation type
     assign eff_addr = {3'b000, addr_i[28:0]}; // Mask upper bits for real address
-
+    
+    // AES MMIO range: 0x300 - 0x33F
+    assign aes_sel      = (eff_addr[31:6] == 26'h000000c);
+    assign aes_write_en = mem_write_i & aes_sel;
+    assign aes_read_en  = mem_read_i & aes_sel;
     // --------------------------------------------------------
     // Load/Store Unit
     // --------------------------------------------------------
@@ -94,24 +109,17 @@ module mem_stage (
     //   - Creating merged word for store operations (SB/SH)
 
     load_store_unit u_load_store_unit (
-        .ls_tag_i           (ls_tag),              // Load/store type
-        .byte_off_i         (eff_addr[1:0]),       // Byte offset within word
-        .mem_word_i         (raw_mem_word),        // Raw memory data
-        .store_data_i       (write_data_i),        // Data to be stored
-        .load_data_o        (read_data_o),         // Final processed load data
-        .merged_store_word_o(merged_store_word)    // Modified store word
+         .ls_tag_i           (ls_tag),
+        .byte_off_i         (eff_addr[1:0]),
+        .mem_word_i         (raw_mem_word),
+        .store_data_i       (write_data_i),
+        .load_data_o        (mem_read_data),
+        .merged_store_word_o(merged_store_word)
     );
 
-    // --------------------------------------------------------
-    // Data Memory Block
-    // --------------------------------------------------------
-    // Performs:
-    //   - Memory read (for both load and store operations)
-    //   - Memory write (for store operations)
-    //
-    // Important:
-    //   - For SB/SH, memory performs read-modify-write
-    //   - merged_store_word ensures correct byte/half update
+  
+    assign data_mem_read_en  = (mem_read_i | mem_write_i) & ~aes_sel;
+    assign data_mem_write_en = mem_write_i & ~aes_sel;
 
     data_mem u_data_mem (
         .clk(clk),
@@ -123,16 +131,21 @@ module mem_stage (
         //   - If normal store (SW): use write_data_i
         //   - If partial store (SB/SH): use merged_store_word
         .write_data_i((ls_tag == 3'b000) ? write_data_i : merged_store_word),
-
-        // Memory read enabled for both load and store:
-        //   - Store needs read for merge operation
-        .mem_read_i(mem_read_i | mem_write_i),
-
-        // Write enable
-        .mem_write_i(mem_write_i),
-
-        // Raw 32-bit data output
+        .mem_read_i(data_mem_read_en),
+        .mem_write_i(data_mem_write_en),
         .read_data_o(raw_mem_word)
     );
+           aes_mmio u_aes_mmio (
+        .clk(clk),
+        .rst_n(rst_n),
+        .addr_i(eff_addr),
+        .write_data_i(write_data_i),
+        .write_en_i(aes_write_en),
+        .read_en_i(aes_read_en),
+        .read_data_o(aes_read_data)
+    );
+
+    // Select between data memory reads and AES MMIO reads
+    assign read_data_o = aes_sel ? aes_read_data : mem_read_data;
 
 endmodule
