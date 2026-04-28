@@ -359,6 +359,7 @@ module riscv_core_top (
     // ========================================================
     mem_stage u_mem_stage (
         .clk(clk),
+        .rst_n(rst_n),
         .addr_i(alu_result_mem),
         .write_data_i(rs2_data_mem),
 
