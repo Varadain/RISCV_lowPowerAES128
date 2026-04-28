@@ -313,3 +313,51 @@ Functional correctness : VERIFIED
 
 
 A fully verified 5-stage pipelined RISC-V processor with complete functional validation of 47 RV32I instructions using a self-checking SystemVerilog testbench.
+
+----
+- Real pipeline behavior
+- Hazard handling (forwarding + stalls)
+- Memory access correctness
+- Branch control logic
+- Full instruction validation
+
+This is the **foundation of real processor design and verification**.
+
+---
+
+# 12. Final Result
+
+
+Total instructions verified : 47
+All tests passed : YES
+Functional correctness : VERIFIED
+
+
+---
+
+# 13. One-line summary
+
+
+A fully verified 5-stage pipelined RISC-V processor with complete functional validation of 47 RV32I instructions using a self-checking SystemVerilog testbench.
+
+## AES-128 Low-Power MMIO Integration
+
+A low-power AES-128 accelerator is integrated through the MEM stage as a memory-mapped peripheral.
+
+### MMIO base address
+- `AES_BASE = 0x00000300`
+
+### Register map (word offsets)
+- `+0x00` CTRL/STATUS: bit0=`busy`, bit1=`done`; write bit0=`start`, write bit1=`clear done`
+- `+0x08..+0x14` KEY0..KEY3 (128-bit key, little-endian words)
+- `+0x18..+0x24` PT0..PT3 (128-bit plaintext, little-endian words)
+- `+0x28..+0x34` CT0..CT3 (128-bit ciphertext output)
+
+### Programming sequence
+1. Write KEY0..KEY3
+2. Write PT0..PT3
+3. Write `1` to CTRL (`AES_BASE + 0x00`) to start
+4. Poll CTRL bit1 (`done`) or bit0 (`busy`)
+5. Read CT0..CT3 when done
+
+The AES core clock enable is active only while busy, minimizing switching activity in idle periods.
