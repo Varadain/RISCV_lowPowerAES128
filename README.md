@@ -64,3 +64,6 @@ SystemVerilog RTL reference for a **5-stage pipelined RISC-V (RV32I-style) core*
 15. `forwarding_unit`
 
 Package file: `riscv_pkg.sv` defines shared control types.
+----
+https://www.edaplayground.com/x/6qTp
+https://www.edaplayground.com/x/CLFm
