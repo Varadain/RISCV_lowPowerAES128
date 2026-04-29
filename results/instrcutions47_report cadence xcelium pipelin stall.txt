@@ -1,0 +1,433 @@
+TOOL:	xrun	25.03-s001: Started on Apr 29, 2026 at 11:07:37 EDT
+xrun: 25.03-s001: (c) Copyright 1995-2025 Cadence Design Systems, Inc.
+file: testbench.sv
+	module worklib.testbench:sv
+		errors: 0, warnings: 0
+file: design.sv
+	module worklib.riscv_core_top:sv
+		errors: 0, warnings: 0
+file: pc_reg.sv
+	module worklib.pc_reg:sv
+		errors: 0, warnings: 0
+file: if_stage.sv
+	module worklib.if_stage:sv
+		errors: 0, warnings: 0
+file: id_stage.sv
+	module worklib.id_stage:sv
+		errors: 0, warnings: 0
+file: hazard_unit.sv
+	module worklib.hazard_unit:sv
+		errors: 0, warnings: 0
+file: forwarding_unit.sv
+	module worklib.forwarding_unit:sv
+		errors: 0, warnings: 0
+file: ex_stage.sv
+	module worklib.ex_stage:sv
+		errors: 0, warnings: 0
+file: mem_stage.sv
+	module worklib.mem_stage:sv
+		errors: 0, warnings: 0
+file: wb_stage.sv
+	module worklib.wb_stage:sv
+		errors: 0, warnings: 0
+file: instr_mem.sv
+	module worklib.instr_mem:sv
+		errors: 0, warnings: 0
+file: reg_file.sv
+	module worklib.reg_file:sv
+		errors: 0, warnings: 0
+file: imm_gen.sv
+	module worklib.imm_gen:sv
+		errors: 0, warnings: 0
+file: control_unit.sv
+	module worklib.control_unit:sv
+		errors: 0, warnings: 0
+file: alu.sv
+	module worklib.alu:sv
+		errors: 0, warnings: 0
+file: load_store_unit.sv
+	module worklib.load_store_unit:sv
+		errors: 0, warnings: 0
+file: data_mem.sv
+	module worklib.data_mem:sv
+		errors: 0, warnings: 0
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+	Top level design units:
+		testbench
+	Building instance overlay tables: .................... Done
+	Generating native compiled code:
+		worklib.wb_stage:sv <0x5f42e084>
+			streams:   1, words:   220
+		worklib.data_mem:sv <0x161484fc>
+			streams:   4, words:  1364
+		worklib.load_store_unit:sv <0x34ec11b3>
+			streams:   1, words:  2157
+		worklib.mem_stage:sv <0x4d42e95c>
+			streams:   9, words:  2293
+		worklib.alu:sv <0x7cba3fc8>
+			streams:   2, words:  1428
+		worklib.ex_stage:sv <0x43e778df>
+			streams:  12, words:  6694
+		worklib.forwarding_unit:sv <0x383644ba>
+			streams:   1, words:  1074
+		worklib.hazard_unit:sv <0x4852068a>
+			streams:   1, words:   642
+		worklib.control_unit:sv <0x4d0e8b5f>
+			streams:   1, words:  5515
+		worklib.imm_gen:sv <0x0473f1c0>
+			streams:   2, words:  2439
+		worklib.reg_file:sv <0x7bb49ca4>
+			streams:   7, words:  2654
+		worklib.id_stage:sv <0x6740fc95>
+			streams:  16, words:  6084
+		worklib.if_stage:sv <0x185ebbf3>
+			streams:   1, words:   337
+		worklib.pc_reg:sv <0x3a76e296>
+			streams:   2, words:   473
+		worklib.testbench:sv <0x49f50f84>
+			streams:  16, words: 14525
+		worklib.riscv_core_top:sv <0x104069c7>
+			streams:  82, words: 27251
+		worklib.instr_mem:sv <0x65f4db23>
+			streams:   1, words:   208
+	Building instance specific data structures.
+	Loading native compiled code:     .................... Done
+	Design hierarchy summary:
+		                 Instances  Unique
+		Modules:                17      17
+		Registers:             133     133
+		Scalar wires:           51       -
+		Vectored wires:        105       -
+		Always blocks:          19      19
+		Initial blocks:         12      12
+		Cont. assignments:      16      23
+		Pseudo assignments:     87       -
+		Process Clocks:          7       2
+		Simulation timescale:  1ps
+	Writing initial simulation snapshot: worklib.testbench:sv
+Loading snapshot worklib.testbench:sv .................... Done
+xcelium> source /xcelium25.03/tools/xcelium/files/xmsimrc
+xcelium> run
+Cycle 1:
+  PC=0 INSTR=00002283
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 2:
+  PC=0 INSTR=00002283
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 3:
+  PC=0 INSTR=00002283
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 4:
+  PC=0 INSTR=00002283
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 5:
+  PC=0 INSTR=00002283
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 6:
+  PC=4 INSTR=00028333
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 7:
+  PC=8 INSTR=00100093
+  ID: rs1=5 rs2=0
+  EX: rd=5 mem_read=1
+  stall_if=1 flush_ifid=1
+
+>>> STALL DETECTED <<<
+
+>>> FLUSH DETECTED <<<
+
+Cycle 8:
+  PC=8 INSTR=00100093
+  ID: rs1=0 rs2=0
+  EX: rd=5 mem_read=1
+  stall_if=0 flush_ifid=0
+
+Cycle 9:
+  PC=12 INSTR=00100113
+  ID: rs1=0 rs2=1
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 10:
+  PC=16 INSTR=00208663
+  ID: rs1=0 rs2=1
+  EX: rd=1 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 11:
+  PC=20 INSTR=00000013
+  ID: rs1=1 rs2=2
+  EX: rd=2 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 12:
+  PC=24 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=12 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 13:
+  PC=28 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 14:
+  PC=32 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 15:
+  PC=36 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 16:
+  PC=40 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 17:
+  PC=44 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 18:
+  PC=48 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 19:
+  PC=52 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 20:
+  PC=56 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 21:
+  PC=60 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 22:
+  PC=64 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 23:
+  PC=68 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 24:
+  PC=72 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 25:
+  PC=76 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 26:
+  PC=80 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 27:
+  PC=84 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 28:
+  PC=88 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 29:
+  PC=92 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 30:
+  PC=96 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 31:
+  PC=100 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 32:
+  PC=104 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 33:
+  PC=108 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 34:
+  PC=112 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 35:
+  PC=116 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 36:
+  PC=120 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 37:
+  PC=124 INSTR=00000013
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 38:
+  PC=128 INSTR=xxxxxxxx
+  ID: rs1=0 rs2=0
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 39:
+  PC=132 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=0 mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 40:
+  PC=136 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 41:
+  PC=140 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 42:
+  PC=144 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 43:
+  PC=148 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 44:
+  PC=152 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 45:
+  PC=156 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 46:
+  PC=160 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 47:
+  PC=164 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 48:
+  PC=168 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 49:
+  PC=172 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+Cycle 50:
+  PC=176 INSTR=xxxxxxxx
+  ID: rs1=x rs2=x
+  EX: rd=x mem_read=0
+  stall_if=0 flush_ifid=0
+
+
+==============================
+     HAZARD TEST SUMMARY
+==============================
+STALL_IF  : PASS (1 events)
+FLUSH_IFID: PASS (1 events)
+
+OVERALL: PASS
+==============================
+
+Simulation complete via $finish(1) at time 500 NS + 0
+./testbench.sv:109     $finish;
+xcelium> exit
+TOOL:	xrun	25.03-s001: Exiting on Apr 29, 2026 at 11:07:39 EDT  (total: 00:00:02)
+Finding VCD file...
+./dump.vcd
+[2026-04-29 15:07:39 UTC] Opening EPWave...
+Done
