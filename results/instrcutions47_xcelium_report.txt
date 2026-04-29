@@ -1,0 +1,235 @@
+[2026-04-28 11:45:03 UTC] chmod +x run.bash; sed -i -e 's/\r//g' run.bash; ./run.bash  
+TOOL:	xrun	25.03-s001: Started on Apr 28, 2026 at 07:45:04 EDT
+xrun: 25.03-s001: (c) Copyright 1995-2025 Cadence Design Systems, Inc.
+file: instr_mem.sv
+	module worklib.instr_mem:sv
+		errors: 0, warnings: 0
+file: reg_file.sv
+	module worklib.reg_file:sv
+		errors: 0, warnings: 0
+file: imm_gen.sv
+	module worklib.imm_gen:sv
+		errors: 0, warnings: 0
+file: control_unit.sv
+	module worklib.control_unit:sv
+		errors: 0, warnings: 0
+file: alu.sv
+	module worklib.alu:sv
+		errors: 0, warnings: 0
+file: load_store_unit.sv
+	module worklib.load_store_unit:sv
+		errors: 0, warnings: 0
+file: data_mem.sv
+	module worklib.data_mem:sv
+		errors: 0, warnings: 0
+file: pc_reg.sv
+	module worklib.pc_reg:sv
+		errors: 0, warnings: 0
+file: if_stage.sv
+	module worklib.if_stage:sv
+		errors: 0, warnings: 0
+file: id_stage.sv
+	module worklib.id_stage:sv
+		errors: 0, warnings: 0
+file: ex_stage.sv
+	module worklib.ex_stage:sv
+		errors: 0, warnings: 0
+file: mem_stage.sv
+	module worklib.mem_stage:sv
+		errors: 0, warnings: 0
+file: wb_stage.sv
+	module worklib.wb_stage:sv
+		errors: 0, warnings: 0
+file: forwarding_unit.sv
+	module worklib.forwarding_unit:sv
+		errors: 0, warnings: 0
+file: hazard_unit.sv
+	module worklib.hazard_unit:sv
+		errors: 0, warnings: 0
+file: design.sv
+	module worklib.riscv_core_top:sv
+		errors: 0, warnings: 0
+file: testbench.sv
+	module worklib.riscv_core_tb:sv
+		errors: 0, warnings: 0
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+	Top level design units:
+		riscv_core_tb
+
+	Extracting FSMs for coverage:
+		worklib.pc_reg
+		worklib.instr_mem
+		worklib.if_stage
+		worklib.reg_file
+		worklib.imm_gen
+		worklib.control_unit
+		worklib.id_stage
+		worklib.hazard_unit
+		worklib.forwarding_unit
+		worklib.alu
+		worklib.ex_stage
+		worklib.load_store_unit
+		worklib.data_mem
+		worklib.mem_stage
+		worklib.wb_stage
+		worklib.riscv_core_top
+		worklib.riscv_core_tb
+	Total FSMs extracted = 0
+	Building instance overlay tables: .................... Done
+	Enabling instrumentation for coverage types: block expression FSM toggle functional
+xmelab: *W,COVDCL: By default expression coverage is scored only for Verilog logical operators (|| and &&) and VHDL logical operators (OR, AND, NOR, and NAND), and is scored only in condition expressions. To score coverage for other operators and for expressions in other statements, use the "set_expr_coverable_operators" and "set_expr_coverable_statements" coverage configuration file commands with suitable options at elaboration.
+	Generating native compiled code:
+		worklib.wb_stage:sv <0x46fd486c>
+			streams:   1, words:   366
+		worklib.load_store_unit:sv <0x5de445bf>
+			streams:   1, words:  5607
+		worklib.mem_stage:sv <0x5b25b326>
+			streams:   9, words:  3160
+		worklib.alu:sv <0x468ad31f>
+			streams:   2, words:  5061
+		worklib.ex_stage:sv <0x6adc6b51>
+			streams:   9, words: 14318
+		worklib.forwarding_unit:sv <0x1858db3b>
+			streams:   1, words:  3756
+		worklib.hazard_unit:sv <0x37e903ce>
+			streams:   1, words:  1689
+		worklib.control_unit:sv <0x7ae64c0d>
+			streams:   1, words: 21323
+		worklib.imm_gen:sv <0x7bbc335c>
+			streams:   2, words:  4442
+		worklib.id_stage:sv <0x6af49a01>
+			streams:  11, words:  8076
+		worklib.if_stage:sv <0x00a70f41>
+			streams:   1, words:   505
+		worklib.pc_reg:sv <0x53fa5c40>
+			streams:   2, words:   700
+		worklib.riscv_core_top:sv <0x47156985>
+			streams:  59, words: 31660
+		worklib.riscv_core_tb:sv <0x3adce19b>
+			streams:  21, words: 61973
+		worklib.instr_mem:sv <0x0b34a95b>
+			streams:   2, words:  3685
+		worklib.data_mem:sv <0x704f9ed1>
+			streams:   4, words:  1943
+		worklib.reg_file:sv <0x4eb20d44>
+			streams:   7, words:  3971
+    logic [31:0] regs [0:31];
+                    |
+xmelab: *W,COVMDD (./reg_file.sv,12|20): Toggle coverage for bit, logic, reg, wire, enum and struct multi-dimensional static arrays and vectors is not supported by default. To enable toggle coverage for enum multi-dimensional static arrays specify 'set_toggle_scoring -sv_enum enable_mda' and for other multi-dimensional static arrays, specify 'set_toggle_scoring -sv_mda [<max_bit_base2_exponent>] [-sv_mda_of_struct]' ccf command in the coverage configuration file.
+    integer i;
+            |
+xmelab: *W,COVUTA (./reg_file.sv,13|12): Toggle coverage is not supported for SystemVerilog integer, real array, string, dynamic array, sparse memory and reference ports. It is also not supported for VHDL multi-dimensional array and array of record. There may also be other such objects in the design.
+xmelab: *W,COVNOEN: By default, toggle coverage is not supported for systemverilog enumerated nets and variables. To enable toggle coverage of these objects, specify the 'set_toggle_scoring -sv_enum' command in the coverage configuration file.
+	Building instance specific data structures.
+xmelab: *W,CGPIDF: Covergroup "per_instance" option , by default, is set as 0.
+xmelab: *N,COVCGN: Coverage configuration file command "set_covergroup -new_instance_reporting" can be specified to improve the scoping and naming of covergroup instances. It may be noted that subsequent merging of a coverage database saved with this command and a coverage database saved without this command is not allowed.
+	Loading native compiled code:     .................... Done
+	Design hierarchy summary:
+		                 Instances  Unique
+		Modules:                17      17
+		Registers:             175     175
+		Scalar wires:           49       -
+		Vectored wires:        105       -
+		Always blocks:          18      18
+		Initial blocks:          8       8
+		Cont. assignments:      14      21
+		Pseudo assignments:     55       -
+		Covergroup Instances:    0       1
+		Process Clocks:          7       2
+		Simulation timescale:  1ps
+	Writing initial simulation snapshot: worklib.riscv_core_tb:sv
+Loading snapshot worklib.riscv_core_tb:sv .................... Done
+xcelium> source /xcelium25.03/tools/xcelium/files/xmsimrc
+xcelium> run
+xmsim: *W,DVEXACC: some objects excluded from $dumpvars due to access restrictions, use +access+r on command line for access to all objects.
+            File: ./testbench.sv, line = 150, pos = 16
+           Scope: riscv_core_tb
+            Time: 0 FS + 0
+
+
+=== R-type tests ===
+[R] ADD -> got=0x0000001a expected=0x0000001a -> PASS
+[R] SUB -> got=0x0000000e expected=0x0000000e -> PASS
+[R] SLL -> got=0x00000500 expected=0x00000500 -> PASS
+[R] SLT -> got=0x00000000 expected=0x00000000 -> PASS
+[R] SLTU -> got=0x00000000 expected=0x00000000 -> PASS
+[R] XOR -> got=0x00000012 expected=0x00000012 -> PASS
+[R] SRL -> got=0x00000005 expected=0x00000005 -> PASS
+[R] SRA -> got=0xfffffffc expected=0xfffffffc -> PASS
+[R] OR -> got=0x00000016 expected=0x00000016 -> PASS
+[R] AND -> got=0x00000004 expected=0x00000004 -> PASS
+
+=== LOAD/STORE ===
+[LOAD] LB -> got=0xffffffdd expected=0xffffffdd -> PASS
+[LOAD] LH -> got=0xffffccdd expected=0xffffccdd -> PASS
+[LOAD] LW -> got=0xaabbccdd expected=0xaabbccdd -> PASS
+[LOAD] LBU -> got=0x000000dd expected=0x000000dd -> PASS
+[LOAD] LHU -> got=0x0000ccdd expected=0x0000ccdd -> PASS
+[STORE] SB -> got=0x00000055 expected=0x00000055 -> PASS
+[STORE] SH -> got=0x000055aa expected=0x000055aa -> PASS
+[STORE] SW -> got=0xdeadbeef expected=0xdeadbeef -> PASS
+
+=== BRANCH ===
+[B] BEQ -> got=0x00000001 expected=0x00000001 -> PASS
+[B] BNE -> got=0x00000000 expected=0x00000000 -> PASS
+[B] BLT -> got=0x00000000 expected=0x00000000 -> PASS
+[B] BGE -> got=0x00000001 expected=0x00000001 -> PASS
+[B] BLTU -> got=0x00000000 expected=0x00000000 -> PASS
+[B] BGEU -> got=0x00000001 expected=0x00000001 -> PASS
+
+=== U/J ===
+[U] LUI -> got=0x12345000 expected=0x12345000 -> PASS
+[U] AUIPC -> got=0x00001000 expected=0x00001000 -> PASS
+[J] JAL -> got=0x00000004 expected=0x00000004 -> PASS
+[J] JALR -> got=0x00000004 expected=0x00000004 -> PASS
+
+=== SYSTEM/PSEUDO ===
+[SYS] ECALL -> got=0x00000007 expected=0x00000007 -> PASS
+[SYS] EBREAK -> got=0x00000007 expected=0x00000007 -> PASS
+[SYS] FENCE -> got=0x00000005 expected=0x00000005 -> PASS
+[SYS] FENCEI -> got=0x00000005 expected=0x00000005 -> PASS
+[SYS] NOP -> got=0x00000000 expected=0x00000000 -> PASS
+[SYS] MV -> got=0x00000002 expected=0x00000002 -> PASS
+[SYS] LI -> got=0x00000009 expected=0x00000009 -> PASS
+[SYS] NOP2 -> got=0x00000000 expected=0x00000000 -> PASS
+
+=== I-type tests ===
+[I] ADDI -> got=0x00000009 expected=0x00000009 -> PASS
+[I] SLTI -> got=0x00000000 expected=0x00000000 -> PASS
+[I] SLTIU -> got=0x00000000 expected=0x00000000 -> PASS
+[I] XORI -> got=0x000000f9 expected=0x000000f9 -> PASS
+[I] ORI -> got=0x0000000b expected=0x0000000b -> PASS
+[I] ANDI -> got=0x00000001 expected=0x00000001 -> PASS
+[I] SLLI -> got=0x00000024 expected=0x00000024 -> PASS
+[I] SRLI -> got=0x00000004 expected=0x00000004 -> PASS
+[I] SRAI -> got=0x00000004 expected=0x00000004 -> PASS
+
+=== J test ===
+[J] skip -> got=0x00000000 expected=0x00000000 -> PASS
+[J] target -> got=0x00000001 expected=0x00000001 -> PASS
+
+================================================
+PASS=47 FAIL=0
+Coverage=100.00%
+================================================
+Simulation complete via $finish(1) at time 7815 NS + 0
+./testbench.sv:456         $finish;
+xcelium> exit
+xmsim: *N,COVCGN: Coverage configuration file command "set_covergroup -new_instance_reporting" can be specified to improve the scoping and naming of covergroup instances. It may be noted that subsequent merging of a coverage database saved with this command and a coverage database saved without this command is not allowed.
+xmsim: *W,CGPIZE: Instance coverage for covergroup instance "cov" will not be dumped to database as per_instance option value is set to 0:./testbench.sv, 51.
+
+coverage setup:
+  workdir  :  ./cov_work
+  dutinst  :  riscv_core_tb(riscv_core_tb)
+  scope    :  scope
+  testname :  test
+
+coverage files:
+  model(design data) :  ./cov_work/scope/icc_49d52576_74d7fef9.ucm
+  data               :  ./cov_work/scope/test/icc_49d52576_74d7fef9.ucd
+TOOL:	xrun	25.03-s001: Exiting on Apr 28, 2026 at 07:45:06 EDT  (total: 00:00:02)
+Finding VCD file...
+./tb.vcd
+[2026-04-28 11:45:07 UTC] Opening EPWave...
+Done
