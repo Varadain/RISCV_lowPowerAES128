@@ -74,7 +74,7 @@ because:
 */
 `timescale 1ns/1ps
 
-module simple_tb;
+module testbench;
 
   logic clk;
   logic rst_n;
@@ -99,54 +99,63 @@ module simple_tb;
   assign flush_ifid = dut.flush_ifid;
 
   // Clock
+  initial clk = 0;
   always #5 clk = ~clk;
 
-  initial clk = 0;
+  // ============================
+  // PROGRAM LOAD (FIXED TIMING)
+  // ============================
+  initial begin
+    // LOAD-USE hazard
+    dut.u_if_stage.u_instr_mem.rom[0] = 32'h00002283; // LW x5,0(x0)
+    dut.u_if_stage.u_instr_mem.rom[1] = 32'h00028333; // ADD x6,x5,x0
 
-  // Reset
+    // BRANCH hazard
+    dut.u_if_stage.u_instr_mem.rom[2] = 32'h00100093; // ADDI x1,1
+    dut.u_if_stage.u_instr_mem.rom[3] = 32'h00100113; // ADDI x2,1
+    dut.u_if_stage.u_instr_mem.rom[4] = 32'h00208663; // BEQ x1,x2
+    dut.u_if_stage.u_instr_mem.rom[5] = 32'h00000013; // NOP (flush)
+
+    // Fill rest
+    for (int i = 6; i < 32; i++)
+      dut.u_if_stage.u_instr_mem.rom[i] = 32'h00000013;
+  end
+
+  // Reset (AFTER program load)
   initial begin
     rst_n = 0;
     repeat (5) @(posedge clk);
     rst_n = 1;
   end
 
-  // Program ROM
-  initial begin
-    wait(rst_n);
-
-    // LOAD-USE → STALL
-    dut.u_if_stage.u_instr_mem.rom[0] = 32'h0000A283; // LW
-    dut.u_if_stage.u_instr_mem.rom[1] = 32'h00228333; // ADD (hazard)
-
-    // BRANCH → FLUSH
-    dut.u_if_stage.u_instr_mem.rom[2] = 32'h00100093;
-    dut.u_if_stage.u_instr_mem.rom[3] = 32'h00100113;
-    dut.u_if_stage.u_instr_mem.rom[4] = 32'h00208663; // BEQ
-    dut.u_if_stage.u_instr_mem.rom[5] = 32'h00000033; // flushed
-    dut.u_if_stage.u_instr_mem.rom[6] = 32'h00500213;
-
-    for (int i = 7; i < 32; i++)
-      dut.u_if_stage.u_instr_mem.rom[i] = 32'h00000013;
-  end
-
-  // Monitor
+  // ============================
+  // DEBUG
+  // ============================
   always @(posedge clk) begin
     cycle++;
 
+    $display("Cycle %0d:", cycle);
+    $display("  PC=%0d INSTR=%h", dut.pc_if, dut.instr_if);
+    $display("  ID: rs1=%0d rs2=%0d", dut.rs1_id, dut.rs2_id);
+    $display("  EX: rd=%0d mem_read=%0b", dut.rd_ex, dut.mem_read_ex);
+    $display("  stall_if=%0b flush_ifid=%0b\n", stall_if, flush_ifid);
+
     if (stall_if) begin
-      stall_count++;
       stall_seen = 1;
-      $display("[%0t]  STALL DETECTED (cycle %0d)", $time, cycle);
+      stall_count++;
+      $display(">>> STALL DETECTED <<<\n");
     end
 
     if (flush_ifid) begin
-      flush_count++;
       flush_seen = 1;
-      $display("[%0t]  FLUSH DETECTED (cycle %0d)", $time, cycle);
+      flush_count++;
+      $display(">>> FLUSH DETECTED <<<\n");
     end
   end
 
-  // Final check (replaces SVA)
+  // ============================
+  // RESULT CHECK
+  // ============================
   initial begin
     #500;
 
@@ -157,27 +166,29 @@ module simple_tb;
     if (stall_seen)
       $display("STALL_IF  : PASS (%0d events)", stall_count);
     else
-      $display("STALL_IF  : FAIL (never triggered)");
+      $display("STALL_IF  : FAIL");
 
     if (flush_seen)
       $display("FLUSH_IFID: PASS (%0d events)", flush_count);
     else
-      $display("FLUSH_IFID: FAIL (never triggered)");
+      $display("FLUSH_IFID: FAIL");
 
     if (stall_seen && flush_seen)
-      $display("\n OVERALL: PASS");
+      $display("\nOVERALL: PASS");
     else
-      $display("\n OVERALL: FAIL");
+      $display("\nOVERALL: FAIL");
 
     $display("==============================\n");
 
     $finish;
   end
 
-  // Wave dump
-  initial begin
-    $dumpfile("wave.vcd");
-    $dumpvars(0, simple_tb);
-  end
+  // ============================
+  // WAVES (Xcelium)
+  // ============================
+initial begin
+  $dumpfile("dump.vcd");
+  $dumpvars(0, testbench);
+end
 
 endmodule
