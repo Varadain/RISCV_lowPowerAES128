@@ -61,62 +61,27 @@
 // ============================================================
 
 module reg_file (
-    input  logic        clk,         // Clock signal for synchronous write
-    input  logic [4:0]  rs1_i,       // Source register 1 address
-    input  logic [4:0]  rs2_i,       // Source register 2 address
-    input  logic [4:0]  rd_i,        // Destination register address
-    input  logic [31:0] rd_data_i,   // Data to be written into rd
-    input  logic        rd_we_i,     // Write enable signal
+    input  logic        clk,
+    input  logic [4:0]  rs1_i,
+    input  logic [4:0]  rs2_i,
+    input  logic [4:0]  rd_i,
+    input  logic [31:0] rd_data_i,
+    input  logic        rd_we_i,
 
-    output logic [31:0] rs1_data_o,  // Output data for rs1
-    output logic [31:0] rs2_data_o   // Output data for rs2
+    output logic [31:0] rs1_data_o,
+    output logic [31:0] rs2_data_o
 );
 
-    // ========================================================
-    // REGISTER STORAGE ARRAY
-    // 32 registers, each 32-bit wide
-    // regs[0] corresponds to x0
-    // ========================================================
     logic [31:0] regs [0:31];
 
-    integer i;
-
-    // ========================================================
-    // INITIALIZATION
-    // Set all registers to 0 at simulation start
-    // (helps deterministic simulation behavior)
-    // ========================================================
-    initial begin
-        for (i = 0; i < 32; i++) begin
-            regs[i] = 32'h0;
-        end
-    end
-
-    // ========================================================
-    // BYPASS LOGIC (WRITE-FORWARDING)
-    //
-    // Detect if current read register is same as write register
-    // AND write is happening in same cycle
-    //
-    // Conditions:
-    //   - Write enabled
-    //   - rd is not x0
-    //   - rd matches rs1 or rs2
-    // ========================================================
+    // ---------------- Bypass ----------------
     logic rs1_bypass;
     logic rs2_bypass;
 
     assign rs1_bypass = rd_we_i && (rd_i != 5'h0) && (rd_i == rs1_i);
     assign rs2_bypass = rd_we_i && (rd_i != 5'h0) && (rd_i == rs2_i);
 
-    // ========================================================
-    // READ LOGIC (COMBINATIONAL)
-    //
-    // Priority:
-    //   1. If register is x0 → return 0
-    //   2. If bypass condition → return rd_data_i
-    //   3. Otherwise → return stored value
-    // ========================================================
+    // ---------------- Read ----------------
     assign rs1_data_o =
         (rs1_i == 5'h0) ? 32'h0 :
         (rs1_bypass     ? rd_data_i : regs[rs1_i]);
@@ -125,19 +90,14 @@ module reg_file (
         (rs2_i == 5'h0) ? 32'h0 :
         (rs2_bypass     ? rd_data_i : regs[rs2_i]);
 
-    // ========================================================
-    // WRITE LOGIC (SEQUENTIAL)
-    //
-    // - Triggered on rising clock edge
-    // - Writes only if:
-    //     rd_we_i = 1 AND rd_i != 0
-    //
-    // - Prevents writing into x0
-    // ========================================================
+    // ---------------- Write ----------------
     always_ff @(posedge clk) begin
         if (rd_we_i && (rd_i != 5'h0)) begin
             regs[rd_i] <= rd_data_i;
         end
+
+        // enforce x0 = 0 every cycle (important)
+        regs[0] <= 32'h0;
     end
 
 endmodule
