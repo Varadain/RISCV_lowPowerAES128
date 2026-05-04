@@ -10,7 +10,7 @@
 //                 PIPELINE OVERVIEW
 //
 //   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐   ┌────────┐
-//   │   IF   │→→│   ID   │→→│   EX   │→→│   MEM  │→→│   WB   │
+//   │   IF   │→→ │   ID   │→→ │   EX   │→→ │   MEM  │→→ │     WB │
 //   └────────┘   └────────┘   └────────┘   └────────┘   └────────┘
 //
 //   IF  : Instruction Fetch (PC + Instruction Memory)
@@ -67,7 +67,7 @@
 //
 // ============================================================
 
-module riscv_core_top (
+module risc_Q_UVM (
     input  logic clk,     // System clock driving all pipeline stages
     input  logic rst_n    // Active-low reset (clears pipeline)
 );
@@ -186,11 +186,16 @@ module riscv_core_top (
     // Handles flush (branch) and stall conditions
     // ========================================================
     always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n || flush_ifid || branch_taken_ex) begin
+        if (!rst_n) begin
+            // Async reset clears IF/ID register
+            pc_id    <= 32'h0;
+            instr_id <= 32'h00000013;
+        end
+        else if (flush_ifid || branch_taken_ex) begin
             // Insert NOP instruction (ADDI x0, x0, 0)
             pc_id    <= 32'h0;
             instr_id <= 32'h00000013;
-        end 
+        end
         else if (!stall_if) begin
             pc_id    <= pc_if;
             instr_id <= instr_if;
@@ -246,8 +251,8 @@ module riscv_core_top (
     // ID → EX Pipeline Register
     // ========================================================
     always_ff @(posedge clk or negedge rst_n) begin
-        if (!rst_n || branch_taken_ex) begin
-            // Clear pipeline on reset or branch
+        if (!rst_n) begin
+            // Async reset clears ID/EX register
             pc_ex         <= 0;
             rs1_ex        <= 0;
             rs2_ex        <= 0;
@@ -263,7 +268,25 @@ module riscv_core_top (
             alu_src_ex    <= 0;
             branch_ex     <= 0;
             alu_ctrl_ex   <= 0;
-        end 
+        end
+        else if (branch_taken_ex) begin
+            // Synchronous flush on taken branch
+            pc_ex         <= 0;
+            rs1_ex        <= 0;
+            rs2_ex        <= 0;
+            rd_ex         <= 0;
+            rs1_data_ex   <= 0;
+            rs2_data_ex   <= 0;
+            imm_ex        <= 0;
+
+            reg_write_ex  <= 0;
+            mem_read_ex   <= 0;
+            mem_write_ex  <= 0;
+            mem_to_reg_ex <= 0;
+            alu_src_ex    <= 0;
+            branch_ex     <= 0;
+            alu_ctrl_ex   <= 0;
+        end
         else if (!stall_if) begin
             // Normal pipeline flow
             pc_ex         <= pc_id;
