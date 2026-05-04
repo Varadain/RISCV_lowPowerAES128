@@ -80,18 +80,7 @@ module data_mem (
     // Total memory size = 256 × 4 bytes = 1 KB
     logic [31:0] ram [0:255];
 
-    integer i;  // Loop variable for initialization
-
-    // ========================================================
-    // MEMORY INITIALIZATION
-    // ========================================================
-    // Initialize all memory locations to zero at simulation start
-    initial begin
-        for (i = 0; i < 256; i++) begin
-            ram[i] = 32'h0;
-        end
-    end
-
+    // NOTE: no procedural memory initialization in RTL to keep synthesis-portable.
     // ========================================================
     // WRITE OPERATION (SYNCHRONOUS)
     // ========================================================
