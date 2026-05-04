@@ -48,6 +48,56 @@
 //
 // ============================================================
 
+// ============================================================
+// LOAD STORE UNIT (LSU)
+// ============================================================
+//
+// Purpose:
+// This module handles sub-word memory operations for loads and stores.
+// It extracts bytes/halfwords from a 32-bit memory word for loads,
+// and merges partial store data into an existing memory word.
+//
+// ============================================================
+//
+// DATA FLOW DIAGRAM:
+//
+//                +-----------------------+
+// mem_word_i --->|                       |
+//                |   BYTE / HALF SELECT  |----> sel_byte / sel_half
+// store_data_i ->|                       |
+//                +-----------+-----------+
+//                            |
+//                            v
+//                   +------------------+
+//                   |  LOAD GENERATOR  |----> load_data_o
+//                   +------------------+
+//                            |
+//                            v
+//                   +------------------------+
+//                   | STORE MERGE GENERATOR |
+//                   +------------------------+
+//                            |
+//                            v
+//                   merged_store_word_o
+//
+// ============================================================
+//
+// FUNCTIONALITY:
+//
+// LOADS:
+//   LB  → Load byte (sign-extended)
+//   LH  → Load halfword (sign-extended)
+//   LBU → Load byte (zero-extended)
+//   LHU → Load halfword (zero-extended)
+//   LW  → Load full word (default pass-through)
+//
+// STORES:
+//   SB → Store byte (merge into word)
+//   SH → Store halfword (merge into word)
+//   SW → Store full word (default pass-through)
+//
+// ============================================================
+
 module load_store_unit (
     input  logic [2:0]  ls_tag_i,          // Load/store type selector
     input  logic [1:0]  byte_off_i,        // Byte offset within 32-bit word
@@ -172,3 +222,4 @@ module load_store_unit (
     end
 
 endmodule
+
