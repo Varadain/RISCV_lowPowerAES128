@@ -1,0 +1,322 @@
+# transcript on
+# 
+# if {[file exists work]} {
+#     vdel -lib work -all
+# }
+# vlib work
+# vmap work work
+# Questa Intel Starter FPGA Edition-64 vmap 2023.3 Lib Mapping Utility 2023.07 Jul 17 2023
+# vmap work work 
+# Modifying modelsim.ini
+# 
+# vlog -sv -work work "$project_dir/aes_sbox.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:20 on May 18,2026
+# vlog -reportprogress 300 -sv -work work D:/mtech/sem 4/midesm presetation/AES128_lowPower/aes_sbox.sv 
+# -- Compiling module aes_sbox
+# 
+# Top level modules:
+# 	aes_sbox
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vlog -sv -work work "$project_dir/sub_bytes.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work D:/mtech/sem 4/midesm presetation/AES128_lowPower/sub_bytes.sv 
+# -- Compiling module sub_bytes
+# 
+# Top level modules:
+# 	sub_bytes
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work "$project_dir/shift_rows.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work D:/mtech/sem 4/midesm presetation/AES128_lowPower/shift_rows.sv 
+# -- Compiling module shift_rows
+# 
+# Top level modules:
+# 	shift_rows
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work "$project_dir/mix_col.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work D:/mtech/sem 4/midesm presetation/AES128_lowPower/mix_col.sv 
+# -- Compiling module mix_col
+# 
+# Top level modules:
+# 	mix_col
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work "$project_dir/mix_columns.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work D:/mtech/sem 4/midesm presetation/AES128_lowPower/mix_columns.sv 
+# -- Compiling module mix_columns
+# 
+# Top level modules:
+# 	mix_columns
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work "$project_dir/key_expand.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work D:/mtech/sem 4/midesm presetation/AES128_lowPower/key_expand.sv 
+# -- Compiling module key_expand
+# 
+# Top level modules:
+# 	key_expand
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work "$project_dir/AES128_lowPower.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work D:/mtech/sem 4/midesm presetation/AES128_lowPower/AES128_lowPower.sv 
+# -- Compiling module AES128_lowPower
+# -- Compiling module aes_clock_gate
+# -- Compiling module AES128_lowPower_core
+# 
+# Top level modules:
+# 	AES128_lowPower
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+$tb_dir "$tb_dir/interfaces/aes_interface.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work "+incdir+D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb" D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/interfaces/aes_interface.sv 
+# -- Compiling interface aes_interface
+# 
+# Top level modules:
+# 	--none--
+# End time: 22:23:21 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+$tb_dir "$tb_dir/assertions/aes_assertions.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:21 on May 18,2026
+# vlog -reportprogress 300 -sv -work work "+incdir+D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb" D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/assertions/aes_assertions.sv 
+# -- Compiling module aes_assertions
+# 
+# Top level modules:
+# 	aes_assertions
+# End time: 22:23:22 on May 18,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+$tb_dir "$tb_dir/aes_uvm_pkg.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:22 on May 18,2026
+# vlog -reportprogress 300 -sv -work work "+incdir+D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb" D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/aes_uvm_pkg.sv 
+# -- Compiling package aes_uvm_pkg
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# ** Note: (vlog-2286) D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/aes_uvm_pkg.sv(6): Using implicit +incdir+C:/intelFPGA_lite/questa_fse/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	--none--
+# End time: 22:23:22 on May 18,2026, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vlog -sv -work work +incdir+$tb_dir "$tb_dir/aes_tb_top.sv"
+# Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+# Start time: 22:23:22 on May 18,2026
+# vlog -reportprogress 300 -sv -work work "+incdir+D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb" D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/aes_tb_top.sv 
+# -- Compiling module aes_tb_top
+# -- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+# -- Importing package aes_uvm_pkg
+# ** Note: (vlog-2286) D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/aes_tb_top.sv(6): Using implicit +incdir+C:/intelFPGA_lite/questa_fse/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+# 
+# Top level modules:
+# 	aes_tb_top
+# End time: 22:23:23 on May 18,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
+# 
+# vsim -t 1ps -suppress 12110 -novopt work.aes_tb_top +UVM_TESTNAME=aes_stress_test
+# vsim -t 1ps -suppress 12110 -novopt work.aes_tb_top "+UVM_TESTNAME=aes_stress_test" 
+# Start time: 22:23:23 on May 18,2026
+# ** Warning: (vsim-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.aes_tb_top
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.aes_interface
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading sv_std.std
+# Loading work.aes_interface
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.aes_uvm_pkg
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading mtiUvm.uvm_pkg
+# Loading work.aes_uvm_pkg
+# Loading mtiUvm.questa_uvm_pkg
+# Loading work.aes_tb_top
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.AES128_lowPower
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.AES128_lowPower
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.AES128_lowPower_core
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.AES128_lowPower_core
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.sub_bytes
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.sub_bytes
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.shift_rows
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.shift_rows
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.mix_columns
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.mix_columns
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.key_expand
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.key_expand
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.aes_sbox
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.aes_sbox
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.aes_clock_gate
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.aes_clock_gate
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.aes_assertions
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.aes_assertions
+# Refreshing D:/mtech/sem 4/midesm presetation/AES128_lowPower/simulation/questa/work.mix_col
+# ** Warning: (vlog-8891) All optimizations are disabled because the -novopt option is in effect. This will cause your simulation to run very slowly. If you are using this switch to preserve visibility for Debug or PLI features, please see the User's Manual section on Preserving Object Visibility with vopt. -novopt option is now deprecated and will be removed in future releases.
+# Loading work.mix_col
+# Loading C:/intelFPGA_lite/questa_fse/uvm-1.1d\win64\uvm_dpi.dll
+# 
+# add wave -divider "DFT and Clock Gating"
+# add wave sim:/aes_tb_top/clk
+# add wave sim:/aes_tb_top/aes_if/reset
+# add wave sim:/aes_tb_top/aes_if/clk_en
+# add wave sim:/aes_tb_top/aes_if/gated_clk_dbg
+# add wave sim:/aes_tb_top/aes_if/test_mode
+# add wave sim:/aes_tb_top/aes_if/scan_enable
+# add wave sim:/aes_tb_top/aes_if/scan_in
+# add wave sim:/aes_tb_top/aes_if/scan_out
+# 
+# add wave -divider "AES Transaction Interface"
+# add wave sim:/aes_tb_top/aes_if/load
+# add wave sim:/aes_tb_top/aes_if/load_sel
+# add wave sim:/aes_tb_top/aes_if/load_index
+# add wave -radix hex sim:/aes_tb_top/aes_if/data_in
+# add wave sim:/aes_tb_top/aes_if/start
+# add wave sim:/aes_tb_top/aes_if/done
+# add wave -radix hex sim:/aes_tb_top/aes_if/data_out
+# 
+# add wave -divider "Core State"
+# add wave -radix hex sim:/aes_tb_top/aes_if/plaintext_dbg
+# add wave -radix hex sim:/aes_tb_top/aes_if/key_dbg
+# add wave -radix hex sim:/aes_tb_top/aes_if/state_dbg
+# add wave -radix hex sim:/aes_tb_top/aes_if/round_key_dbg
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/round_dbg
+# add wave -radix hex sim:/aes_tb_top/aes_if/ciphertext_dbg
+# 
+# add wave -divider "Power and Assertion Metrics"
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/active_cycles
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/idle_cycles
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/scan_cycles
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/gated_clk_edges
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/state_toggles
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/round_key_toggles
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/glitch_count
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/double_pulse_count
+# add wave -radix unsigned sim:/aes_tb_top/aes_if/assertion_fail_count
+# 
+# view wave
+# .main_pane.wave.interior.cs.body.pw.wf
+# view structure
+# .main_pane.structure.interior.cs.body.struct
+# view signals
+# .main_pane.objects.interior.cs.body.tree
+# run -all
+# ----------------------------------------------------------------
+# UVM-1.1d
+# (C) 2007-2013 Mentor Graphics Corporation
+# (C) 2007-2013 Cadence Design Systems, Inc.
+# (C) 2006-2013 Synopsys, Inc.
+# (C) 2011-2013 Cypress Semiconductor Corp.
+# ----------------------------------------------------------------
+# 
+#   ***********       IMPORTANT RELEASE NOTES         ************
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_NO_DEPRECATED undefined.
+#   See http://www.eda.org/svdb/view.php?id=3313 for more details.
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_OBJECT_MUST_HAVE_CONSTRUCTOR undefined.
+#   See http://www.eda.org/svdb/view.php?id=3770 for more details.
+# 
+#       (Specify +UVM_NO_RELNOTES to turn off this notice)
+# 
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(277) @ 0: reporter [Questa UVM] QUESTA_UVM-1.2.3
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(278) @ 0: reporter [Questa UVM]  questa_uvm::init(+struct)
+# ** Error: (vsim-7) Failed to open VCD file "../logs/aes_advanced_uvm.vcd" in write mode.
+# No such file or directory. (errno = ENOENT)    : D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/aes_tb_top.sv(58)
+#    Time: 0 ps  Iteration: 0  Instance: /aes_tb_top
+# UVM_INFO @ 0: reporter [RNTST] Running test aes_stress_test...
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 55000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-NIST scenario=6
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 535000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-NIST CT=69c4e0d86a7b0430d8cdb78070b4c55a latency=13 cycles PASS
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 545000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-ZERO scenario=2
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 1015000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-ZERO CT=66e94bd4ef8a2c3b884cfa59ca342b2e latency=12 cycles PASS
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 1025000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-NIST scenario=6
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 1505000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-NIST CT=69c4e0d86a7b0430d8cdb78070b4c55a latency=13 cycles PASS
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 1515000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-ZERO scenario=2
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 1985000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-ZERO CT=66e94bd4ef8a2c3b884cfa59ca342b2e latency=12 cycles PASS
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 1995000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-NIST scenario=6
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 2475000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-NIST CT=69c4e0d86a7b0430d8cdb78070b4c55a latency=13 cycles PASS
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 2485000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-ZERO scenario=2
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 2955000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-ZERO CT=66e94bd4ef8a2c3b884cfa59ca342b2e latency=12 cycles PASS
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 2965000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-NIST scenario=6
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 3445000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-NIST CT=69c4e0d86a7b0430d8cdb78070b4c55a latency=13 cycles PASS
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/driver/aes_driver.sv(124) @ 3455000: uvm_test_top.env.agent.driver [AES_DRV] Driving STRESS-ZERO scenario=2
+# UVM_INFO D:/mtech/sem 4/midesm presetation/AES128_lowPower/uvm_tb/scoreboard/aes_scoreboard.sv(46) @ 3925000: uvm_test_top.env.scoreboard [AES_PASS] STRESS-ZERO CT=66e94bd4ef8a2c3b884cfa59ca342b2e latency=12 cycles PASS
+# UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1267) @ 4135000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+# 
+# =========================================================
+# AES LOW POWER VERIFICATION DASHBOARD
+# =========================================================
+# | METRIC                     | VALUE                    |
+# ---------------------------------------------------------
+# | Simulation Time            | 4135000                  |
+# | Test Name                  |                          |
+# | AES Mode                   | AES-128 ECB ENC          |
+# | AES Clock Frequency        | 100 MHz                  |
+# | Total Transactions         | 8                        |
+# | Passed Transactions        | 8                        |
+# | Failed Transactions        | 0                        |
+# | Coverage Percentage        | 69.57%                   |
+# | Clock Gating Efficiency    | 3.41%                   |
+# | Estimated Power Reduction  | 2.39%                   |
+# | Toggle Count State         | 88                       |
+# | Toggle Count Round Key     | 80                       |
+# | Avg Encryption Latency     | 12.50 cycles              |
+# | Throughput                 | 1.024 Gbps                |
+# | Effective Frequency        | 100 MHz                  |
+# | Idle Cycles                | 14                       |
+# | Active Cycles              | 396                      |
+# | Scan Mode Cycles           | 0                        |
+# | DFT Status                 | NOT_RUN                  |
+# | Assertion Failures         | 0                        |
+# | Glitch Events              | 0                        |
+# | Double Pulse Events        | 0                        |
+# | Missing Pulse Events       | 0                        |
+# | FSM Integrity Status       | PASS                     |
+# | Ciphertext Integrity       | PASS                     |
+# | Performance Grade          | A                        |
+# | Power Grade                | B                        |
+# | Verification Grade         | REVIEW                   |
+# =========================================================
+# 
+# 
+# --- UVM Report Summary ---
+# 
+# ** Report counts by severity
+# UVM_INFO :   20
+# UVM_WARNING :    0
+# UVM_ERROR :    0
+# UVM_FATAL :    0
+# ** Report counts by id
+# [AES_DRV]     8
+# [AES_PASS]     8
+# [Questa UVM]     2
+# [RNTST]     1
+# [TEST_DONE]     1
+# ** Note: $finish    : C:/intelFPGA_lite/questa_fse/win64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
+#    Time: 4135 ns  Iteration: 56  Instance: /aes_tb_top
+# 1
+# Break in Task uvm_pkg/uvm_root::run_test at C:/intelFPGA_lite/questa_fse/win64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh line 430
+# wave zoom full
+# 0 ps
+# 4341750 ps
