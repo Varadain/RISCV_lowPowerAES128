@@ -1,496 +1,627 @@
-# Iterative Low-Power AES-128 Accelerator with DFT Support and Advanced UVM Verification
+# Lightweight IoT Security Processor
 
-## Overview
+A compact **RISC-V based IoT security processor** that reads sensor data, encrypts it using a hardware AES accelerator, and sends encrypted output through UART.
 
-This project presents a **low-power iterative AES-128 hardware accelerator** optimized for FPGA and embedded IoT applications using:
+Built using:
 
-- datapath reuse
-- activity-aware sequential architecture
-- ASIC-style clock gating
-- DFT-aware RTL design
-- advanced UVM-based verification
-- assertion-based verification
-- functional coverage
-- low-power verification methodology
+* 5-stage RV32I-style pipelined processor
+* Low-power AES-128 accelerator
+* AES-ECB and AES-CTR modes
+* Sensor MMIO interface
+* Intel Avalon SPI sensor IP
+* UART transmitter
+* Interrupt controller
+* DMA-lite engine
+* Power/activity counters
 
-The architecture minimizes switching activity by reusing a single AES round datapath across multiple encryption rounds instead of using fully parallel hardware.
+In one line:
 
-The project is implemented using:
-
-- SystemVerilog RTL
-- UVM 1.1d
-- QuestaSim
-- Quartus Prime
-- Cadence Genus
+> A tiny RISC-V SoC that can sense, encrypt, transmit, and measure activity like a lightweight IoT security node.
 
 ---
 
-# Key Features
+## Why This Project Exists
 
-## RTL Architecture
+Small IoT devices often need encryption, but running AES fully in software costs CPU cycles and power.
 
-- Iterative AES-128 encryption engine
-- Hardware-reusable datapath
-- FSM-controlled round execution
-- Sequential AES round processing
-- Reduced switching activity
-- Low-power architecture
-- FPGA-friendly implementation
-- ASIC-style clock gating model
-- DFT-aware scan support
+This project moves AES into hardware.
 
----
-
-## Low-Power Optimizations
-
-- Clock gating support
-- Controlled datapath activation
-- Sequential hardware reuse
-- Reduced combinational switching
-- Runtime toggle monitoring
-- Activity-aware encryption flow
-- Reduced dynamic power consumption
-
----
-
-## DFT Features
-
-The design includes RTL-level DFT-aware enhancements for improving controllability and observability.
-
-Implemented DFT features:
-
-- `test_mode`
-- `scan_enable`
-- `scan_in`
-- `scan_out`
-- scan-chain mux path
-- clock-gating bypass during test mode
-- scan-friendly RTL structure
-
-Current DFT verification includes:
-
-- scan mode activation
-- gated-clock bypass validation
-- scan-enable verification
-- scan-path observability checks
-- RTL-level scan behavior validation
-
-> Note: Full industrial ATPG signoff using Tessent/Modus/TetraMAX was not performed.  
-> The current implementation focuses on RTL-level DFT-aware architecture and verification.
-
----
-
-# Advanced UVM Verification
-
-The project uses a modular split-file UVM verification environment.
-
-Verification features include:
-
-- dedicated driver, monitor, sequencer, agent, environment
-- reference model
-- scoreboard-based checking
-- assertion-based verification
-- functional coverage
-- stress testing
-- glitch verification
-- low-power verification
-- DFT-aware verification
-
----
-
-# Architecture Concept
-
-Instead of implementing:
+Instead of this:
 
 ```text
-10 parallel AES round units
+Sensor -> CPU does everything -> slow encrypted output
 ```
 
-the proposed architecture reuses:
+this design does this:
 
 ```text
-1 reusable AES round datapath
+Sensor -> RISC-V control -> AES hardware -> UART encrypted output
 ```
 
-across all AES rounds using FSM-controlled sequential execution.
-
-This approach:
-
-- reduces switching activity
-- reduces dynamic power
-- reduces logic duplication
-- reduces silicon area
-- improves resource efficiency
+The CPU controls the system.
+The AES hardware does the heavy crypto work.
+The UART sends the encrypted data.
+The activity counters help measure low-power behavior.
 
 ---
 
-# Dynamic Power Principle
-
-Dynamic power in CMOS circuits is:
-
-```math
-P_{dyn} = \alpha C_L V^2 f
-```
-
-Where:
-
-| Parameter | Description |
-|---|---|
-| α | Switching activity |
-| C_L | Load capacitance |
-| V | Supply voltage |
-| f | Clock frequency |
-
-The proposed architecture minimizes:
+## Architecture
 
 ```text
-switching activity (α)
++----------------------+
+| Sensor MMIO / SPI IP |
++----------+-----------+
+           |
+           v
++----------------------+
+| 5-stage RISC-V CPU   |
+| IF ID EX MEM WB      |
++----------+-----------+
+           |
+           v
++----------------------+
+| AES-128 / AES-CTR    |
+| MMIO Accelerator     |
++----------+-----------+
+           |
+           v
++----------------------+
+| UART MMIO TX         |
++----------+-----------+
+           |
+           v
+   Encrypted Serial Output
 ```
-
-using iterative datapath reuse and selective hardware activation.
 
 ---
 
-# AES Encryption Flow
+## Main Features
+
+* 5-stage pipelined RV32I-style processor
+* Forwarding, load-use stall, and branch flush support
+* Memory-mapped AES-128 hardware accelerator
+* AES-ECB mode for compatibility
+* AES-CTR mode for sensor-stream encryption
+* Sensor MMIO registers for simple testing
+* Intel Avalon SPI IP for realistic sensor I/O
+* UART transmitter for encrypted output
+* Simple interrupt controller
+* DMA-lite memory copy engine
+* Sleep request and activity counters
+* FPGA-visible debug outputs
+* Questa simulation verified
+
+---
+
+## Pipeline
+
+The processor uses the classic five-stage pipeline:
 
 ```text
-Plaintext
-    ↓
-AddRoundKey
-    ↓
-Rounds 1–9:
-    SubBytes
-    ShiftRows
-    MixColumns
-    AddRoundKey
-    ↓
-Final Round:
-    SubBytes
-    ShiftRows
-    AddRoundKey
-    ↓
-Ciphertext
+IF -> ID -> EX -> MEM -> WB
 ```
+
+New IoT/security features are added around the memory/MMIO path, so the stable CPU pipeline does not need to be rewritten.
 
 ---
 
-# Project Directory Structure
+## Supported Instructions
+
+The design supports many RV32I-style instructions:
 
 ```text
-AES128_lowPower/
-│
-├── AES128_lowPower.sv
-├── aes_sbox.sv
-├── sub_bytes.sv
-├── shift_rows.sv
-├── mix_columns.sv
-├── key_expand.sv
-│
-├── uvm_tb/
-│   ├── agent/
-│   ├── assertions/
-│   ├── coverage/
-│   ├── driver/
-│   ├── env/
-│   ├── interfaces/
-│   ├── logs/
-│   ├── monitor/
-│   ├── power_monitor/
-│   ├── reference_model/
-│   ├── scoreboard/
-│   ├── scripts/
-│   ├── seq_items/
-│   ├── sequences/
-│   ├── tests/
-│   ├── aes_tb_top.sv
-│   └── aes_uvm_pkg.sv
-│
-└── simulation/
+ADD, SUB, AND, OR, XOR
+SLL, SRL, SRA
+SLT, SLTU
+ADDI, ANDI, ORI, XORI
+SLTI, SLTIU
+SLLI, SRLI, SRAI
+LB, LH, LW, LBU, LHU
+SB, SH, SW
+BEQ, BNE, BLT, BGE, BLTU, BGEU
+LUI, AUIPC
+JAL, JALR
+NOP, MV, LI, J
+ECALL, EBREAK, FENCE, FENCE.I
 ```
 
 ---
 
-# UVM Verification Architecture
+## AES Accelerator
+
+The AES core is implemented in:
 
 ```text
-                +----------------+
-                |     TEST       |
-                +----------------+
-                         |
-                         v
-                +----------------+
-                |      ENV       |
-                +----------------+
-                   /          \
-                  v            v
-         +---------------+ +---------------+
-         |     AGENT     | |  SCOREBOARD   |
-         +---------------+ +---------------+
-              /     \
-             v       v
-      +-----------+ +-----------+
-      |  DRIVER   | |  MONITOR  |
-      +-----------+ +-----------+
-             |
-             v
-      +----------------+
-      |    AES DUT     |
-      +----------------+
+aes128_lowpower.sv
 ```
 
----
+It supports AES-128 encryption using an iterative low-power architecture.
 
-# Verification Features
-
-## Functional Verification
-
-- AES encryption correctness
-- NIST AES-128 test vector validation
-- FSM integrity verification
-- Ciphertext correctness checks
-- Round-transition verification
-
----
-
-## Clock Gating Verification
-
-Dedicated tests validate:
-
-- glitch detection
-- double pulse detection
-- missing pulse detection
-- gated-clock correctness
-- idle-to-active recovery
-- reset collision behavior
-- illegal enable timing
-- metastability-like behavior
-
----
-
-## DFT Verification
-
-Implemented RTL-level DFT validation includes:
-
-- scan enable verification
-- test mode verification
-- scan bypass verification
-- scan-path validation
-- gated-clock bypass validation
-
----
-
-## Assertion-Based Verification
-
-Assertions verify:
-
-- no illegal clock pulse
-- no glitch propagation
-- valid FSM transitions
-- proper reset behavior
-- valid ciphertext timing
-- final-round correctness
-- gated-clock behavior
-
----
-
-# Implemented UVM Tests
-
-| Test Name | Description |
-|---|---|
-| aes_base_test | Basic AES functionality |
-| aes_power_test | Low-power validation |
-| aes_glitch_test | Clock-gating verification |
-| aes_scan_test | DFT and scan-mode validation |
-| aes_stress_test | Randomized stress verification |
-
----
-
-# Example Verification Dashboard
+AES flow:
 
 ```text
-=========================================================
-AES LOW POWER VERIFICATION DASHBOARD
-=========================================================
+Initial AddRoundKey
+Rounds 1-9: SubBytes -> ShiftRows -> MixColumns -> AddRoundKey
+Final Round: SubBytes -> ShiftRows -> AddRoundKey
+```
 
-Total Transactions         : 8
-Passed Transactions        : 8
-Failed Transactions        : 0
+The AES block is controlled by software through normal RISC-V load/store instructions.
 
-Ciphertext Integrity       : PASS
-FSM Integrity Status       : PASS
+---
 
-Glitch Events              : 0
-Double Pulse Events        : 0
-Missing Pulse Events       : 0
+## AES Modes
 
-Clock Gating Status        : PASS
-Assertion Status           : PASS
+### AES-ECB
 
-Average Latency            : 12.5 cycles
-Throughput                 : 1.024 Gbps
+AES-ECB is used for basic block encryption and NIST test-vector compatibility.
 
-=========================================================
+### AES-CTR
+
+AES-CTR is used for IoT sensor-stream encryption.
+
+```text
+ciphertext = plaintext XOR AES_encrypt(nonce || counter)
+```
+
+CTR mode uses:
+
+```text
+64-bit nonce + 64-bit counter
+```
+
+The counter auto-increments after each block.
+
+---
+
+## Memory Map
+
+| Address       | Peripheral              |
+| ------------- | ----------------------- |
+| `0x0000_0300` | AES / AES-CTR           |
+| `0x0000_0400` | Sensor MMIO / SPI       |
+| `0x0000_0500` | UART                    |
+| `0x0000_0600` | Interrupt controller    |
+| `0x0000_0700` | DMA-lite                |
+| `0x0000_0800` | Power/activity counters |
+
+---
+
+## AES Register Map
+
+| Offset          | Register                    | Description                 |
+| --------------- | --------------------------- | --------------------------- |
+| `0x00`          | `AES_CTRL`                  | Start, clear done, CTR mode |
+| `0x04`          | `AES_STATUS`                | Busy, done, mode status     |
+| `0x08` - `0x14` | `AES_KEY0` - `AES_KEY3`     | 128-bit key                 |
+| `0x18` - `0x24` | `AES_PT0` - `AES_PT3`       | Plaintext                   |
+| `0x28` - `0x34` | `AES_CT0` - `AES_CT3`       | Ciphertext                  |
+| `0x38` - `0x3C` | `AES_NONCE0` - `AES_NONCE1` | 64-bit nonce                |
+| `0x40` - `0x44` | `AES_COUNT0` - `AES_COUNT1` | 64-bit counter              |
+
+---
+
+## Sensor / SPI Registers
+
+Base address:
+
+```text
+0x0000_0400
+```
+
+Provides:
+
+* Sensor data register
+* Sensor status register
+* Sensor control register
+* SPI RX/TX register access
+* SPI status/control access
+* SPI slave-select access
+
+---
+
+## UART Registers
+
+Base address:
+
+```text
+0x0000_0500
+```
+
+Provides:
+
+* TX data register
+* TX status register
+* UART control register
+* Baud divisor register
+
+UART mode:
+
+```text
+8 data bits, no parity, 1 stop bit
 ```
 
 ---
 
-# Power Analysis Summary
+## Interrupt Controller
 
-| Metric | Baseline AES | Proposed AES |
-|---|---|---|
-| Leakage Power | 6.99e−6 W | 4.52e−7 W |
-| Internal Power | 1.29e−2 W | 6.97e−4 W |
-| Switching Power | 8.97e−3 W | 1.56e−4 W |
-| Total Power | 2.19e−2 W | 8.53e−4 W |
+Base address:
 
----
+```text
+0x0000_0600
+```
 
-# Area Analysis Summary
+Interrupt sources:
 
-| Metric | Baseline AES | Proposed AES |
-|---|---|---|
-| Total Cell Count | 83,352 | 2,694 |
-| Total Area | 202,949.64 µm² | 11,841.48 µm² |
+| Bit | Source       |
+| --- | ------------ |
+| 0   | AES done     |
+| 1   | UART done    |
+| 2   | Sensor ready |
+| 3   | DMA done     |
 
----
+Registers:
 
-# Timing Results
-
-| Timing Metric | Result |
-|---|---|
-| Clock Period | 10 ns |
-| Critical Path Delay | 3.36 ns |
-| Worst Negative Slack | +6.47 ns |
-| Timing Status | MET |
+* `IRQ_PENDING`
+* `IRQ_ENABLE`
+* `IRQ_CLEAR`
 
 ---
 
-# Simulation Tools
+## DMA-lite
 
-## RTL Simulation
+Base address:
 
-- QuestaSim Intel FPGA Edition
-- ModelSim
+```text
+0x0000_0700
+```
+
+Used for simple internal word-copy experiments.
+
+Registers:
+
+* Source address
+* Destination address
+* Length
+* Control
+* Status
 
 ---
 
-## Synthesis
+## Power / Activity Counters
 
-- Cadence Genus
+Base address:
+
+```text
+0x0000_0800
+```
+
+Counters:
+
+* CPU active cycles
+* AES active cycles
+* UART active cycles
+* DMA active cycles
+* Sensor active cycles
+* Sleep cycles
+
+These counters help compare active and idle behavior for low-power analysis.
 
 ---
 
-## FPGA Flow
+## Important RTL Files
 
-- Intel Quartus Prime
+| File                        | Purpose                |
+| --------------------------- | ---------------------- |
+| `riscv_aes_advancements.sv` | Top-level SoC          |
+| `pc_reg.sv`                 | Program counter        |
+| `if_stage.sv`               | Instruction fetch      |
+| `id_stage.sv`               | Instruction decode     |
+| `ex_stage.sv`               | Execute stage          |
+| `mem_stage.sv`              | Memory and MMIO access |
+| `wb_stage.sv`               | Writeback              |
+| `reg_file.sv`               | Register file          |
+| `alu.sv`                    | ALU                    |
+| `control_unit.sv`           | Control logic          |
+| `hazard_unit.sv`            | Load-use stall logic   |
+| `forwarding_unit.sv`        | Forwarding logic       |
+| `data_mem.sv`               | Data memory            |
+| `instr_mem.sv`              | Instruction memory     |
+| `aes128_lowpower.sv`        | AES primitive          |
+| `aes_mmio.sv`               | AES MMIO wrapper       |
+| `sensor_mmio.sv`            | Simple sensor MMIO     |
+| `sensor_spi_mmio.sv`        | Sensor + SPI wrapper   |
+| `uart_tx.sv`                | UART transmitter       |
+| `uart_mmio.sv`              | UART MMIO wrapper      |
+| `simple_intc.sv`            | Interrupt controller   |
+| `dma_lite.sv`               | DMA-lite engine        |
+| `power_mgmt_mmio.sv`        | Power/activity block   |
+| `riscv_core_tb.sv`          | Testbench              |
 
 ---
 
-# Running Simulation
+## Verification Result
 
-## Compile and Run Advanced UVM Regression
+Simulation tool:
 
-```tcl
-cd uvm_tb/scripts
-do compile_advanced.do
+```text
+Questa Intel Starter FPGA Edition 2023.3
+```
+
+Final result:
+
+```text
+RV32I-style directed verification summary: PASS=77 FAIL=0
+Lightweight IoT Security Processor verification summary: PASS=77 FAIL=0
+
+ALL TESTS PASSED
+Errors: 0
+Warnings: 1
+```
+
+The single warning is from using `+acc` for waveform visibility:
+
+```text
+Some optimizations are turned off because the +acc switch is in effect.
+```
+
+That warning is expected and does not indicate a design failure.
+
+---
+
+## Verified Blocks
+
+The testbench verifies:
+
+* R-type instructions
+* I-type instructions
+* Load/store instructions
+* Branch instructions
+* Jump instructions
+* U-type instructions
+* System/fence/pseudo behavior
+* Pipeline stall signal
+* Pipeline flush signal
+* AES MMIO read/write/select
+* AES-128 ECB
+* AES-CTR
+* CTR counter auto-increment
+* Sensor MMIO
+* Intel SPI IP clock/select activity
+* UART MMIO transmit
+* Interrupt pending and combined IRQ
+* DMA-lite copy
+* Sleep control
+* Activity debug output
+
+---
+
+## AES Test Vector
+
+The AES-128 test uses the standard NIST vector:
+
+```text
+Key        = 000102030405060708090A0B0C0D0E0F
+Plaintext  = 00112233445566778899AABBCCDDEEFF
+Ciphertext = 69C4E0D86A7B0430D8CDB78070B4C55A
+```
+
+The design output:
+
+```text
+CT0 = 70B4C55A
+CT1 = D8CDB780
+CT2 = 6A7B0430
+CT3 = 69C4E0D8
+```
+
+Combined:
+
+```text
+69C4E0D86A7B0430D8CDB78070B4C55A
+```
+
+Result:
+
+```text
+PASS
 ```
 
 ---
 
-## Run Specific UVM Test
+## AES-CTR Test
 
-```tcl
-vsim work.aes_tb_top +UVM_TESTNAME=aes_stress_test
-run -all
+CTR mode was tested using zero plaintext.
+
+Since:
+
+```text
+ciphertext = 0 XOR AES_encrypt(nonce || counter)
+```
+
+the ciphertext should match the AES keystream.
+
+Result:
+
+```text
+CT0 = 70B4C55A
+CT1 = D8CDB780
+CT2 = 6A7B0430
+CT3 = 69C4E0D8
+Counter auto-increment = PASS
 ```
 
 ---
 
-# Waveform Debug Signals
+## Example IoT Demo Flow
 
-The waveform environment includes:
+A simple firmware/demo program can do this:
 
-- gated clock
-- scan mode
-- FSM state
-- round counter
-- plaintext
-- ciphertext
-- round keys
-- toggle counters
-- assertion counters
-- glitch counters
+```text
+1. Configure UART
+2. Enable sensor
+3. Read sensor sample
+4. Load AES key
+5. Load nonce and counter
+6. Start AES-CTR encryption
+7. Wait for AES done
+8. Read ciphertext
+9. Send ciphertext through UART
+10. Enter sleep
+11. Read activity counters
+```
 
----
+In short:
 
-# Security Discussion
-
-The architecture reduces simultaneous switching activity using iterative datapath reuse and controlled hardware activation.
-
-This may help stabilize instantaneous power behavior and reduce side-channel leakage characteristics compared to fully parallel AES architectures.
-
----
-
-# Current Status
-
-## Completed
-
-- RTL implementation
-- Iterative AES architecture
-- Hardware reuse
-- Low-power optimization
-- Clock gating
-- DFT-aware RTL support
-- Split-file UVM environment
-- Assertions
-- Functional coverage
-- Stress testing
-- Glitch verification
-- FPGA synthesis
-- Timing analysis
+```text
+sense -> encrypt -> transmit -> sleep -> measure
+```
 
 ---
 
-## Ongoing Work
+## Why It Is Useful
 
-- Enhanced DFT verification closure
-- Scan-chain integrity automation
-- Coverage closure improvement
-- Runtime toggle analysis refinement
+This project is useful for studying:
+
+* Hardware AES vs software AES
+* Low-power IoT encryption
+* RISC-V based secure embedded design
+* MMIO peripheral integration
+* AES-CTR streaming encryption
+* Sensor-to-UART encrypted data flow
+* Activity-counter based power analysis
+* FPGA resource usage
+
+---
+
+## FPGA Note
+
+If the top-level exposes only:
+
+```text
+clk
+rst_n
+```
+
+Quartus may optimize away most of the design.
+
+To avoid that, this design exposes debug outputs such as:
+
+* Current PC
+* AES done
+* AES ciphertext
+* UART TX
+* SPI clock
+* SPI MOSI
+* SPI slave select
+* IRQ debug
+* Sleep debug
+* Activity counter debug
+
+So the FPGA tools can actually see useful logic.
+
+Because invisible hardware tends to disappear.
+
+---
+
+## Thesis Title
+
+Suggested title:
+
+```text
+Lightweight Low-Power RISC-V IoT Security Processor with AES-CTR Acceleration and MMIO Peripheral Integration
+```
+
+Shorter version:
+
+```text
+Lightweight RISC-V IoT Security Processor with Hardware AES-CTR Encryption
+```
+
+---
+
+## Project Contribution
+
+This work converts a basic RISC-V processor with AES into a small IoT security SoC.
+
+Main contributions:
+
+* Processor + AES hardware integration
+* AES-CTR support for streaming encryption
+* Sensor and SPI input path
+* UART encrypted output path
+* Interrupt/event aggregation
+* DMA-lite data movement
+* Activity counters for low-power study
+* Verified processor and peripheral behavior
+* FPGA-observable top-level outputs
+
+---
+
+## Comparison With Older Approaches
+
+| Approach            | Problem              | This Project            |
+| ------------------- | -------------------- | ----------------------- |
+| Software AES on MCU | Uses many CPU cycles | AES runs in hardware    |
+| Standalone AES core | Not a full system    | Integrated with RISC-V  |
+| Basic RISC-V + AES  | Only crypto demo     | Full IoT data path      |
+| Vendor MCU crypto   | Less modifiable      | Open RTL design         |
+| Large SoC           | More complex         | Lightweight and focused |
+
+---
+
+## Current Limitations
+
+This is a research processor, not a production security chip.
+
+Current limitations:
+
+* AES gives confidentiality, not full authentication
+* No SHA/HMAC block yet
+* No secure key storage yet
+* No side-channel protection yet
+* DMA-lite is simple by design
+* UART is transmit-focused
+
+These are good future-work directions.
 
 ---
 
 ## Future Work
 
-- RISC-V custom instruction integration
-- AXI4-Lite interface
-- UPF-based power intent
-- Side-channel leakage evaluation
-- CDC verification
-- Formal verification
-- FPGA hardware deployment
+Possible upgrades:
+
+* SHA-256 accelerator
+* HMAC support
+* AES-GCM mode
+* Secure boot
+* Key zeroization
+* Write-only key registers
+* OTP/eFuse/PUF key storage
+* I2C sensor interface
+* AXI4-Lite wrapper
+* CSR-based interrupt handling
+* Side-channel countermeasures
+* FPGA board demo with real sensor
 
 ---
 
-# Research Contribution
+## Final Status
 
-The key contribution of this work is:
+```text
+Processor:        Working
+AES-ECB:          Working
+AES-CTR:          Working
+Sensor MMIO:      Working
+SPI IP Activity:  Working
+UART TX:          Working
+Interrupt block:  Working
+DMA-lite:         Working
+Power counters:   Working
+Verification:     PASS=77 FAIL=0
+```
 
-> architectural-level switching activity reduction through iterative datapath reuse instead of localized block-level optimization.
+---
 
-The proposed architecture demonstrates that:
+## One-Line Summary
 
-- sequential datapath reuse
-- controlled hardware activation
-- activity-aware design
-
-can significantly improve:
-
-- power efficiency
-- silicon area
-- embedded hardware suitability
-
-while maintaining AES-128 functional correctness.
-- low-power verification study
-- cryptographic hardware education
-- UVM methodology learning
+A verified 5-stage RV32I-style RISC-V processor with low-power AES-128 ECB/CTR acceleration, sensor/SPI input, UART encrypted output, DMA-lite, interrupt aggregation, and activity counters for lightweight IoT security research.
