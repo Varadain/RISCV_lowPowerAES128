@@ -1,628 +1,226 @@
-# Lightweight IoT Security Processor
+# Lightweight IoT Security Processor with Custom Security ISA
 
-A compact **RISC-V based IoT security processor** that reads sensor data, encrypts it using a hardware AES accelerator, and sends encrypted output through UART.
+This project implements a lightweight RISC-V based IoT security processor for
+FPGA and RTL simulation study. It extends a 5-stage RV32I-style pipelined
+processor with an AES-128 hardware accelerator, AES-CTR mode support, sensor
+input registers, UART transmission, an interrupt controller, DMA-lite data
+movement, low-power activity counters, and a small custom security instruction
+set.
 
-Built using:
-
-* 5-stage RV32I-style pipelined processor
-* Low-power AES-128 accelerator
-* AES-ECB and AES-CTR modes
-* Sensor MMIO interface
-* Intel Avalon SPI sensor IP
-* UART transmitter
-* Interrupt controller
-* DMA-lite engine
-* Power/activity counters
-
-In one line:
-
-> A tiny RISC-V SoC that can sense, encrypt, transmit, and measure activity like a lightweight IoT security node.
-
----
-
-## Why This Project Exists
-
-Small IoT devices often need encryption, but running AES fully in software costs CPU cycles and power.
-
-This project moves AES into hardware.
-
-Instead of this:
+The design target is an IoT edge/security use case:
 
 ```text
-Sensor -> CPU does everything -> slow encrypted output
+Sensor input / SPI / MMIO
+        ->
+5-stage RISC-V processor
+        ->
+AES-128 ECB / CTR accelerator
+        ->
+UART transmitter
+        ->
+Encrypted data output
 ```
-
-this design does this:
-
-```text
-Sensor -> RISC-V control -> AES hardware -> UART encrypted output
-```
-
-The CPU controls the system.
-The AES hardware does the heavy crypto work.
-The UART sends the encrypted data.
-The activity counters help measure low-power behavior.
-
----
-
-## Architecture
-
-```text
-+----------------------+
-| Sensor MMIO / SPI IP |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| 5-stage RISC-V CPU   |
-| IF ID EX MEM WB      |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| AES-128 / AES-CTR    |
-| MMIO Accelerator     |
-+----------+-----------+
-           |
-           v
-+----------------------+
-| UART MMIO TX         |
-+----------+-----------+
-           |
-           v
-   Encrypted Serial Output
-```
-
----
 
 ## Main Features
 
-* 5-stage pipelined RV32I-style processor
-* Forwarding, load-use stall, and branch flush support
-* Memory-mapped AES-128 hardware accelerator
-* AES-ECB mode for compatibility
-* AES-CTR mode for sensor-stream encryption
-* Sensor MMIO registers for simple testing
-* Intel Avalon SPI IP for realistic sensor I/O
-* UART transmitter for encrypted output
-* Simple interrupt controller
-* DMA-lite memory copy engine
-* Sleep request and activity counters
-* FPGA-visible debug outputs
-* Questa simulation verified
+- 5-stage pipelined RV32I-style processor
+- AES-128 low-power iterative encryption block
+- AES MMIO peripheral with preserved ECB behavior
+- AES-CTR mode for encrypted sensor data streams
+- UART transmitter peripheral
+- Sensor MMIO interface with optional SPI IP wrapper
+- Simple interrupt controller
+- DMA-lite word transfer engine
+- Sleep control and activity counters
+- Custom RISC-V security instructions using the `custom-0` opcode
+- Quartus project files for Intel FPGA compilation
+- Questa simulation flow with waveform visibility
+- Python waveform PDF report generator
 
----
+## Directory Highlights
 
-## Pipeline
-
-The processor uses the classic five-stage pipeline:
-
-```text
-IF -> ID -> EX -> MEM -> WB
-```
-
-New IoT/security features are added around the memory/MMIO path, so the stable CPU pipeline does not need to be rewritten.
-
----
-
-## Supported Instructions
-
-The design supports many RV32I-style instructions:
-
-```text
-ADD, SUB, AND, OR, XOR
-SLL, SRL, SRA
-SLT, SLTU
-ADDI, ANDI, ORI, XORI
-SLTI, SLTIU
-SLLI, SRLI, SRAI
-LB, LH, LW, LBU, LHU
-SB, SH, SW
-BEQ, BNE, BLT, BGE, BLTU, BGEU
-LUI, AUIPC
-JAL, JALR
-NOP, MV, LI, J
-ECALL, EBREAK, FENCE, FENCE.I
-```
-
----
-
-## AES Accelerator
-
-The AES core is implemented in:
-
-```text
-aes128_lowpower.sv
-```
-
-It supports AES-128 encryption using an iterative low-power architecture.
-
-AES flow:
-
-```text
-Initial AddRoundKey
-Rounds 1-9: SubBytes -> ShiftRows -> MixColumns -> AddRoundKey
-Final Round: SubBytes -> ShiftRows -> AddRoundKey
-```
-
-The AES block is controlled by software through normal RISC-V load/store instructions.
-
----
-
-## AES Modes
-
-### AES-ECB
-
-AES-ECB is used for basic block encryption and NIST test-vector compatibility.
-
-### AES-CTR
-
-AES-CTR is used for IoT sensor-stream encryption.
-
-```text
-ciphertext = plaintext XOR AES_encrypt(nonce || counter)
-```
-
-CTR mode uses:
-
-```text
-64-bit nonce + 64-bit counter
-```
-
-The counter auto-increments after each block.
-
----
+| Path | Purpose |
+| --- | --- |
+| `riscv_aes_advancements.sv` | Top-level processor/SoC module |
+| `riscv_core_tb.sv` | Directed verification testbench |
+| `aes_mmio.sv` | AES ECB/CTR MMIO wrapper |
+| `aes128_lowpower.sv` | AES-128 encryption primitive |
+| `uart_mmio.sv`, `uart_tx.sv` | UART peripheral |
+| `sensor_mmio.sv`, `sensor_spi_mmio.sv` | Sensor/SPI interface |
+| `simple_intc.sv` | Interrupt controller |
+| `dma_lite.sv` | DMA-lite engine |
+| `power_mgmt_mmio.sv` | Sleep and activity counter registers |
+| `custom_isa_extension.md` | Custom instruction documentation |
+| `memory_map.md` | Full MMIO address map |
+| `verification_plan.md` | Verification plan |
+| `iot_security_processor_architecture.md` | Architecture explanation |
+| `thesis_contribution.md` | Thesis contribution summary |
+| `tools/generate_instruction_waveform_pdf.py` | Waveform PDF/HTML generator |
 
 ## Memory Map
 
-| Address       | Peripheral              |
-| ------------- | ----------------------- |
-| `0x0000_0300` | AES / AES-CTR           |
-| `0x0000_0400` | Sensor MMIO / SPI       |
-| `0x0000_0500` | UART                    |
-| `0x0000_0600` | Interrupt controller    |
-| `0x0000_0700` | DMA-lite                |
-| `0x0000_0800` | Power/activity counters |
+| Base Address | Peripheral |
+| --- | --- |
+| `0x0000_0300` | AES / AES-CTR |
+| `0x0000_0400` | Sensor MMIO + SPI |
+| `0x0000_0500` | UART MMIO |
+| `0x0000_0600` | Interrupt controller |
+| `0x0000_0700` | DMA-lite |
+| `0x0000_0800` | Power/activity control |
 
----
+See `memory_map.md` for register-level details.
 
-## AES Register Map
+## Custom Security ISA
 
-| Offset          | Register                    | Description                 |
-| --------------- | --------------------------- | --------------------------- |
-| `0x00`          | `AES_CTRL`                  | Start, clear done, CTR mode |
-| `0x04`          | `AES_STATUS`                | Busy, done, mode status     |
-| `0x08` - `0x14` | `AES_KEY0` - `AES_KEY3`     | 128-bit key                 |
-| `0x18` - `0x24` | `AES_PT0` - `AES_PT3`       | Plaintext                   |
-| `0x28` - `0x34` | `AES_CT0` - `AES_CT3`       | Ciphertext                  |
-| `0x38` - `0x3C` | `AES_NONCE0` - `AES_NONCE1` | 64-bit nonce                |
-| `0x40` - `0x44` | `AES_COUNT0` - `AES_COUNT1` | 64-bit counter              |
-
----
-
-## Sensor / SPI Registers
-
-Base address:
+The custom instructions use the RISC-V `custom-0` opcode:
 
 ```text
-0x0000_0400
+opcode = 7'b0001011
 ```
 
-Provides:
+Implemented commands:
 
-* Sensor data register
-* Sensor status register
-* Sensor control register
-* SPI RX/TX register access
-* SPI status/control access
-* SPI slave-select access
+| Mnemonic | Function |
+| --- | --- |
+| `CSEC_XOR` | Custom XOR operation |
+| `CSEC_AES_STATUS` | Read AES busy/done/mode status |
+| `CSEC_AES_START` | Start AES-CTR operation |
+| `CSEC_AES_CT0` | Read ciphertext word 0 |
+| `CSEC_AES_CLEAR` | Clear AES done flag |
 
----
+See `custom_isa_extension.md` and `custom_isa_demo.S` for details.
 
-## UART Registers
+## Requirements
 
-Base address:
+Tested with:
+
+- Quartus Prime Lite / Standard for FPGA compilation
+- Questa Intel FPGA Edition for RTL simulation
+- Python 3 for waveform PDF generation
+- Microsoft Edge or another Chromium browser for HTML-to-PDF printing
+
+The Python generator does not require a large external package stack.
+
+## Quartus Compile
+
+Open the project:
 
 ```text
-0x0000_0500
+riscv_aes_advancements.qpf
 ```
 
-Provides:
+Fast compile / synthesis-oriented check:
 
-* TX data register
-* TX status register
-* UART control register
-* Baud divisor register
-
-UART mode:
-
-```text
-8 data bits, no parity, 1 stop bit
+```powershell
+.\compile_light.ps1
 ```
 
----
+Full low-power compile flow:
 
-## Interrupt Controller
-
-Base address:
-
-```text
-0x0000_0600
+```powershell
+.\compile_full_low_power.ps1
 ```
 
-Interrupt sources:
-
-| Bit | Source       |
-| --- | ------------ |
-| 0   | AES done     |
-| 1   | UART done    |
-| 2   | Sensor ready |
-| 3   | DMA done     |
-
-Registers:
-
-* `IRQ_PENDING`
-* `IRQ_ENABLE`
-* `IRQ_CLEAR`
-
----
-
-## DMA-lite
-
-Base address:
+The timing constraints are in:
 
 ```text
-0x0000_0700
+riscv_aes_advancements.sdc
 ```
 
-Used for simple internal word-copy experiments.
+## Questa Simulation
 
-Registers:
+Run the automated regression from PowerShell:
 
-* Source address
-* Destination address
-* Length
-* Control
-* Status
-
----
-
-## Power / Activity Counters
-
-Base address:
-
-```text
-0x0000_0800
+```powershell
+.\run_questa_regression.ps1
 ```
 
-Counters:
+Or run the GUI waveform script from Questa Transcript:
 
-* CPU active cycles
-* AES active cycles
-* UART active cycles
-* DMA active cycles
-* Sensor active cycles
-* Sleep cycles
-
-These counters help compare active and idle behavior for low-power analysis.
-
----
-
-## Important RTL Files
-
-| File                        | Purpose                |
-| --------------------------- | ---------------------- |
-| `riscv_aes_advancements.sv` | Top-level SoC          |
-| `pc_reg.sv`                 | Program counter        |
-| `if_stage.sv`               | Instruction fetch      |
-| `id_stage.sv`               | Instruction decode     |
-| `ex_stage.sv`               | Execute stage          |
-| `mem_stage.sv`              | Memory and MMIO access |
-| `wb_stage.sv`               | Writeback              |
-| `reg_file.sv`               | Register file          |
-| `alu.sv`                    | ALU                    |
-| `control_unit.sv`           | Control logic          |
-| `hazard_unit.sv`            | Load-use stall logic   |
-| `forwarding_unit.sv`        | Forwarding logic       |
-| `data_mem.sv`               | Data memory            |
-| `instr_mem.sv`              | Instruction memory     |
-| `aes128_lowpower.sv`        | AES primitive          |
-| `aes_mmio.sv`               | AES MMIO wrapper       |
-| `sensor_mmio.sv`            | Simple sensor MMIO     |
-| `sensor_spi_mmio.sv`        | Sensor + SPI wrapper   |
-| `uart_tx.sv`                | UART transmitter       |
-| `uart_mmio.sv`              | UART MMIO wrapper      |
-| `simple_intc.sv`            | Interrupt controller   |
-| `dma_lite.sv`               | DMA-lite engine        |
-| `power_mgmt_mmio.sv`        | Power/activity block   |
-| `riscv_core_tb.sv`          | Testbench              |
-
----
-
-## Verification Result
-
-Simulation tool:
-
-```text
-Questa Intel Starter FPGA Edition 2023.3
+```tcl
+cd {D:/mtech/sem 4/midesm presetation/riscv_aes_advancements/risc_aes_custom_ISA/simulation/questa}
+do riscv_aes_advancements_run_msim_rtl_verilog.do
 ```
 
-Final result:
+The simulation script compiles with:
 
 ```text
-RV32I-style directed verification summary: PASS=77 FAIL=0
-Lightweight IoT Security Processor verification summary: PASS=77 FAIL=0
++define+SIMULATION
+```
 
+This preserves testbench-visible internal simulation objects such as the
+instruction ROM hierarchy.
+
+Expected regression result:
+
+```text
 ALL TESTS PASSED
-Errors: 0
-Warnings: 1
+PASS=83 FAIL=0
 ```
 
-The single warning is from using `+acc` for waveform visibility:
+## Waveform PDF Report
+
+After running Questa and generating a VCD, create the submission waveform report:
+
+```powershell
+python .\tools\generate_instruction_waveform_pdf.py
+```
+
+If Python is not on PATH, use the full Python executable path.
+
+Generated files:
 
 ```text
-Some optimizations are turned off because the +acc switch is in effect.
+reports/waveforms/custom_isa_instruction_waveforms.html
+reports/waveforms/custom_isa_instruction_waveforms.pdf
 ```
 
-That warning is expected and does not indicate a design failure.
+The PDF is organized as submission pages:
+
+- R-type instructions
+- I-type instructions
+- Load/store instructions
+- Branch instructions
+- U-type and jump instructions
+- System/fence/pseudo instructions
+- AES-128 ECB MMIO
+- AES-CTR mode
+- Sensor MMIO
+- SPI IP interface
+- UART transmitter
+- Interrupt controller
+- DMA-lite
+- Power/activity counters
+- Custom security ISA
+- Beginner guide for reading waveforms
+
+## Verification Coverage
+
+The directed testbench verifies:
+
+- RV32I-style arithmetic and logical instructions
+- Immediate instructions
+- Load/store behavior
+- Branch and jump behavior
+- System/fence/pseudo behavior
+- AES-128 ECB NIST-compatible result
+- AES-CTR encryption behavior
+- Sensor MMIO reads
+- SPI wrapper visibility
+- UART MMIO write and status behavior
+- Interrupt pending/enable/clear behavior
+- DMA-lite completion
+- Power and activity counters
+- Custom security ISA operations
+
+## Thesis Application
+
+This design is suitable for a thesis project on low-power IoT security
+processing. It demonstrates how a compact RISC-V processor can offload
+cryptographic work to a hardware accelerator, encrypt sensor data using
+AES-CTR, transmit encrypted output through a communication interface, and
+measure activity for low-power evaluation.
+
+The custom security ISA path also enables comparison between conventional MMIO
+accelerator control and custom instruction based accelerator control.
 
----
-
-## Verified Blocks
-
-The testbench verifies:
-
-* R-type instructions
-* I-type instructions
-* Load/store instructions
-* Branch instructions
-* Jump instructions
-* U-type instructions
-* System/fence/pseudo behavior
-* Pipeline stall signal
-* Pipeline flush signal
-* AES MMIO read/write/select
-* AES-128 ECB
-* AES-CTR
-* CTR counter auto-increment
-* Sensor MMIO
-* Intel SPI IP clock/select activity
-* UART MMIO transmit
-* Interrupt pending and combined IRQ
-* DMA-lite copy
-* Sleep control
-* Activity debug output
-
----
-
-## AES Test Vector
-
-The AES-128 test uses the standard NIST vector:
-
-```text
-Key        = 000102030405060708090A0B0C0D0E0F
-Plaintext  = 00112233445566778899AABBCCDDEEFF
-Ciphertext = 69C4E0D86A7B0430D8CDB78070B4C55A
-```
-
-The design output:
-
-```text
-CT0 = 70B4C55A
-CT1 = D8CDB780
-CT2 = 6A7B0430
-CT3 = 69C4E0D8
-```
-
-Combined:
-
-```text
-69C4E0D86A7B0430D8CDB78070B4C55A
-```
-
-Result:
-
-```text
-PASS
-```
-
----
-
-## AES-CTR Test
-
-CTR mode was tested using zero plaintext.
-
-Since:
-
-```text
-ciphertext = 0 XOR AES_encrypt(nonce || counter)
-```
-
-the ciphertext should match the AES keystream.
-
-Result:
-
-```text
-CT0 = 70B4C55A
-CT1 = D8CDB780
-CT2 = 6A7B0430
-CT3 = 69C4E0D8
-Counter auto-increment = PASS
-```
-
----
-
-## Example IoT Demo Flow
-
-A simple firmware/demo program can do this:
-
-```text
-1. Configure UART
-2. Enable sensor
-3. Read sensor sample
-4. Load AES key
-5. Load nonce and counter
-6. Start AES-CTR encryption
-7. Wait for AES done
-8. Read ciphertext
-9. Send ciphertext through UART
-10. Enter sleep
-11. Read activity counters
-```
-
-In short:
-
-```text
-sense -> encrypt -> transmit -> sleep -> measure
-```
-
----
-
-## Why It Is Useful
-
-This project is useful for studying:
-
-* Hardware AES vs software AES
-* Low-power IoT encryption
-* RISC-V based secure embedded design
-* MMIO peripheral integration
-* AES-CTR streaming encryption
-* Sensor-to-UART encrypted data flow
-* Activity-counter based power analysis
-* FPGA resource usage
-
----
-
-## FPGA Note
-
-If the top-level exposes only:
-
-```text
-clk
-rst_n
-```
-
-Quartus may optimize away most of the design.
-
-To avoid that, this design exposes debug outputs such as:
-
-* Current PC
-* AES done
-* AES ciphertext
-* UART TX
-* SPI clock
-* SPI MOSI
-* SPI slave select
-* IRQ debug
-* Sleep debug
-* Activity counter debug
-
-So the FPGA tools can actually see useful logic.
-
-Because invisible hardware tends to disappear.
-
----
-
-## Thesis Title
-
-Suggested title:
-
-```text
-Lightweight Low-Power RISC-V IoT Security Processor with AES-CTR Acceleration and MMIO Peripheral Integration
-```
-
-Shorter version:
-
-```text
-Lightweight RISC-V IoT Security Processor with Hardware AES-CTR Encryption
-```
-
----
-
-## Project Contribution
-
-This work converts a basic RISC-V processor with AES into a small IoT security SoC.
-
-Main contributions:
-
-* Processor + AES hardware integration
-* AES-CTR support for streaming encryption
-* Sensor and SPI input path
-* UART encrypted output path
-* Interrupt/event aggregation
-* DMA-lite data movement
-* Activity counters for low-power study
-* Verified processor and peripheral behavior
-* FPGA-observable top-level outputs
-
----
-
-## Comparison With Older Approaches
-
-| Approach            | Problem              | This Project            |
-| ------------------- | -------------------- | ----------------------- |
-| Software AES on MCU | Uses many CPU cycles | AES runs in hardware    |
-| Standalone AES core | Not a full system    | Integrated with RISC-V  |
-| Basic RISC-V + AES  | Only crypto demo     | Full IoT data path      |
-| Vendor MCU crypto   | Less modifiable      | Open RTL design         |
-| Large SoC           | More complex         | Lightweight and focused |
-
----
-
-## Current Limitations
-
-This is a research processor, not a production security chip.
-
-Current limitations:
-
-* AES gives confidentiality, not full authentication
-* No SHA/HMAC block yet
-* No secure key storage yet
-* No side-channel protection yet
-* DMA-lite is simple by design
-* UART is transmit-focused
-
-These are good future-work directions.
-
----
-
-## Future Work
-
-Possible upgrades:
-
-* SHA-256 accelerator
-* HMAC support
-* AES-GCM mode
-* Secure boot
-* Key zeroization
-* Write-only key registers
-* OTP/eFuse/PUF key storage
-* I2C sensor interface
-* AXI4-Lite wrapper
-* CSR-based interrupt handling
-* Side-channel countermeasures
-* FPGA board demo with real sensor
-
----
-
-## Final Status
-
-```text
-Processor:        Working
-AES-ECB:          Working
-AES-CTR:          Working
-Sensor MMIO:      Working
-SPI IP Activity:  Working
-UART TX:          Working
-Interrupt block:  Working
-DMA-lite:         Working
-Power counters:   Working
-# RV32I-style directed verification summary: PASS=83 FAIL=0
-# Lightweight IoT Security Processor + Custom ISA verification summary: PASS=83 FAIL=0
-```
-
----
-
-## One-Line Summary
-
-A verified 5-stage RV32I-style RISC-V processor with low-power AES-128 ECB/CTR acceleration, sensor/SPI input, UART encrypted output, DMA-lite, interrupt aggregation, and activity counters for lightweight IoT security research.
