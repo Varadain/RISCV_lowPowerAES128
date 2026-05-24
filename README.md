@@ -617,7 +617,8 @@ UART TX:          Working
 Interrupt block:  Working
 DMA-lite:         Working
 Power counters:   Working
-Verification:     PASS=77 FAIL=0
+# RV32I-style directed verification summary: PASS=83 FAIL=0
+# Lightweight IoT Security Processor + Custom ISA verification summary: PASS=83 FAIL=0
 ```
 
 ---
