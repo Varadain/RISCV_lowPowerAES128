@@ -922,3 +922,192 @@ are also controlled using RISC-V custom-0 instructions, allowing comparison
 between traditional MMIO accelerator control and custom instruction based
 security acceleration.
 ```
+Yes. Think of the project files in two groups:
+
+```text
+1. RISC-V processor/core files
+2. Non-RISC-V peripheral/support files
+```
+
+The RISC-V core is the CPU. The other files are added around it to make it an IoT security SoC.
+
+**Non-RISC-V Files Added / Used**
+
+| File | Purpose |
+| --- | --- |
+| `aes128_lowpower.sv` | Main low-power iterative AES-128 encryption core |
+| `aes_mmio.sv` | AES memory-mapped wrapper with ECB + CTR mode |
+| `uart_tx.sv` | Serial UART transmitter |
+| `uart_mmio.sv` | UART MMIO wrapper for CPU access |
+| `sensor_mmio.sv` | Simple sensor register model |
+| `sensor_spi_mmio.sv` | SPI-based sensor interface wrapper |
+| `ip/sensor_spi_ip/sensor_spi_ip.v` | Optional Intel/Quartus SPI IP |
+| `simple_intc.sv` | Interrupt controller |
+| `dma_lite.sv` | DMA-lite word transfer engine |
+| `power_mgmt_mmio.sv` | Sleep control and activity counters |
+| `riscv_core_tb.sv` | Testbench for CPU + peripherals |
+| `custom_isa_demo.S` | Demo program for custom instructions |
+| `iot_security_demo.S` | Demo flow for sensor encryption and UART output |
+
+**Brief Idea Of Each Non-RISC-V Block**
+
+`aes128_lowpower.sv` is the original AES hardware. It performs AES-128 encryption using an iterative reusable datapath, so it uses less hardware than fully parallel AES.
+
+`aes_mmio.sv` connects AES to the CPU. The CPU writes key, plaintext, nonce, counter, and control registers. It reads status and ciphertext registers. This file also adds AES-CTR mode.
+
+`uart_tx.sv` converts one byte into serial bits using UART format:
+
+```text
+start bit + 8 data bits + stop bit
+```
+
+`uart_mmio.sv` allows the CPU to control UART using load/store instructions. CPU writes ciphertext to `UART_TXDATA`, and UART sends it through `uart_tx`.
+
+`sensor_mmio.sv` models sensor data as readable registers. For example, the CPU can read `SENSOR_DATA` like a health sensor sample.
+
+`sensor_spi_mmio.sv` is the more practical sensor interface. It connects the CPU MMIO bus to SPI-style registers.
+
+`simple_intc.sv` collects event signals:
+
+```text
+AES done
+UART done
+sensor ready
+DMA done
+```
+
+It stores them in interrupt pending registers.
+
+`dma_lite.sv` helps move data without making the CPU copy every word manually.
+
+`power_mgmt_mmio.sv` counts active cycles of CPU, AES, UART, DMA, sensor, and sleep mode. This is useful for low-power analysis.
+
+---
+
+**RISC-V Files Needed To Update For This Project**
+
+The main RISC-V files that need changes are:
+
+| File | Why It Needs Update |
+| --- | --- |
+| `riscv_aes_advancements.sv` | Top-level integration of new peripherals |
+| `mem_stage.sv` | MMIO address decoding for AES/UART/SPI/DMA/interrupt/power |
+| `control_unit.sv` | Needed for custom ISA decode |
+| `id_stage.sv` | Needed to recognize custom instruction fields |
+| `ex_stage.sv` | Needed to pass custom ISA operands/control |
+| `wb_stage.sv` | Needed to write custom instruction result back |
+| `riscv_core_tb.sv` | Needed to verify new features |
+
+**Most Important RISC-V Update: `mem_stage.sv`**
+
+This is the biggest change.
+
+Before:
+
+```text
+CPU load/store -> data memory
+CPU load/store -> AES
+```
+
+After:
+
+```text
+0x0000_0300 -> AES / AES-CTR
+0x0000_0400 -> Sensor / SPI
+0x0000_0500 -> UART
+0x0000_0600 -> Interrupt controller
+0x0000_0700 -> DMA-lite
+0x0000_0800 -> Power/activity counters
+```
+
+So `mem_stage.sv` becomes like a small internal bus/interconnect.
+
+**Top-Level Update: `riscv_aes_advancements.sv`**
+
+This file connects everything together:
+
+```text
+RISC-V pipeline
+AES
+UART
+Sensor/SPI
+Interrupt controller
+DMA
+Power counters
+debug outputs
+```
+
+It also exposes outputs like:
+
+```text
+uart_tx
+irq_debug
+sleep_debug
+activity_counter_debug
+aes_done_debug
+aes_ciphertext_debug
+current_pc_debug
+```
+
+**Custom ISA Updates**
+
+For normal MMIO integration, the CPU mostly uses existing `lw` and `sw`.
+
+But for custom AES/security instructions, deeper RISC-V changes are needed:
+
+```text
+control_unit.sv -> detect custom opcode
+id_stage.sv     -> decode custom instruction fields
+ex_stage.sv     -> forward operands
+mem_stage.sv    -> execute custom AES command
+wb_stage.sv     -> write result to rd
+```
+
+Custom opcode:
+
+```text
+opcode = 7'b0001011
+```
+
+Custom instructions:
+
+```text
+CSEC_XOR
+CSEC_AES_STATUS
+CSEC_AES_START
+CSEC_AES_CT0
+CSEC_AES_CLEAR
+```
+
+**RISC-V Files Mostly Not Changed**
+
+These are mostly stable CPU files:
+
+| File | Reason |
+| --- | --- |
+| `pc_reg.sv` | PC update logic remains same |
+| `if_stage.sv` | Instruction fetch mostly same |
+| `instr_mem.sv` | Instruction storage mostly same, simulation visibility added |
+| `reg_file.sv` | Register file unchanged |
+| `imm_gen.sv` | Immediate generation unchanged |
+| `alu.sv` | Standard ALU operations unchanged |
+| `hazard_unit.sv` | Existing stall/flush logic mostly reused |
+| `forwarding_unit.sv` | Existing forwarding logic reused |
+| `load_store_unit.sv` | Existing load/store formatting reused |
+| `data_mem.sv` | Normal RAM unchanged |
+
+**Simple Summary**
+
+For adding AES, UART, SPI, DMA, interrupt, and power blocks, the CPU pipeline does not need to be rewritten. The main update is:
+
+```text
+mem_stage.sv = decode addresses and connect peripherals
+```
+
+For adding custom AES instructions, the CPU decode/control path must be updated:
+
+```text
+control_unit -> id_stage -> ex_stage -> mem_stage -> wb_stage
+```
+
+So the project keeps the RISC-V core stable, adds peripherals through MMIO, and adds custom ISA only where processor-level acceleration is needed.
