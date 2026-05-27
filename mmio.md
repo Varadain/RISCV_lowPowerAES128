@@ -1016,7 +1016,1133 @@ ALL TESTS PASSED
 
 ---
 
-# 13. Final Speaker Summary
+# 13. Code-Level Explanation Of Each MMIO Block
+
+This section explains the important MMIO code snippets from each module. The
+goal is to understand how the CPU address, write data, read data, and control
+signals move through the MMIO system.
+
+---
+
+## 13.1 `mem_stage.sv` MMIO Decoder
+
+The MEM stage receives the effective address from the execute stage. This
+address is used to decide whether the CPU is accessing normal RAM or a
+peripheral.
+
+### Address Select Code
+
+```systemverilog
+assign aes_sel    = (eff_addr[31:8] == 24'h000003);
+assign sensor_sel = (eff_addr[31:8] == 24'h000004);
+assign uart_sel   = (eff_addr[31:8] == 24'h000005);
+assign intc_sel   = (eff_addr[31:8] == 24'h000006);
+assign dma_sel    = (eff_addr[31:8] == 24'h000007);
+assign power_sel  = (eff_addr[31:8] == 24'h000008);
+assign mmio_sel   = aes_sel | sensor_sel | uart_sel | intc_sel | dma_sel | power_sel;
+```
+
+Explanation:
+
+```text
+eff_addr[31:8] compares the upper address bits.
+0x0000_0300 to 0x0000_03FF selects AES.
+0x0000_0400 to 0x0000_04FF selects sensor/SPI.
+0x0000_0500 to 0x0000_05FF selects UART.
+0x0000_0600 to 0x0000_06FF selects interrupt controller.
+0x0000_0700 to 0x0000_07FF selects DMA.
+0x0000_0800 to 0x0000_08FF selects power/activity counters.
+```
+
+This gives each peripheral a 256-byte MMIO window.
+
+### Read/Write Enable Code
+
+```systemverilog
+assign aes_write_en    = mem_write_i & aes_sel;
+assign aes_read_en     = mem_read_i  & aes_sel;
+assign sensor_write_en = mem_write_i & sensor_sel;
+assign sensor_read_en  = mem_read_i  & sensor_sel;
+assign uart_write_en   = mem_write_i & uart_sel;
+assign uart_read_en    = mem_read_i  & uart_sel;
+assign intc_write_en   = mem_write_i & intc_sel;
+assign intc_read_en    = mem_read_i  & intc_sel;
+assign dma_write_en    = mem_write_i & dma_sel;
+assign dma_read_en     = mem_read_i  & dma_sel;
+assign power_write_en  = mem_write_i & power_sel;
+assign power_read_en   = mem_read_i  & power_sel;
+```
+
+Explanation:
+
+```text
+mem_write_i comes from a store instruction.
+mem_read_i comes from a load instruction.
+The select signal decides which peripheral gets the access.
+```
+
+Example:
+
+```text
+If CPU executes sw to 0x0000_0500:
+uart_sel = 1
+mem_write_i = 1
+uart_write_en = 1
+```
+
+### Data Memory Disable For MMIO
+
+```systemverilog
+assign data_mem_read_en  = (mem_read_i | mem_write_i) & ~mmio_sel & ~custom_valid_i;
+assign data_mem_write_en = mem_write_i & ~mmio_sel & ~custom_valid_i;
+```
+
+Explanation:
+
+```text
+If address is MMIO, normal RAM is not selected.
+If address is not MMIO, load/store goes to data_mem.sv.
+If custom instruction is active, normal memory access is disabled.
+```
+
+This prevents RAM and peripherals from responding at the same time.
+
+### Read Data Mux Code
+
+```systemverilog
+always_comb begin
+    read_data_o = 32'h0;
+    if (custom_valid_i) begin
+        read_data_o = custom_result;
+    end else if (mmio_sel) begin
+        unique case (1'b1)
+            aes_sel:    read_data_o = aes_read_data;
+            sensor_sel: read_data_o = sensor_read_data;
+            uart_sel:   read_data_o = uart_read_data;
+            intc_sel:   read_data_o = intc_read_data;
+            dma_sel:    read_data_o = dma_read_data;
+            power_sel:  read_data_o = power_read_data;
+            default:    read_data_o = mmio_sel ? 32'hDEAD_BAAD : mem_read_data;
+        endcase
+    end else begin
+        read_data_o = mem_read_data;
+    end
+end
+```
+
+Explanation:
+
+```text
+For custom instruction -> return custom result.
+For AES read -> return AES register data.
+For sensor read -> return sensor/SPI register data.
+For UART read -> return UART status/config data.
+For interrupt read -> return IRQ pending/enable data.
+For DMA read -> return DMA register/status data.
+For power read -> return activity counter data.
+Otherwise -> return normal data memory read data.
+```
+
+Speaker note:
+
+> `mem_stage.sv` is the central MMIO interconnect. It decodes the address,
+> creates one read/write enable, disables normal RAM during MMIO access, and
+> multiplexes the selected peripheral read data back to the CPU.
+
+---
+
+## 13.2 `aes_mmio.sv`
+
+AES MMIO allows the CPU to control the AES accelerator using load/store
+instructions.
+
+### Register Offset Code
+
+```systemverilog
+localparam logic [7:0] OFF_CTRL   = 8'h00;
+localparam logic [7:0] OFF_STATUS = 8'h04;
+localparam logic [7:0] OFF_KEY0   = 8'h08;
+localparam logic [7:0] OFF_KEY1   = 8'h0C;
+localparam logic [7:0] OFF_KEY2   = 8'h10;
+localparam logic [7:0] OFF_KEY3   = 8'h14;
+localparam logic [7:0] OFF_PT0    = 8'h18;
+localparam logic [7:0] OFF_PT1    = 8'h1C;
+localparam logic [7:0] OFF_PT2    = 8'h20;
+localparam logic [7:0] OFF_PT3    = 8'h24;
+localparam logic [7:0] OFF_CT0    = 8'h28;
+localparam logic [7:0] OFF_CT1    = 8'h2C;
+localparam logic [7:0] OFF_CT2    = 8'h30;
+localparam logic [7:0] OFF_CT3    = 8'h34;
+localparam logic [7:0] OFF_NONCE0 = 8'h38;
+localparam logic [7:0] OFF_NONCE1 = 8'h3C;
+localparam logic [7:0] OFF_COUNT0 = 8'h40;
+localparam logic [7:0] OFF_COUNT1 = 8'h44;
+```
+
+Explanation:
+
+```text
+These localparams define internal register offsets.
+The base address is decoded in mem_stage.sv.
+Inside aes_mmio.sv, only the lower address bits are used.
+```
+
+### Internal AES Registers
+
+```systemverilog
+logic [127:0] key_reg;
+logic [127:0] pt_reg;
+logic [127:0] ct_reg;
+logic [63:0]  nonce_reg;
+logic [63:0]  counter_reg;
+logic busy_reg;
+logic done_reg;
+logic mode_ctr_reg;
+```
+
+Explanation:
+
+```text
+key_reg stores the 128-bit AES key.
+pt_reg stores the 128-bit plaintext block.
+ct_reg stores the 128-bit ciphertext block.
+nonce_reg and counter_reg are used for AES-CTR mode.
+busy_reg tells whether AES is running.
+done_reg tells whether AES completed.
+mode_ctr_reg selects ECB or CTR mode.
+```
+
+### AES Input Block Selection
+
+```systemverilog
+assign aes_input_block = mode_ctr_reg ? {nonce_reg, counter_reg} : pt_reg;
+```
+
+Explanation:
+
+```text
+In ECB mode, AES encrypts plaintext directly.
+In CTR mode, AES encrypts nonce || counter to create a keystream.
+```
+
+### AES Control Write Code
+
+```systemverilog
+OFF_CTRL: begin
+    mode_ctr_reg <= write_data_i[2];
+    if (write_data_i[0] && !busy_reg) begin
+        busy_reg <= 1'b1;
+        done_reg <= 1'b0;
+    end
+    if (write_data_i[1]) begin
+        done_reg <= 1'b0;
+    end
+end
+```
+
+Explanation:
+
+```text
+write_data_i[0] starts AES.
+write_data_i[1] clears the done flag.
+write_data_i[2] selects CTR mode.
+AES only starts if busy_reg is 0.
+```
+
+### AES Key And Plaintext Write Code
+
+```systemverilog
+OFF_KEY0:   key_reg[31:0]    <= write_data_i;
+OFF_KEY1:   key_reg[63:32]   <= write_data_i;
+OFF_KEY2:   key_reg[95:64]   <= write_data_i;
+OFF_KEY3:   key_reg[127:96]  <= write_data_i;
+OFF_PT0:    pt_reg[31:0]     <= write_data_i;
+OFF_PT1:    pt_reg[63:32]    <= write_data_i;
+OFF_PT2:    pt_reg[95:64]    <= write_data_i;
+OFF_PT3:    pt_reg[127:96]   <= write_data_i;
+```
+
+Explanation:
+
+```text
+The 128-bit key is written as four 32-bit words.
+The 128-bit plaintext is written as four 32-bit words.
+This matches a 32-bit RISC-V data path.
+```
+
+### AES-CTR Nonce And Counter Write Code
+
+```systemverilog
+OFF_NONCE0: nonce_reg[31:0]    <= write_data_i;
+OFF_NONCE1: nonce_reg[63:32]   <= write_data_i;
+OFF_COUNT0: counter_reg[31:0]  <= write_data_i;
+OFF_COUNT1: counter_reg[63:32] <= write_data_i;
+```
+
+Explanation:
+
+```text
+AES-CTR uses a 64-bit nonce and a 64-bit counter.
+Together they form the 128-bit input block for AES encryption.
+```
+
+### AES Completion Code
+
+```systemverilog
+if (clk_en_i && aes_done && busy_reg) begin
+    ct_reg   <= mode_ctr_reg ? (pt_reg ^ aes_ciphertext) : aes_ciphertext;
+    busy_reg <= 1'b0;
+    done_reg <= 1'b1;
+    if (mode_ctr_reg) begin
+        counter_reg <= counter_reg + 64'd1;
+    end
+end
+```
+
+Explanation:
+
+```text
+When AES core finishes, aes_done becomes 1.
+In ECB mode, ciphertext is AES output.
+In CTR mode, ciphertext is plaintext XOR AES output.
+busy clears after completion.
+done sets after completion.
+counter increments automatically in CTR mode.
+```
+
+### AES Read Code
+
+```systemverilog
+OFF_STATUS: read_data_o = {29'h0, mode_ctr_reg, done_reg, busy_reg};
+OFF_CT0:    read_data_o = ct_reg[31:0];
+OFF_CT1:    read_data_o = ct_reg[63:32];
+OFF_CT2:    read_data_o = ct_reg[95:64];
+OFF_CT3:    read_data_o = ct_reg[127:96];
+```
+
+Explanation:
+
+```text
+CPU reads STATUS to check busy/done.
+CPU reads CT0 to CT3 to get the 128-bit ciphertext.
+```
+
+---
+
+## 13.3 `sensor_mmio.sv`
+
+This is the simple sensor MMIO model. It is useful for simulation and demo
+without needing real SPI/I2C hardware.
+
+### Register Offset Code
+
+```systemverilog
+localparam logic [5:0] OFF_DATA    = 6'h00;
+localparam logic [5:0] OFF_STATUS  = 6'h04;
+localparam logic [5:0] OFF_CONTROL = 6'h08;
+```
+
+Explanation:
+
+```text
+0x00 is sensor data.
+0x04 is sensor status.
+0x08 is sensor control.
+```
+
+### Reset Code
+
+```systemverilog
+sensor_data_reg <= 32'h1234_5678;
+data_ready_reg  <= 1'b1;
+enable_reg      <= 1'b1;
+sample_tick     <= 8'h0;
+```
+
+Explanation:
+
+```text
+After reset, the sensor has a default sample value.
+data_ready is set, so the CPU can immediately read a sample.
+enable is set, so the sample generator is active.
+```
+
+### Sample Update Code
+
+```systemverilog
+if (enable_reg) begin
+    sample_tick <= sample_tick + 8'd1;
+    if (sample_tick == 8'hff) begin
+        sensor_data_reg <= sensor_data_reg + 32'h0001_0101;
+        data_ready_reg  <= 1'b1;
+    end
+end
+```
+
+Explanation:
+
+```text
+This creates a changing sensor value for simulation.
+Every time sample_tick reaches 0xFF, sensor data changes.
+data_ready becomes 1 to show that a new sample is available.
+```
+
+### Sensor Write Code
+
+```systemverilog
+OFF_DATA: sensor_data_reg <= write_data_i;
+OFF_CONTROL: begin
+    enable_reg <= write_data_i[0];
+    if (write_data_i[1]) begin
+        data_ready_reg <= 1'b0;
+    end
+end
+```
+
+Explanation:
+
+```text
+Writing SENSOR_DATA allows test/demo injection of a sample.
+CONTROL[0] enables or disables the sensor.
+CONTROL[1] clears the data_ready flag.
+```
+
+### Sensor Read Code
+
+```systemverilog
+OFF_DATA:    read_data_o = sensor_data_reg;
+OFF_STATUS:  read_data_o = {31'h0, data_ready_reg};
+OFF_CONTROL: read_data_o = {31'h0, enable_reg};
+```
+
+Explanation:
+
+```text
+Reading DATA returns the sensor sample.
+Reading STATUS returns the data_ready bit.
+Reading CONTROL returns the enable bit.
+```
+
+### Clear-On-Read Code
+
+```systemverilog
+if (read_en_i && (reg_offset == OFF_DATA)) begin
+    data_ready_reg <= 1'b0;
+end
+```
+
+Explanation:
+
+```text
+When CPU reads sensor data, the ready flag clears automatically.
+This models that the current sample has been consumed.
+```
+
+---
+
+## 13.4 `sensor_spi_mmio.sv`
+
+This module extends the simple sensor MMIO model with an SPI register window.
+
+### Sensor And SPI Offset Code
+
+```systemverilog
+localparam logic [5:0] OFF_DATA       = 6'h00;
+localparam logic [5:0] OFF_STATUS     = 6'h04;
+localparam logic [5:0] OFF_CONTROL    = 6'h08;
+localparam logic [5:0] OFF_SPI_RXDATA = 6'h10;
+localparam logic [5:0] OFF_SPI_TXDATA = 6'h14;
+localparam logic [5:0] OFF_SPI_STATUS = 6'h18;
+localparam logic [5:0] OFF_SPI_CTRL   = 6'h1c;
+localparam logic [5:0] OFF_SPI_SS     = 6'h24;
+```
+
+Explanation:
+
+```text
+0x00 to 0x08 are simple sensor registers.
+0x10 to 0x24 are SPI IP registers.
+Both live inside the 0x0000_0400 MMIO window.
+```
+
+### SPI Register Select Code
+
+```systemverilog
+always_comb begin
+    spi_reg_sel = 1'b0;
+    spi_addr    = 3'd0;
+    case (reg_offset)
+        OFF_SPI_RXDATA: begin
+            spi_reg_sel = 1'b1;
+            spi_addr    = 3'd0;
+        end
+        OFF_SPI_TXDATA: begin
+            spi_reg_sel = 1'b1;
+            spi_addr    = 3'd1;
+        end
+        OFF_SPI_STATUS: begin
+            spi_reg_sel = 1'b1;
+            spi_addr    = 3'd2;
+        end
+        OFF_SPI_CTRL: begin
+            spi_reg_sel = 1'b1;
+            spi_addr    = 3'd3;
+        end
+        OFF_SPI_SS: begin
+            spi_reg_sel = 1'b1;
+            spi_addr    = 3'd5;
+        end
+        default: ;
+    endcase
+end
+```
+
+Explanation:
+
+```text
+If the CPU accesses an SPI offset, spi_reg_sel becomes 1.
+The MMIO offset is translated into the SPI IP internal address.
+```
+
+### SPI IP Connection Code
+
+```systemverilog
+sensor_spi_ip u_sensor_spi_ip (
+    .clk          (clk),
+    .reset_n      (rst_n),
+    .spi_select   (spi_reg_sel & clk_en_i),
+    .mem_addr     (spi_addr),
+    .data_from_cpu(write_data_i[15:0]),
+    .read_n       (~(read_en_i  & spi_reg_sel & clk_en_i)),
+    .write_n      (~(write_en_i & spi_reg_sel & clk_en_i)),
+    .MISO         (spi_miso_i),
+    .MOSI         (spi_mosi_o),
+    .SCLK         (spi_sclk_o),
+    .SS_n         (spi_ss_n_o),
+    .data_to_cpu  (spi_data_to_cpu),
+    .irq          (spi_irq),
+    .readyfordata (spi_readyfordata)
+);
+```
+
+Explanation:
+
+```text
+The CPU's MMIO read/write is converted to SPI IP read/write signals.
+read_n and write_n are active-low because the SPI IP expects active-low controls.
+MISO, MOSI, SCLK, and SS_n are the actual SPI pins.
+```
+
+### SPI Dataavailable Code
+
+```systemverilog
+if (spi_dataavailable) begin
+    sensor_data_reg <= {24'h0, spi_data_to_cpu[7:0]};
+    data_ready_reg  <= 1'b1;
+end
+```
+
+Explanation:
+
+```text
+When SPI receives data, the lower 8 bits are copied into SENSOR_DATA.
+data_ready becomes 1, so the CPU knows new sensor data is available.
+```
+
+---
+
+## 13.5 `uart_mmio.sv`
+
+UART MMIO lets the CPU send encrypted bytes through the `uart_tx` pin.
+
+### Register Offset Code
+
+```systemverilog
+localparam logic [5:0] OFF_TXDATA   = 6'h00;
+localparam logic [5:0] OFF_STATUS   = 6'h04;
+localparam logic [5:0] OFF_CONTROL  = 6'h08;
+localparam logic [5:0] OFF_BAUD_DIV = 6'h0C;
+```
+
+Explanation:
+
+```text
+TXDATA starts transmission.
+STATUS reports busy/done.
+CONTROL enables UART and clears done.
+BAUD_DIV controls transmission speed.
+```
+
+### Reset Code
+
+```systemverilog
+baud_div_reg   <= 16'd15;
+enable_reg     <= 1'b1;
+done_latched   <= 1'b0;
+```
+
+Explanation:
+
+```text
+UART starts enabled.
+Default baud divisor is 15.
+done flag starts cleared.
+```
+
+### TXDATA Write Code
+
+```systemverilog
+OFF_TXDATA: begin
+    tx_data_reg <= write_data_i[7:0];
+    if (enable_reg && !tx_busy_o) begin
+        tx_start       <= 1'b1;
+        done_latched   <= 1'b0;
+    end
+end
+```
+
+Explanation:
+
+```text
+CPU writes the low byte to transmit.
+If UART is enabled and idle, tx_start pulses.
+done_latched clears because a new transfer has started.
+```
+
+### Control Write Code
+
+```systemverilog
+OFF_CONTROL: begin
+    enable_reg <= write_data_i[0];
+    if (write_data_i[1]) begin
+        done_latched <= 1'b0;
+    end
+end
+```
+
+Explanation:
+
+```text
+CONTROL[0] enables UART.
+CONTROL[1] clears the done flag.
+```
+
+### Baud Divisor Code
+
+```systemverilog
+OFF_BAUD_DIV: baud_div_reg <= write_data_i[15:0];
+```
+
+Explanation:
+
+```text
+CPU can program UART speed.
+One UART bit lasts baud_div + 1 clock cycles.
+```
+
+### UART Read Code
+
+```systemverilog
+OFF_TXDATA:   read_data_o = {24'h0, tx_data_reg};
+OFF_STATUS:   read_data_o = {30'h0, done_latched, tx_busy_o};
+OFF_CONTROL:  read_data_o = {31'h0, enable_reg};
+OFF_BAUD_DIV: read_data_o = {16'h0, baud_div_reg};
+```
+
+Explanation:
+
+```text
+CPU can read last TX byte.
+CPU can check busy/done status.
+CPU can read enable state.
+CPU can read configured baud divisor.
+```
+
+### UART Transmitter Instance
+
+```systemverilog
+uart_tx u_uart_tx (
+    .clk       (clk),
+    .rst_n     (rst_n),
+    .clk_en_i  (clk_en_i),
+    .start_i   (tx_start),
+    .data_i    (tx_data_reg),
+    .baud_div_i(baud_div_reg),
+    .tx_o      (uart_tx_o),
+    .busy_o    (tx_busy_o),
+    .done_o    (tx_done_pulse)
+);
+```
+
+Explanation:
+
+```text
+uart_mmio stores register values.
+uart_tx performs actual serial transmission.
+tx_done_pulse is latched into done_latched for CPU visibility.
+```
+
+---
+
+## 13.6 `uart_tx.sv`
+
+This module is not an MMIO register file by itself, but it is the UART engine
+controlled by `uart_mmio.sv`.
+
+### Start Code
+
+```systemverilog
+if (start_i && !busy_o) begin
+    shifter    <= {1'b1, data_i, 1'b0}; // stop, data, start
+    bit_count  <= 4'd10;
+    baud_count <= baud_div_i;
+    busy_o     <= 1'b1;
+    tx_o       <= 1'b0;
+end
+```
+
+Explanation:
+
+```text
+UART frame has 10 bits: start + 8 data + stop.
+Start bit is 0.
+Stop bit is 1.
+Data is shifted serially.
+```
+
+### Baud Counter Code
+
+```systemverilog
+if (baud_count != 16'd0) begin
+    baud_count <= baud_count - 16'd1;
+end else begin
+    baud_count <= baud_div_i;
+    shifter    <= {1'b1, shifter[9:1]};
+    bit_count  <= bit_count - 4'd1;
+end
+```
+
+Explanation:
+
+```text
+baud_count controls how long each serial bit remains on uart_tx.
+When baud_count reaches zero, the next bit is shifted out.
+```
+
+### Done Code
+
+```systemverilog
+if (bit_count == 4'd1) begin
+    busy_o <= 1'b0;
+    done_o <= 1'b1;
+end
+```
+
+Explanation:
+
+```text
+After all 10 bits are transmitted, busy clears and done pulses.
+```
+
+---
+
+## 13.7 `simple_intc.sv`
+
+The interrupt controller stores peripheral events and produces one combined IRQ.
+
+### Register Offset Code
+
+```systemverilog
+localparam logic [5:0] OFF_PENDING = 6'h00;
+localparam logic [5:0] OFF_ENABLE  = 6'h04;
+localparam logic [5:0] OFF_CLEAR   = 6'h08;
+```
+
+Explanation:
+
+```text
+PENDING shows which events occurred.
+ENABLE selects which events can raise irq_o.
+CLEAR clears selected pending bits.
+```
+
+### IRQ Source Packing
+
+```systemverilog
+assign irq_sources = {
+    dma_done_irq_i,
+    sensor_data_ready_irq_i,
+    uart_tx_done_irq_i,
+    aes_done_irq_i
+};
+```
+
+Explanation:
+
+```text
+bit 0 = AES done
+bit 1 = UART done
+bit 2 = sensor ready
+bit 3 = DMA done
+```
+
+### Pending And Enable Code
+
+```systemverilog
+pending_reg <= pending_reg | irq_sources;
+
+if (write_en_i) begin
+    case (reg_offset)
+        OFF_ENABLE: enable_reg <= write_data_i[3:0];
+        OFF_CLEAR:  pending_reg <= (pending_reg | irq_sources) & ~write_data_i[3:0];
+        default: ;
+    endcase
+end
+```
+
+Explanation:
+
+```text
+Any interrupt source sets its pending bit.
+Writing ENABLE changes which sources are allowed.
+Writing CLEAR with 1s clears selected pending bits.
+```
+
+### Combined IRQ Code
+
+```systemverilog
+assign irq_o = |(pending_reg & enable_reg);
+```
+
+Explanation:
+
+```text
+If a bit is both pending and enabled, irq_o becomes 1.
+```
+
+### Read Code
+
+```systemverilog
+OFF_PENDING: read_data_o = {28'h0, pending_reg};
+OFF_ENABLE:  read_data_o = {28'h0, enable_reg};
+```
+
+Explanation:
+
+```text
+CPU reads PENDING to know which event occurred.
+CPU reads ENABLE to know which events are enabled.
+```
+
+---
+
+## 13.8 `dma_lite.sv`
+
+DMA-lite copies words through a lightweight memory port.
+
+### Register Offset Code
+
+```systemverilog
+localparam logic [5:0] OFF_SRC    = 6'h00;
+localparam logic [5:0] OFF_DST    = 6'h04;
+localparam logic [5:0] OFF_LEN    = 6'h08;
+localparam logic [5:0] OFF_CTRL   = 6'h0C;
+localparam logic [5:0] OFF_STATUS = 6'h10;
+```
+
+Explanation:
+
+```text
+SRC stores source address.
+DST stores destination address.
+LEN stores number of words.
+CTRL starts DMA or clears done.
+STATUS reports busy/done.
+```
+
+### DMA Address Code
+
+```systemverilog
+assign dma_read_addr_o  = src_addr_reg + {index_reg[29:0], 2'b00};
+assign dma_write_addr_o = dst_addr_reg + {index_reg[29:0], 2'b00};
+assign dma_write_data_o = dma_read_data_i;
+assign dma_write_en_o   = clk_en_i && busy_o;
+```
+
+Explanation:
+
+```text
+DMA copies word by word.
+Each word address increments by 4 bytes.
+Read data is directly written to destination.
+Write enable is active while DMA is busy.
+```
+
+### DMA Register Write Code
+
+```systemverilog
+OFF_SRC: src_addr_reg <= write_data_i;
+OFF_DST: dst_addr_reg <= write_data_i;
+OFF_LEN: len_reg      <= write_data_i;
+OFF_CTRL: begin
+    if (write_data_i[1]) begin
+        done_o <= 1'b0;
+    end
+    if (write_data_i[0] && !busy_o) begin
+        index_reg <= 32'h0;
+        busy_o    <= (len_reg != 32'h0);
+        done_o    <= (len_reg == 32'h0);
+    end
+end
+```
+
+Explanation:
+
+```text
+CPU programs source, destination, and length.
+CTRL[0] starts DMA.
+CTRL[1] clears done.
+If length is zero, DMA immediately reports done.
+```
+
+### DMA Progress Code
+
+```systemverilog
+if (busy_o) begin
+    if (index_reg + 32'd1 >= len_reg) begin
+        busy_o <= 1'b0;
+        done_o <= 1'b1;
+    end
+    index_reg <= index_reg + 32'd1;
+end
+```
+
+Explanation:
+
+```text
+Each cycle, DMA transfers one word and increments index.
+When final word is transferred, busy clears and done sets.
+```
+
+### DMA Read Code
+
+```systemverilog
+OFF_SRC:    read_data_o = src_addr_reg;
+OFF_DST:    read_data_o = dst_addr_reg;
+OFF_LEN:    read_data_o = len_reg;
+OFF_STATUS: read_data_o = {30'h0, done_o, busy_o};
+```
+
+Explanation:
+
+```text
+CPU can read programmed addresses, length, and status.
+STATUS[0] is busy.
+STATUS[1] is done.
+```
+
+---
+
+## 13.9 `power_mgmt_mmio.sv`
+
+This MMIO block controls sleep request and records activity counters.
+
+### Register Offset Code
+
+```systemverilog
+localparam logic [5:0] OFF_CTRL   = 6'h00;
+localparam logic [5:0] OFF_CPU    = 6'h04;
+localparam logic [5:0] OFF_AES    = 6'h08;
+localparam logic [5:0] OFF_UART   = 6'h0C;
+localparam logic [5:0] OFF_SLEEP  = 6'h10;
+localparam logic [5:0] OFF_DMA    = 6'h14;
+localparam logic [5:0] OFF_SENSOR = 6'h18;
+```
+
+Explanation:
+
+```text
+CTRL controls sleep and counter clear.
+Other offsets expose activity counters.
+```
+
+### Control And Clear Code
+
+```systemverilog
+assign clear_counters = write_en_i && (reg_offset == OFF_CTRL) && write_data_i[1];
+
+if (write_en_i && (reg_offset == OFF_CTRL)) begin
+    sleep_o <= write_data_i[0];
+end
+```
+
+Explanation:
+
+```text
+POWER_CTRL[0] sets sleep request.
+POWER_CTRL[1] clears all counters.
+```
+
+### Counter Increment Code
+
+```systemverilog
+if (clear_counters) begin
+    cpu_active_cycles    <= 32'h0;
+    aes_active_cycles    <= 32'h0;
+    uart_active_cycles   <= 32'h0;
+    sleep_cycles         <= 32'h0;
+    dma_active_cycles    <= 32'h0;
+    sensor_active_cycles <= 32'h0;
+end else begin
+    if (cpu_active_i && !sleep_o) cpu_active_cycles <= cpu_active_cycles + 32'd1;
+    if (aes_active_i)             aes_active_cycles <= aes_active_cycles + 32'd1;
+    if (uart_active_i)            uart_active_cycles <= uart_active_cycles + 32'd1;
+    if (sleep_o)                  sleep_cycles <= sleep_cycles + 32'd1;
+    if (dma_active_i)             dma_active_cycles <= dma_active_cycles + 32'd1;
+    if (sensor_active_i)          sensor_active_cycles <= sensor_active_cycles + 32'd1;
+end
+```
+
+Explanation:
+
+```text
+When clear is written, all counters reset to zero.
+Otherwise each counter increments when its activity input is high.
+CPU active counter does not increment during sleep.
+Sleep counter increments when sleep_o is set.
+```
+
+### Power Read Code
+
+```systemverilog
+OFF_CTRL:   read_data_o = {31'h0, sleep_o};
+OFF_CPU:    read_data_o = cpu_active_cycles;
+OFF_AES:    read_data_o = aes_active_cycles;
+OFF_UART:   read_data_o = uart_active_cycles;
+OFF_SLEEP:  read_data_o = sleep_cycles;
+OFF_DMA:    read_data_o = dma_active_cycles;
+OFF_SENSOR: read_data_o = sensor_active_cycles;
+```
+
+Explanation:
+
+```text
+CPU can read sleep status and each activity counter.
+These values help compare MMIO, custom ISA, DMA, interrupt, and sleep behavior.
+```
+
+### Debug Counter Code
+
+```systemverilog
+assign activity_counter_debug_o =
+    aes_active_cycles ^ uart_active_cycles ^ sleep_cycles ^ dma_active_cycles;
+```
+
+Explanation:
+
+```text
+This creates an observable debug value from internal counters.
+It helps keep activity-counter logic visible at the top level.
+```
+
+---
+
+## 13.10 Common MMIO Coding Pattern
+
+All MMIO modules follow the same basic structure.
+
+### 1. Define Register Offsets
+
+```systemverilog
+localparam logic [5:0] OFF_STATUS = 6'h04;
+```
+
+Purpose:
+
+```text
+Gives each register a fixed offset inside the peripheral window.
+```
+
+### 2. Extract Lower Address Bits
+
+```systemverilog
+assign reg_offset = addr_i[5:0];
+```
+
+Purpose:
+
+```text
+The top-level decoder selects the peripheral.
+The local module uses lower bits to select the internal register.
+```
+
+### 3. Sequential Write Logic
+
+```systemverilog
+always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+        // reset registers
+    end else if (clk_en_i) begin
+        if (write_en_i) begin
+            case (reg_offset)
+                // update selected register
+            endcase
+        end
+    end
+end
+```
+
+Purpose:
+
+```text
+Writes change internal registers only on clock edges.
+Reset gives known initial values.
+Clock enable supports low-power style activity control.
+```
+
+### 4. Combinational Read Logic
+
+```systemverilog
+always_comb begin
+    read_data_o = 32'h0;
+    if (read_en_i) begin
+        case (reg_offset)
+            // return selected register
+            default: read_data_o = 32'h0;
+        endcase
+    end
+end
+```
+
+Purpose:
+
+```text
+Loads return the selected register value.
+Unmapped offsets return zero.
+```
+
+### 5. Status And IRQ Outputs
+
+```systemverilog
+assign active_o = busy_o;
+assign done_irq_o = done_o;
+```
+
+Purpose:
+
+```text
+Peripheral status can feed power counters and interrupt controller.
+```
+
+Speaker note:
+
+> Every MMIO module uses the same clean pattern: fixed offsets, local register
+> decode, clocked writes, combinational reads, status outputs, and optional
+> interrupt/activity outputs. This makes the design modular and easy to extend.
+
+---
+
+# 14. Final Speaker Summary
 
 Use this in viva or presentation:
 
@@ -1036,4 +2162,3 @@ simple word transfers, and power MMIO records activity and sleep cycles.
 This MMIO design keeps the RISC-V pipeline mostly unchanged while converting it
 into a complete IoT security processor.
 ```
-
