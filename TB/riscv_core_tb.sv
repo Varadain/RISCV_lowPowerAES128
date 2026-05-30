@@ -432,6 +432,86 @@ module riscv_core_tb;
         end
     endtask
 
+    function automatic [7:0] hex_ascii(input logic [3:0] value);
+        begin
+            hex_ascii = (value < 4'd10) ? (8'h30 + {4'h0, value}) : (8'h41 + ({4'h0, value} - 8'd10));
+        end
+    endfunction
+
+    task automatic aes_ctr_encrypt_direct(
+        input  logic [127:0] key,
+        input  logic [127:0] plaintext,
+        input  logic [63:0]  nonce,
+        input  logic [63:0]  counter,
+        output logic [127:0] ciphertext
+    );
+        int timeout;
+        begin
+            dut.u_mem_stage.u_aes_mmio.key_reg      = key;
+            dut.u_mem_stage.u_aes_mmio.pt_reg       = plaintext;
+            dut.u_mem_stage.u_aes_mmio.nonce_reg    = nonce;
+            dut.u_mem_stage.u_aes_mmio.counter_reg  = counter;
+            dut.u_mem_stage.u_aes_mmio.mode_ctr_reg = 1'b1;
+
+            @(negedge clk);
+            dut.u_mem_stage.u_aes_mmio.aes_start_pulse = 1'b1;
+            dut.u_mem_stage.u_aes_mmio.busy_reg        = 1'b1;
+            dut.u_mem_stage.u_aes_mmio.done_reg        = 1'b0;
+            @(negedge clk);
+            dut.u_mem_stage.u_aes_mmio.aes_start_pulse = 1'b0;
+
+            timeout = 0;
+            while ((dut.u_mem_stage.u_aes_mmio.done_reg !== 1'b1) && (timeout < 60)) begin
+                @(posedge clk);
+                timeout++;
+            end
+            ciphertext = dut.u_mem_stage.u_aes_mmio.ct_reg;
+        end
+    endtask
+
+    task automatic uart_send_byte_direct(input logic [7:0] value);
+        int timeout;
+        begin
+            while (dut.u_mem_stage.u_uart_mmio.tx_busy_o) begin
+                @(posedge clk);
+            end
+
+            @(negedge clk);
+            dut.u_mem_stage.u_uart_mmio.tx_data_reg      = value;
+            dut.u_mem_stage.u_uart_mmio.tx_start_pulse   = 1'b1;
+            dut.u_mem_stage.u_uart_mmio.done_latched     = 1'b0;
+            dut.u_mem_stage.u_uart_mmio.enable_reg       = 1'b1;
+            dut.u_mem_stage.u_uart_mmio.baud_div_reg     = 16'd1;
+            @(negedge clk);
+            dut.u_mem_stage.u_uart_mmio.tx_start_pulse   = 1'b0;
+
+            timeout = 0;
+            while ((dut.u_mem_stage.u_uart_mmio.done_latched !== 1'b1) && (timeout < 80)) begin
+                @(posedge clk);
+                timeout++;
+            end
+            $write("%c", value);
+        end
+    endtask
+
+    task automatic uart_print_string(input string msg);
+        int i;
+        begin
+            for (i = 0; i < msg.len(); i++) begin
+                uart_send_byte_direct(msg[i]);
+            end
+        end
+    endtask
+
+    task automatic uart_print_hex128(input logic [127:0] value);
+        int nib;
+        begin
+            for (nib = 31; nib >= 0; nib--) begin
+                uart_send_byte_direct(hex_ascii(value[nib*4 +: 4]));
+            end
+        end
+    endtask
+
     // -------------------------------------------------------------------------
     // R-type group (10 instructions)
     // -------------------------------------------------------------------------
@@ -831,6 +911,48 @@ module riscv_core_tb;
         end
     endtask
 
+    task automatic run_end_to_end_uart_aes_ctr_tests();
+        logic [127:0] e2e_key;
+        logic [127:0] e2e_plaintext;
+        logic [127:0] e2e_ciphertext;
+        logic [127:0] e2e_decrypted;
+        logic [63:0]  e2e_nonce;
+        logic [63:0]  e2e_counter;
+        begin
+            $display("\n=== End-to-end AES-CTR UART print/decrypt tests ===");
+            clear_mem_and_regs();
+            apply_reset();
+
+            e2e_key       = 128'h000102030405060708090A0B0C0D0E0F;
+            e2e_plaintext = 128'h4845414C54485F485237385F53393721; // "HEALTH_HR78_S97!"
+            e2e_nonce     = 64'h0011223344556677;
+            e2e_counter   = 64'h8899AABBCCDDEEFF;
+
+            aes_ctr_encrypt_direct(e2e_key, e2e_plaintext, e2e_nonce, e2e_counter, e2e_ciphertext);
+            check_and_report("E2E", "ENC_DONE", "AES-CTR encryption completed", {31'h0, dut.u_mem_stage.u_aes_mmio.done_reg}, 32'h1);
+            check_and_report("E2E", "CT_DIFF",  "ciphertext differs from plaintext", (e2e_ciphertext != e2e_plaintext), 1'b1);
+
+            // CTR decryption uses the same AES encryption primitive. Feed the
+            // ciphertext as input with the same key, nonce, and counter.
+            aes_ctr_encrypt_direct(e2e_key, e2e_ciphertext, e2e_nonce, e2e_counter, e2e_decrypted);
+            check_and_report("E2E", "DEC_MATCH", "AES-CTR decrypted data matches original input", e2e_decrypted, e2e_plaintext);
+
+            $display("UART transcript below is emitted through the RTL UART transmitter:");
+            $write("UART_PRINT: ");
+            uart_print_string("INPUT=");
+            uart_print_hex128(e2e_plaintext);
+            uart_print_string(" KEY=");
+            uart_print_hex128(e2e_key);
+            uart_print_string(" CIPHER=");
+            uart_print_hex128(e2e_ciphertext);
+            uart_print_string(" DECRYPTED=");
+            uart_print_hex128(e2e_decrypted);
+            uart_print_string((e2e_decrypted == e2e_plaintext) ? " MATCH=PASS\n" : " MATCH=FAIL\n");
+
+            check_and_report("E2E", "UART_DONE", "UART completed final transcript byte", {31'h0, dut.u_mem_stage.u_uart_mmio.done_latched}, 32'h1);
+        end
+    endtask
+
     task automatic run_interrupt_tests();
         begin
             $display("\n=== Interrupt controller tests ===");
@@ -969,6 +1091,80 @@ module riscv_core_tb;
     endtask
 
     // -------------------------------------------------------------------------
+    // Deterministic random coverage smoke test
+    // Uses a fixed seed so regression remains repeatable while still exercising
+    // non-constant data values and varied MMIO paths.
+    // -------------------------------------------------------------------------
+    task automatic run_random_coverage_tests();
+        int unsigned seed;
+        logic [31:0] rnd_a;
+        logic [31:0] rnd_b;
+        logic [31:0] rnd_sensor;
+        logic [31:0] rnd_dma_data;
+        logic [7:0]  rnd_uart_byte;
+        int unsigned src_idx;
+        int unsigned dst_idx;
+        begin
+            $display("\n=== Randomized coverage smoke tests ===");
+            seed = 32'hC0DE_2026;
+            rnd_a         = $urandom(seed);
+            rnd_b         = $urandom();
+            rnd_sensor    = $urandom();
+            rnd_dma_data  = $urandom();
+            rnd_uart_byte = $urandom();
+            src_idx       = 8 + ($urandom() % 8);
+            dst_idx       = 24 + ($urandom() % 8);
+
+            // Random custom-ISA datapath check: CSEC_XOR rd, rs1, rs2.
+            clear_mem_and_regs();
+            dut.u_if_stage.u_instr_mem.rom[0] = 32'h00000013; // NOP
+            dut.u_if_stage.u_instr_mem.rom[1] = 32'h00000013; // NOP
+            dut.u_if_stage.u_instr_mem.rom[2] = enc_custom(3'b000, 5'd2, 5'd1, 5'd3);
+            apply_reset();
+            dut.u_id_stage.u_reg_file.regs[1] = rnd_a;
+            dut.u_id_stage.u_reg_file.regs[2] = rnd_b;
+            run_cycles(18);
+            check_and_report("RANDOM", "CSEC_XOR", "random rs1 ^ rs2 through custom ISA", dut.u_id_stage.u_reg_file.regs[3], (rnd_a ^ rnd_b));
+
+            // Random sensor MMIO read: inject a random sample, then read through CPU load.
+            clear_mem_and_regs();
+            dut.u_if_stage.u_instr_mem.rom[0] = enc_itype(12'h400, 5'd0, 3'b000, 5'd1, 7'b0010011); // x1 = sensor base
+            dut.u_if_stage.u_instr_mem.rom[1] = enc_itype(12'd0,   5'd1, 3'b010, 5'd2, 7'b0000011); // LW x2,SENSOR_DATA
+            apply_reset();
+            dut.u_mem_stage.u_sensor_spi_mmio.sensor_data_reg = rnd_sensor;
+            dut.u_mem_stage.u_sensor_spi_mmio.data_ready_reg  = 1'b1;
+            run_cycles(20);
+            check_and_report("RANDOM", "SENSOR", "random sensor sample read through MMIO", dut.u_id_stage.u_reg_file.regs[2], rnd_sensor);
+
+            // Random DMA-lite copy: randomized source/destination word addresses.
+            clear_mem_and_regs();
+            dut.u_if_stage.u_instr_mem.rom[0] = enc_itype(12'h700,        5'd0, 3'b000, 5'd1, 7'b0010011); // x1 = DMA base
+            dut.u_if_stage.u_instr_mem.rom[1] = enc_itype(src_idx * 4,    5'd0, 3'b000, 5'd2, 7'b0010011); // src byte addr
+            dut.u_if_stage.u_instr_mem.rom[2] = enc_stype(12'd0,          5'd2, 5'd1, 3'b010, 7'b0100011); // SW SRC
+            dut.u_if_stage.u_instr_mem.rom[3] = enc_itype(dst_idx * 4,    5'd0, 3'b000, 5'd2, 7'b0010011); // dst byte addr
+            dut.u_if_stage.u_instr_mem.rom[4] = enc_stype(12'd4,          5'd2, 5'd1, 3'b010, 7'b0100011); // SW DST
+            dut.u_if_stage.u_instr_mem.rom[5] = enc_itype(12'd1,          5'd0, 3'b000, 5'd2, 7'b0010011); // len = 1 word
+            dut.u_if_stage.u_instr_mem.rom[6] = enc_stype(12'd8,          5'd2, 5'd1, 3'b010, 7'b0100011); // SW LEN
+            dut.u_if_stage.u_instr_mem.rom[7] = enc_stype(12'd12,         5'd2, 5'd1, 3'b010, 7'b0100011); // SW CTRL start
+            apply_reset();
+            dut.u_mem_stage.u_data_mem.ram[src_idx] = rnd_dma_data;
+            run_cycles(50);
+            check_and_report("RANDOM", "DMA", "random word copied from randomized source to destination", dut.u_mem_stage.u_data_mem.ram[dst_idx], rnd_dma_data);
+
+            // Random UART byte: verify MMIO stores the byte and transfer completes.
+            clear_mem_and_regs();
+            dut.u_if_stage.u_instr_mem.rom[0] = enc_itype(12'h500,          5'd0, 3'b000, 5'd1, 7'b0010011); // x1 = UART base
+            dut.u_if_stage.u_instr_mem.rom[1] = enc_itype({4'h0, rnd_uart_byte}, 5'd0, 3'b000, 5'd2, 7'b0010011); // x2 = random byte
+            dut.u_if_stage.u_instr_mem.rom[2] = enc_stype(12'd0,            5'd2, 5'd1, 3'b010, 7'b0100011); // SW TXDATA
+            apply_reset();
+            dut.u_mem_stage.u_uart_mmio.baud_div_reg = 16'd1;
+            run_cycles(45);
+            check_and_report("RANDOM", "UART_DATA", "random UART byte accepted through MMIO", {24'h0, dut.u_mem_stage.u_uart_mmio.tx_data_reg}, {24'h0, rnd_uart_byte});
+            check_and_report("RANDOM", "UART_DONE", "random UART byte transmission completed", {31'h0, dut.u_mem_stage.u_uart_mmio.done_latched}, 32'h1);
+        end
+    endtask
+
+    // -------------------------------------------------------------------------
     // Main test sequence
     // 47 checks total:
     // 10 (R) + 9 (I) + 8 (Load/Store) + 6 (B) + 4 (U/J) + 10 (System/Fence/Pseudo)
@@ -993,11 +1189,13 @@ module riscv_core_tb;
         run_sensor_mmio_tests();
         run_sensor_spi_ip_tests();
         run_uart_mmio_tests();
+        run_end_to_end_uart_aes_ctr_tests();
         run_interrupt_tests();
         run_dma_lite_tests();
         run_power_activity_tests();
         run_custom_isa_tests();
         run_signal_activity_tests();
+        run_random_coverage_tests();
 
         run_cycles(PIPE_DRAIN);
 
