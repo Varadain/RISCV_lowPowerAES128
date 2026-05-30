@@ -1,0 +1,148 @@
+Questa Intel Starter FPGA Edition-64 vmap 2023.3 Lib Mapping Utility 2023.07 Jul 17 2023
+vmap work uvm_e2e_work 
+Modifying modelsim.ini
+Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+Start time: 20:33:11 on May 30,2026
+vlog -sv "+incdir+D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e" D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_if.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes128_lowpower.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_tx.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_tb_top.sv 
+-- Compiling interface uvm_e2e_if
+-- Compiling module aes_mmio
+-- Compiling module aes128_lowpower
+-- Compiling module sub_bytes
+-- Compiling module shift_rows
+-- Compiling module mix_columns
+-- Compiling module mix_col
+-- Compiling module key_expand
+-- Compiling module aes_sbox
+-- Compiling module uart_tx
+-- Compiling module uart_mmio
+-- Compiling package uvm_e2e_pkg
+-- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+** Note: (vlog-2286) D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(3): Using implicit +incdir+C:/intelFPGA_lite/questa_fse/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+-- Compiling module uvm_e2e_tb_top
+-- Importing package uvm_e2e_pkg
+
+Top level modules:
+	uvm_e2e_tb_top
+End time: 20:33:11 on May 30,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 0
+Reading pref.tcl
+
+# 2023.3
+
+# vsim -c -sv_seed 101 -sv_lib D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\aes_ctr_ref work.uvm_e2e_tb_top -do "run -all; quit" "+UVM_TESTNAME=uvm_e2e_test" "+NUM_TXNS=25" "+E2E_SEED=101" 
+# Start time: 20:33:13 on May 30,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.uvm_e2e_if(fast)
+# Loading mtiUvm.uvm_pkg(fast)
+# Loading work.uvm_e2e_pkg(fast)
+# Loading mtiUvm.questa_uvm_pkg(fast)
+# Loading work.uvm_e2e_tb_top(fast)
+# Loading D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\aes_ctr_ref.dll
+# Loading C:/intelFPGA_lite/questa_fse/uvm-1.1d\win64\uvm_dpi.dll
+# run -all
+# ----------------------------------------------------------------
+# UVM-1.1d
+# (C) 2007-2013 Mentor Graphics Corporation
+# (C) 2007-2013 Cadence Design Systems, Inc.
+# (C) 2006-2013 Synopsys, Inc.
+# (C) 2011-2013 Cypress Semiconductor Corp.
+# ----------------------------------------------------------------
+# 
+#   ***********       IMPORTANT RELEASE NOTES         ************
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_NO_DEPRECATED undefined.
+#   See http://www.eda.org/svdb/view.php?id=3313 for more details.
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_OBJECT_MUST_HAVE_CONSTRUCTOR undefined.
+#   See http://www.eda.org/svdb/view.php?id=3770 for more details.
+# 
+#       (Specify +UVM_NO_RELNOTES to turn off this notice)
+# 
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(277) @ 0: reporter [Questa UVM] QUESTA_UVM-1.2.3
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(278) @ 0: reporter [Questa UVM]  questa_uvm::init(+struct)
+# UVM_INFO @ 0: reporter [RNTST] Running test uvm_e2e_test...
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 46425000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 1: INPUT=0198ac03970007ef68482e31dc492636 KEY=e97cd4510d2f78eaa47b77939ba72837 CIPHER=6c03229a7237e5bc45803f0aed6340d0 DECRYPTED=0198ac03970007ef68482e31dc492636 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 92805000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 2: INPUT=3282b267fd026000914528a1be7343a9 KEY=16c71dea5a3ecdb7f285e21396330b70 CIPHER=7e6dfc7fa71c8cc65a11fc2452270398 DECRYPTED=3282b267fd026000914528a1be7343a9 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 139185000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 3: INPUT=99c5b9cdf17dd8d3069421e0d7a47634 KEY=75398a25cbdc0b7b1cda8a62ff4b7989 CIPHER=856e39e70a54949f184b1be21cfbbc07 DECRYPTED=99c5b9cdf17dd8d3069421e0d7a47634 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 185565000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 4: INPUT=9dd1dccd6f4dd2c97787902335f5eea2 KEY=8c1cbcf26bdcd753d7ef36c817f3e433 CIPHER=fe5ca24c2b988e20d2a4bdbea3caa1f6 DECRYPTED=9dd1dccd6f4dd2c97787902335f5eea2 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 231945000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 5: INPUT=0b375410d711bd8af4b1369a9e21eacb KEY=cc63b597e0f0171fa06344d6d7c5f5ea CIPHER=da2b898709aea7e961de2b8064172057 DECRYPTED=0b375410d711bd8af4b1369a9e21eacb MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 278325000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 6: INPUT=c2e3287c5a738aca4e7134bf743af94c KEY=497ef46569b1ec1cd27a86a5d76299b2 CIPHER=6b6daee1e247bf1794539cdcefcbfbaa DECRYPTED=c2e3287c5a738aca4e7134bf743af94c MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 324705000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 7: INPUT=aaf475dcadb3189b1aa3e6aba8a00790 KEY=a218249977e1ac5c0f2ba0491f7506d8 CIPHER=0af5996842647eeb16461c5621c50fd0 DECRYPTED=aaf475dcadb3189b1aa3e6aba8a00790 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 371085000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 8: INPUT=1e853ce59a21cd49d29f2d2dd06840b0 KEY=d7bbbd6fa2d7a1e48b8a58b1d31f071f CIPHER=3eab54362ab80dc4f819d18907b0517a DECRYPTED=1e853ce59a21cd49d29f2d2dd06840b0 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 417465000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 9: INPUT=0488acac32b9a062d0098438f1507b9f KEY=3a5f754e4a2d39954ee20c5ae240362e CIPHER=e093ce6859e4d3dcc9f2f7f4ed8445a7 DECRYPTED=0488acac32b9a062d0098438f1507b9f MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 463845000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 10: INPUT=06cd1adb17532a1030337018983bbf00 KEY=14a2d54d8f611b482d01e4cc2295ec00 CIPHER=215c552149a43ecd798b413064c91e85 DECRYPTED=06cd1adb17532a1030337018983bbf00 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 510225000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 11: INPUT=45c4640ce1f5956e3857e4825c3f1ac1 KEY=538bcb32775e56c40d5788e77529ce82 CIPHER=8efacd0519b6cecf075bd114dba83b19 DECRYPTED=45c4640ce1f5956e3857e4825c3f1ac1 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 556605000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 12: INPUT=107396bf362cba4d8dcc151fe291a7a8 KEY=1afd5fda91ceac79cc7465795bb7c794 CIPHER=9d90739cafe5aec52838ad966774692f DECRYPTED=107396bf362cba4d8dcc151fe291a7a8 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 602985000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 13: INPUT=e5de3f63647b813a9fc5a9947410a10f KEY=661f53f7005f4d27d680e29a90ab3993 CIPHER=f22fea9121e07396fdf7ff5397bb29f2 DECRYPTED=e5de3f63647b813a9fc5a9947410a10f MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 649365000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 14: INPUT=619755c5eed9ba12eae94d3faa975f98 KEY=6deb9a6aca7c7219c3d170c654f10262 CIPHER=e9ba692427cc9491060c145c0e8a42fe DECRYPTED=619755c5eed9ba12eae94d3faa975f98 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 695745000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 15: INPUT=202c078ebb6f6be0947b5dc907824728 KEY=a38b73fb737ad5211202d80e6964ad6f CIPHER=5f7e41bf546d8584a6e9b56c908ed11d DECRYPTED=202c078ebb6f6be0947b5dc907824728 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 742125000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 16: INPUT=64a232927cfc1eaa1a0d06fee081e977 KEY=684393a05cc449db6a1727a4529ffa75 CIPHER=09932ad8b68e63e82d47acfeb04e630c DECRYPTED=64a232927cfc1eaa1a0d06fee081e977 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 788505000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 17: INPUT=f07de67ddafe64a4db371db128a51fd1 KEY=e0b035be26f7511d56467997b7ee708d CIPHER=fa6269899c48c837707048306b9b48ff DECRYPTED=f07de67ddafe64a4db371db128a51fd1 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 834885000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 18: INPUT=0d6b877bcd1fee992956091fe6c63985 KEY=1f27a6be95f27b868ad80e27e889de89 CIPHER=324a00c97c1ed489383c3b8b4d9693f1 DECRYPTED=0d6b877bcd1fee992956091fe6c63985 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 881265000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 19: INPUT=7f9a0be2e22cc6b125a1a24c2ced7db8 KEY=e81dbeb5a6ad1b50bd242fd32314243c CIPHER=d61d599d1a93d4ae7bfd2303cc36965b DECRYPTED=7f9a0be2e22cc6b125a1a24c2ced7db8 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 927645000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 20: INPUT=95fca9251bd92069c557efe32dd9e576 KEY=3f92946dceff5ea2804a8ad7f31049bf CIPHER=89b78a4579dad6640933a6e58f7e7ce1 DECRYPTED=95fca9251bd92069c557efe32dd9e576 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 974025000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 21: INPUT=e03b40d98c24bde968ab94855d5c0a98 KEY=5de3f77f428cd9d9ef45354274476734 CIPHER=9219111a1f3ad2c92af00ca0ff65fbf4 DECRYPTED=e03b40d98c24bde968ab94855d5c0a98 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 1020405000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 22: INPUT=101d33a97b615b3d50dcb4fe0e21ec3f KEY=4764a86c9f416a58f34c58fd722b5e54 CIPHER=b22c3992c6d976533bcb65a8869872a5 DECRYPTED=101d33a97b615b3d50dcb4fe0e21ec3f MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 1066785000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 23: INPUT=f9d1829ff9c2cd9eae5ae9669dbc4b7d KEY=8eafc394ad7267bad12fb878e235c668 CIPHER=3d49e5e7c969cbca670b8e5c0005e03f DECRYPTED=f9d1829ff9c2cd9eae5ae9669dbc4b7d MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 1113165000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 24: INPUT=d79f13238a96521e5a63fcf49a50af4a KEY=788cba561707bb15ecc80fc74b23b2bf CIPHER=82180c48095165ae9c90c3e8fedc60a4 DECRYPTED=d79f13238a96521e5a63fcf49a50af4a MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(314) @ 1159545000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 25: INPUT=dbf442e126a12d9561620f9c32a26554 KEY=bf1390506e272d5cfa11fbda6831f48f CIPHER=4f630d9a71f69de612f7851ec961a4d2 DECRYPTED=dbf442e126a12d9561620f9c32a26554 MATCH=PASS
+# 
+# UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1267) @ 1160600000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+# 
+# --- UVM Report Summary ---
+# 
+# ** Report counts by severity
+# UVM_INFO :   29
+# UVM_WARNING :    0
+# UVM_ERROR :    0
+# UVM_FATAL :    0
+# ** Report counts by id
+# [Questa UVM]     2
+# [RNTST]     1
+# [TEST_DONE]     1
+# [UART_MATCH]    25
+# ** Note: $finish    : C:/intelFPGA_lite/questa_fse/win64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
+#    Time: 1160600 ns  Iteration: 55  Instance: /uvm_e2e_tb_top
+# End time: 20:33:20 on May 30,2026, Elapsed time: 0:00:07
+# Errors: 0, Warnings: 0
