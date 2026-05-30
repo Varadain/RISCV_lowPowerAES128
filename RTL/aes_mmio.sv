@@ -27,11 +27,6 @@ module aes_mmio (
     input  logic [31:0] write_data_i,
     input  logic        write_en_i,
     input  logic        read_en_i,
-    input  logic        custom_valid_i,
-    input  logic [2:0]  custom_cmd_i,
-    input  logic [31:0] custom_rs1_i,
-    input  logic [31:0] custom_rs2_i,
-    output logic [31:0] custom_result_o,
     output logic [31:0] read_data_o,
     output logic        aes_done_irq_o,
     output logic [31:0] ciphertext_debug_o,
@@ -56,11 +51,6 @@ module aes_mmio (
     localparam logic [7:0] OFF_NONCE1 = 8'h3C;
     localparam logic [7:0] OFF_COUNT0 = 8'h40;
     localparam logic [7:0] OFF_COUNT1 = 8'h44;
-
-    localparam logic [2:0] CSEC_AES_STATUS = 3'b001;
-    localparam logic [2:0] CSEC_AES_START  = 3'b010;
-    localparam logic [2:0] CSEC_AES_CT0    = 3'b011;
-    localparam logic [2:0] CSEC_AES_CLEAR  = 3'b100;
 
     logic [7:0]   reg_offset;
     logic [127:0] key_reg;
@@ -129,26 +119,6 @@ module aes_mmio (
                 endcase
             end
 
-            if (clk_en_i && custom_valid_i) begin
-                case (custom_cmd_i)
-                    CSEC_AES_START: begin
-                        mode_ctr_reg <= 1'b1;
-                        pt_reg[31:0] <= custom_rs1_i;
-                        pt_reg[63:32] <= custom_rs2_i;
-                        pt_reg[127:64] <= 64'h0;
-                        if (!busy_reg) begin
-                            aes_start_pulse <= 1'b1;
-                            busy_reg        <= 1'b1;
-                            done_reg        <= 1'b0;
-                        end
-                    end
-                    CSEC_AES_CLEAR: begin
-                        done_reg <= 1'b0;
-                    end
-                    default: ;
-                endcase
-            end
-
             if (clk_en_i && aes_done && busy_reg) begin
                 ct_reg   <= mode_ctr_reg ? (pt_reg ^ aes_ciphertext) : aes_ciphertext;
                 busy_reg <= 1'b0;
@@ -161,15 +131,6 @@ module aes_mmio (
     end
 
     always_comb begin
-        custom_result_o = 32'h0;
-        case (custom_cmd_i)
-            CSEC_AES_STATUS: custom_result_o = {29'h0, mode_ctr_reg, done_reg, busy_reg};
-            CSEC_AES_START:  custom_result_o = {29'h0, mode_ctr_reg, done_reg, busy_reg};
-            CSEC_AES_CT0:    custom_result_o = ct_reg[31:0];
-            CSEC_AES_CLEAR:  custom_result_o = {31'h0, done_reg};
-            default:         custom_result_o = 32'h0;
-        endcase
-
         read_data_o = 32'h0;
         if (read_en_i) begin
             case (reg_offset)
