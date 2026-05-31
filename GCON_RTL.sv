@@ -1,10 +1,4 @@
-// -----------------------------------------------------------------------------
-// Beginner-friendly combined RTL for AES128_updated_new
-// -----------------------------------------------------------------------------
-// This file contains the complete synthesizable RTL for the iterative AES-128
-// encryption core.  It is intentionally kept in one file for easy submission,
-// reading, and simulation.
-//
+
 // Module order in this file:
 //   1. AES128_updated_new : top module and main finite state machine (FSM)
 //   2. AES_SBOX_ROM       : AES S-box lookup table
@@ -25,7 +19,7 @@
 //   - The core asserts busy while encryption is running.
 //   - When done becomes high, ciphertext is valid.
 //
-// Notes for beginners:
+// Notes:
 //   - <= is nonblocking assignment, used inside clocked always blocks.
 //   - = is blocking assignment, used inside combinational functions/logic.
 //   - [127 - (idx * 8) -: 8] means "select 8 bits starting from bit
