@@ -1,0 +1,300 @@
+Questa Intel Starter FPGA Edition-64 vmap 2023.3 Lib Mapping Utility 2023.07 Jul 17 2023
+vmap work uvm_e2e_work 
+Modifying modelsim.ini
+Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+Start time: 21:11:38 on Jun 15,2026
+vlog -sv "+incdir+D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e" D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_if.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\00_aes128_top.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\01_aes_sbox_rom.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\02_aes_sbox_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\03_aes_mix_columns_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\04_aes_key_expand_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes128_lowpower.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_tx.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_tb_top.sv 
+-- Compiling interface uvm_e2e_if
+-- Compiling module aes_mmio
+-- Compiling module AES128_updated_new
+-- Compiling module AES_SBOX_ROM
+-- Compiling module AES_SBOX_SEQ
+-- Compiling module AES_MIXCOL_SEQ
+-- Compiling module AES_KEYEXP_SEQ
+-- Compiling module aes128_lowpower
+-- Compiling module uart_tx
+-- Compiling module uart_mmio
+-- Compiling package uvm_e2e_pkg
+-- Importing package mtiUvm.uvm_pkg (uvm-1.1d Built-in)
+** Note: (vlog-2286) D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(3): Using implicit +incdir+C:/intelFPGA_lite/questa_fse/uvm-1.1d/../verilog_src/uvm-1.1d/src from import uvm_pkg
+-- Compiling module uvm_e2e_tb_top
+-- Importing package uvm_e2e_pkg
+
+Top level modules:
+	uvm_e2e_tb_top
+End time: 21:11:40 on Jun 15,2026, Elapsed time: 0:00:02
+Errors: 0, Warnings: 0
+Reading pref.tcl
+
+# 2023.3
+
+# vsim -c -sv_seed 611 -sv_lib D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\aes_ctr_ref work.uvm_e2e_tb_top -do "run -all; quit" "+UVM_TESTNAME=uvm_e2e_test" "+NUM_TXNS=100" "+E2E_SEED=611" 
+# Start time: 21:11:42 on Jun 15,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.uvm_e2e_if(fast)
+# Loading mtiUvm.uvm_pkg(fast)
+# Loading work.uvm_e2e_pkg(fast)
+# Loading mtiUvm.questa_uvm_pkg(fast)
+# Loading work.uvm_e2e_tb_top(fast)
+# Loading D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\aes_ctr_ref.dll
+# Loading C:/intelFPGA_lite/questa_fse/uvm-1.1d\win64\uvm_dpi.dll
+# run -all
+# ----------------------------------------------------------------
+# UVM-1.1d
+# (C) 2007-2013 Mentor Graphics Corporation
+# (C) 2007-2013 Cadence Design Systems, Inc.
+# (C) 2006-2013 Synopsys, Inc.
+# (C) 2011-2013 Cypress Semiconductor Corp.
+# ----------------------------------------------------------------
+# 
+#   ***********       IMPORTANT RELEASE NOTES         ************
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_NO_DEPRECATED undefined.
+#   See http://www.eda.org/svdb/view.php?id=3313 for more details.
+# 
+#   You are using a version of the UVM library that has been compiled
+#   with `UVM_OBJECT_MUST_HAVE_CONSTRUCTOR undefined.
+#   See http://www.eda.org/svdb/view.php?id=3770 for more details.
+# 
+#       (Specify +UVM_NO_RELNOTES to turn off this notice)
+# 
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(277) @ 0: reporter [Questa UVM] QUESTA_UVM-1.2.3
+# UVM_INFO verilog_src/questa_uvm_pkg-1.2/src/questa_uvm_pkg.sv(278) @ 0: reporter [Questa UVM]  questa_uvm::init(+struct)
+# UVM_INFO @ 0: reporter [RNTST] Running test uvm_e2e_test...
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 49265000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 1: INPUT=09c02ae59f0d19cbbab89df189dbc732 KEY=d6820a2c6f3ff82f977056722a754d0d CIPHER=c5a30a7d56cb8e6651acbcdc867706e8 DECRYPTED=09c02ae59f0d19cbbab89df189dbc732 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 98485000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 2: INPUT=9db770a307c607322324b0e2122de5be KEY=7dd42c93f08026b07e9dcffb2b3b450a CIPHER=2864cb98b089ec860b6005428722352a DECRYPTED=9db770a307c607322324b0e2122de5be MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 147705000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 3: INPUT=806993adf1913ec31f6f890727acda20 KEY=21f80ed4247146659b01e75b5ab0416e CIPHER=58674662e2b54264dd6ff32bb9cf1101 DECRYPTED=806993adf1913ec31f6f890727acda20 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 196925000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 4: INPUT=6fa8da0ee9cd2f3ac9636ccf3ba108f2 KEY=4d57f00dd9973d66f947ad1b907da649 CIPHER=0b47558f4746430023317e1e03a5b1eb DECRYPTED=6fa8da0ee9cd2f3ac9636ccf3ba108f2 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 246145000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 5: INPUT=f686c4bfec374557972944394a69462e KEY=373a5878fa99aa22346c344cee584afe CIPHER=5e67f2e0d2f9b4475976d86f93c02338 DECRYPTED=f686c4bfec374557972944394a69462e MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 295365000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 6: INPUT=799ffac55e242d66aa9894e2b89594e0 KEY=4b3bad64ec7177cf939627ebba06e79e CIPHER=aa1a025288cdaabba1f3170deb39034d DECRYPTED=799ffac55e242d66aa9894e2b89594e0 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 344585000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 7: INPUT=8160d7d1e8cdf99ca8341e03557914d9 KEY=8ba3ea282a34ba3b130314c242f6edef CIPHER=0a8d0c6c3f23f5152ab6018901b27991 DECRYPTED=8160d7d1e8cdf99ca8341e03557914d9 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 393805000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 8: INPUT=a061d44ec7e37e7aada127eca2c08b02 KEY=c7b2c8924ab83f82e4437de6f400fb39 CIPHER=f3a66cb81affda6fa9e7c35d38d0e8c6 DECRYPTED=a061d44ec7e37e7aada127eca2c08b02 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 443025000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 9: INPUT=d14fccb833c3c2543aa595908aede2fb KEY=e0e1ade27eed6eccb5a46d963ac0823d CIPHER=9a1e211b056ca8898bfe6192af3a9e90 DECRYPTED=d14fccb833c3c2543aa595908aede2fb MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 492245000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 10: INPUT=5d2cfca695b3e2bad57e1f48c4759463 KEY=a9c02cff27acc0d049657e6b33a5cadf CIPHER=4d92011398d75276d8e393d84e5b2d50 DECRYPTED=5d2cfca695b3e2bad57e1f48c4759463 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 541465000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 11: INPUT=6397d702b78cac9961ec2f5664d537f5 KEY=87552ae0632e4764d390c225b154fe2f CIPHER=4c30d5126bf6e3cacd92fee6f2e1098e DECRYPTED=6397d702b78cac9961ec2f5664d537f5 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 590685000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 12: INPUT=93ba897b90248e113d3372a23f847931 KEY=a4e22d60c885e527f006d9d74cb9a569 CIPHER=19f03fe4adbe6898056521afd748377a DECRYPTED=93ba897b90248e113d3372a23f847931 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 639905000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 13: INPUT=dc95bb5314023b2c3f95c17f70f636e2 KEY=736f9317a0ab41b1db3dba1fe3b3e820 CIPHER=b13ee2816f90015b4003b8219ccf6a27 DECRYPTED=dc95bb5314023b2c3f95c17f70f636e2 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 689125000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 14: INPUT=85098ea92f426c273a1115c40d9aab90 KEY=45f87b64180f1bee95266cb74ea4bd0f CIPHER=5a4043c513f40f0c7f82a0fcbd54d2be DECRYPTED=85098ea92f426c273a1115c40d9aab90 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 738345000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 15: INPUT=797c60005aff4d7ed94a4e1681900c12 KEY=82538f7b842e4205c1b6427236f8d74e CIPHER=e8143adb5931972808672d79d1da5e8d DECRYPTED=797c60005aff4d7ed94a4e1681900c12 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 787565000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 16: INPUT=a0edd6e55c1e045d0e28a8f77dfee8ec KEY=bc842b3d05916e4c2347b66064f04805 CIPHER=2fe950b81dd69373b2081ddbea7e1833 DECRYPTED=a0edd6e55c1e045d0e28a8f77dfee8ec MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 836785000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 17: INPUT=6a8b2caaecd30f85295ecb94f5aa43c2 KEY=0799f84b2a8004636b825dc5276756d8 CIPHER=db05b03aa8f2e007de3a26de3d8a42a1 DECRYPTED=6a8b2caaecd30f85295ecb94f5aa43c2 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 886005000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 18: INPUT=d2925abca1775d9e1253a77cb13e9062 KEY=056ede9b0907e965714d5d7086853021 CIPHER=6c35b132aa3c4f1e485c42aad216e1c8 DECRYPTED=d2925abca1775d9e1253a77cb13e9062 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 935225000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 19: INPUT=84a0fc52fe74c9278d534b6f63e5f770 KEY=7c78a7557ad4509ce832b71f64f00697 CIPHER=410bfa6b573edaeb42ed7bc691cae5cc DECRYPTED=84a0fc52fe74c9278d534b6f63e5f770 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 984445000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 20: INPUT=4ad0648a8e61f2eab7a1b474a4c1e883 KEY=a3e9490bd3c5e18f9172f8d5036fc3c1 CIPHER=0007ead144fef5e9e7be80d532297fb1 DECRYPTED=4ad0648a8e61f2eab7a1b474a4c1e883 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1033665000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 21: INPUT=27f25597c550e5d7e4a74d62ac6a7707 KEY=b3d62e02b4dcf4296161e1a5f7f88eef CIPHER=ff8e0e916d4e69aef80007c61dd848a8 DECRYPTED=27f25597c550e5d7e4a74d62ac6a7707 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1082885000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 22: INPUT=6d7f5f4b5459fc0010e0f46cc3c3181a KEY=b8c1073a9ce76e0955e8a5da6b2b6b13 CIPHER=b720d344c7ea1bc3b05bb83e3c1989eb DECRYPTED=6d7f5f4b5459fc0010e0f46cc3c3181a MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1132105000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 23: INPUT=11dedeff8a2a241f1b9dca2bf9c793a7 KEY=7dddb9be97a985ab448a728551802ae8 CIPHER=b8278c3b255887024e18e82921e8b0f0 DECRYPTED=11dedeff8a2a241f1b9dca2bf9c793a7 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1181325000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 24: INPUT=6bdd81b6a68ea423335559e695536f92 KEY=ec8b2b82b69ec09fbf2fecf914ad5981 CIPHER=846d6f2227d9a7779cf8ab2d848138d3 DECRYPTED=6bdd81b6a68ea423335559e695536f92 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1230545000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 25: INPUT=e2c4f20bec302569fb3355c7a0f45d42 KEY=40dd156cac6c6ed417693fef220c3305 CIPHER=f72b208e0a9e66bf5fb998bca24e4e93 DECRYPTED=e2c4f20bec302569fb3355c7a0f45d42 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1279765000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 26: INPUT=0a8105936c5d61caccec7ef82558b341 KEY=5521d1f98cc608b6f7cd259e3ca74801 CIPHER=8426da684674d42f441fce758e815158 DECRYPTED=0a8105936c5d61caccec7ef82558b341 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1328985000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 27: INPUT=27631881ca104db8b742a10b8f15a7fa KEY=46b5bbefc8cc426b50a1474b714b768f CIPHER=a87c08e1e7c034918074068bb168929d DECRYPTED=27631881ca104db8b742a10b8f15a7fa MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1378205000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 28: INPUT=299e93578575db0dfc98e4e7e08ae845 KEY=0dc0c604b509dc045faa7340298d0f81 CIPHER=b99c30e886466659180ba32524a4c1d1 DECRYPTED=299e93578575db0dfc98e4e7e08ae845 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1427425000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 29: INPUT=10247c2f6b9bac1fdd102173fefb906c KEY=123c94f794e4a0661de46252a4633a25 CIPHER=f40784239f614b8a9d0bf436bfb53050 DECRYPTED=10247c2f6b9bac1fdd102173fefb906c MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1476645000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 30: INPUT=2474f007f4fdea9d7c63a70a18de8a2b KEY=faea5226a5778451ea4c5b4f4594f07d CIPHER=198e963df25b2b04e3aa8da7c142a370 DECRYPTED=2474f007f4fdea9d7c63a70a18de8a2b MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1525865000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 31: INPUT=9bdd3f7eba6ecd87181d9168ec284a70 KEY=49a120a3db1bb9592a292761d6650063 CIPHER=b0cf514ab6ad588d86b1745a787681a5 DECRYPTED=9bdd3f7eba6ecd87181d9168ec284a70 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1575085000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 32: INPUT=d4612f6bc00ac20d912eeb28c5326cad KEY=9c56973e989f7ca6967b6343b87cb70a CIPHER=6b8fe11da0ca3f781e3bfdd2209e404a DECRYPTED=d4612f6bc00ac20d912eeb28c5326cad MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1624305000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 33: INPUT=d4d73b6e44e6b4d3ddef204d05350b7e KEY=2f09b33334942f049fea007e23505e0c CIPHER=e1808c1213ca07eb2214809730ed4a5c DECRYPTED=d4d73b6e44e6b4d3ddef204d05350b7e MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1673525000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 34: INPUT=3721eff7513e5998dbaf875e43ce0d7c KEY=ce5845cc1ad5713c2aa7c3e589ba5b88 CIPHER=1df9a7066146936bf9847055416a98b6 DECRYPTED=3721eff7513e5998dbaf875e43ce0d7c MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1722745000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 35: INPUT=59199f0035cce5fc871519e5a11cd5d1 KEY=4f7be8427c059e1b3715a6f8fa9604bd CIPHER=2451b321ae7d88679a9d1d736e2c49ba DECRYPTED=59199f0035cce5fc871519e5a11cd5d1 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1771965000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 36: INPUT=f43f5c99ea221aaf87826c948801ba1c KEY=570ed21d24eba3db428d99f3c7c3a46a CIPHER=a4991110e00304e27bfc03c666a0c3f6 DECRYPTED=f43f5c99ea221aaf87826c948801ba1c MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1821185000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 37: INPUT=d669441b23a136aeabea769442280508 KEY=13adadcc649ba6061b36ab4b05aa20e4 CIPHER=2ae169b1188df9e454f0178e686a40a6 DECRYPTED=d669441b23a136aeabea769442280508 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1870405000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 38: INPUT=de5b65c9eea18bb8250a6e33714b70f5 KEY=f5ee34bf5c406d636c689735af4f0632 CIPHER=e447aea0e6e7a56a57cbc21e71bf1442 DECRYPTED=de5b65c9eea18bb8250a6e33714b70f5 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1919625000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 39: INPUT=31e286e846c9789752ae233a4fec239e KEY=b86f4c716dc9d4a1bce63eef1c478d32 CIPHER=9e84a801b2a97c4fa89384cb6c3d930a DECRYPTED=31e286e846c9789752ae233a4fec239e MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 1968845000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 40: INPUT=f1d7fe8aced188a9075e3e2bd3fcf2a6 KEY=f8aa9a32d67d77446a2caace11d7bbf4 CIPHER=4eb94e064c3b288ef465e9050500eb53 DECRYPTED=f1d7fe8aced188a9075e3e2bd3fcf2a6 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2018065000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 41: INPUT=e3bb625771c9704fa7d74a4f9d4f2d00 KEY=650d3f979d0863e8bfd0411249b9078b CIPHER=e8535dcfb42f509ab38539f60a28783d DECRYPTED=e3bb625771c9704fa7d74a4f9d4f2d00 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2067285000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 42: INPUT=92d667a69a739e57de985beb694f7239 KEY=660a261d7bfb78598afa1601cf70119c CIPHER=4e3271a9af2374a433b291adf7c95464 DECRYPTED=92d667a69a739e57de985beb694f7239 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2116505000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 43: INPUT=c42c17be9da56eb33e11c7cadbf8137e KEY=eb604915aa119eb4a12d18b74544ccea CIPHER=a5c0365fd4f1c70d0e3607d33abb6df2 DECRYPTED=c42c17be9da56eb33e11c7cadbf8137e MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2165725000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 44: INPUT=cdefb5b950498ab542fc5d7ae33c43b3 KEY=0208d4d60ad10b7f5c612aa05f97d17a CIPHER=4fb0183868bc49ea016104fb1c1081ac DECRYPTED=cdefb5b950498ab542fc5d7ae33c43b3 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2214945000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 45: INPUT=bf3d955cbf5461775c29818aef060746 KEY=d234c691163ebfa2f89977a71bd26eb1 CIPHER=db1a027ea68a8ca02ac15f66923119a8 DECRYPTED=bf3d955cbf5461775c29818aef060746 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2264165000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 46: INPUT=926d3f3d84da3af8b32e3c7ae089836a KEY=cc71c8185b24e68139600a1b3c4db74a CIPHER=6c13039e0903dcb75717fbac5ddd3678 DECRYPTED=926d3f3d84da3af8b32e3c7ae089836a MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2313385000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 47: INPUT=2294f89e0d6badfd6252037765a2bf49 KEY=7b3b4bec5a9e9b2fb69cc592ebfcc225 CIPHER=399e992dd9b1e5628de11c9cefbb895d DECRYPTED=2294f89e0d6badfd6252037765a2bf49 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2362605000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 48: INPUT=00fab7b69787cab0b4ee46d8fa9a6082 KEY=67c5032733919e170a3cb9fe3d65d89f CIPHER=bf6858945a72f86141ecb330deb71a85 DECRYPTED=00fab7b69787cab0b4ee46d8fa9a6082 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2411825000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 49: INPUT=f74b4a755eb10b9787b95ab6311654e1 KEY=8acb2da40084997be6dda56e1c79c696 CIPHER=2d2b39d65e84cc8420b56570f218ed86 DECRYPTED=f74b4a755eb10b9787b95ab6311654e1 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2461045000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 50: INPUT=d11243afb59a0c9c75372598a109c61a KEY=a093951f94339ce7124ee93022795e04 CIPHER=e78e6687015f3c6f7f317525e7aae271 DECRYPTED=d11243afb59a0c9c75372598a109c61a MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2510265000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 51: INPUT=c14813b8a4d136c7c33b6fa377244044 KEY=1abb4592332eae563a67b9a46738bead CIPHER=8a34ca68dea76b9355426e05e623cd48 DECRYPTED=c14813b8a4d136c7c33b6fa377244044 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2559485000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 52: INPUT=e85a764b74fbe54202278c0b87742ed8 KEY=574ade6f9c603dace16bf886511580db CIPHER=757927a23d1b662254129fadfd5305e0 DECRYPTED=e85a764b74fbe54202278c0b87742ed8 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2608705000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 53: INPUT=bd9f5b4c8828f6d748b9e86ec3364434 KEY=7da8fc6c268ce2bee1b485b351597b72 CIPHER=0629d08bb16a21f1533bc467ddcff0f1 DECRYPTED=bd9f5b4c8828f6d748b9e86ec3364434 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2657925000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 54: INPUT=2fd2cecfb769ac8added13368ef67293 KEY=54226ae136b68d9e07a2fd9c5a3b6314 CIPHER=04d5462363a155f3990b4683b7fa5677 DECRYPTED=2fd2cecfb769ac8added13368ef67293 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2707145000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 55: INPUT=5c3231b15a878ad3d06a589df44f1101 KEY=db887cf656cc095d2b1f976ee7b54977 CIPHER=ed2d55752ded987a8e31fa9e8053502d DECRYPTED=5c3231b15a878ad3d06a589df44f1101 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2756365000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 56: INPUT=b6e15b5f2cd446da25e5cf7d1d4e0e78 KEY=4cad6738e908f4bd047ac132d7c94c9c CIPHER=462b02ee37813cde9c05542c31ebf73a DECRYPTED=b6e15b5f2cd446da25e5cf7d1d4e0e78 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2805585000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 57: INPUT=457724699eb0c6144832a08d9842dd1c KEY=bfc6a16c168987b9e9a824464932c816 CIPHER=544d46bca8401fd9b925450491a10eb4 DECRYPTED=457724699eb0c6144832a08d9842dd1c MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2854805000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 58: INPUT=ed63d1347fe648566b76b7200fcfd4c9 KEY=5f8742224fa861a330182dcd819374bd CIPHER=bb1b3ea5ab520d921166c9a87c5956b0 DECRYPTED=ed63d1347fe648566b76b7200fcfd4c9 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2904025000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 59: INPUT=1cf662dbc5003b2d8edab9ffe54394ad KEY=6d199786a2c67632ec000672750832b5 CIPHER=c95a03c17c4d322bfdb4bff58d11af75 DECRYPTED=1cf662dbc5003b2d8edab9ffe54394ad MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 2953245000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 60: INPUT=5cd62a2dabeb1a64dc5838d7b3141bb6 KEY=3c3ab367209aafccd901badd2517d3f0 CIPHER=5a9187079b55c1d3c0f2b1b5c4d6fa2f DECRYPTED=5cd62a2dabeb1a64dc5838d7b3141bb6 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3002465000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 61: INPUT=383a86a87519e93f4ffb8920e52d5faf KEY=95cb80a35e2ddbcc4fd105a683dbb094 CIPHER=ddcb740106b95875faba7a02f3b01071 DECRYPTED=383a86a87519e93f4ffb8920e52d5faf MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3051685000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 62: INPUT=9718f8a5898f88c36a6d45889958b826 KEY=45dbde08fd42e1a58fb432de34113309 CIPHER=d6da88c2c11ca91534784f9098645328 DECRYPTED=9718f8a5898f88c36a6d45889958b826 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3100905000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 63: INPUT=eecaefe9d5c55832a6a7cd33bf31d4d3 KEY=30d536c657ba05c0f743c6617e7b9566 CIPHER=d7e37e3fbad5649e152ab4c093cd2e06 DECRYPTED=eecaefe9d5c55832a6a7cd33bf31d4d3 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3150125000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 64: INPUT=51e1d0f9142665c6cb47f8a9be0a9280 KEY=6706710d8dd7365e0884b9d0686037ef CIPHER=5dfbb46949b5b6d9410b1624c74c1a8d DECRYPTED=51e1d0f9142665c6cb47f8a9be0a9280 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3199345000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 65: INPUT=29e5f26d62ab2e99e879a98574658301 KEY=44bde163eaae584b15423b9814134280 CIPHER=0e6816c0d996a0e15bed866d59442eee DECRYPTED=29e5f26d62ab2e99e879a98574658301 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3248565000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 66: INPUT=68f722241acf6bdd0122b0e7b0f11478 KEY=ddb5f5a70325a0c7509e70794cb2f911 CIPHER=8563a450269a88fedb5c295d6bae3b37 DECRYPTED=68f722241acf6bdd0122b0e7b0f11478 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3297785000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 67: INPUT=836d1704103d7f8246616ce41446fa5a KEY=aab6245ca98ffb028b1d9ed520237476 CIPHER=9100d7dc3825cd1f4df09e11662619b8 DECRYPTED=836d1704103d7f8246616ce41446fa5a MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3347005000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 68: INPUT=42e3e956c6efe0f264c60cca0ebcd2c5 KEY=08632e57d896e8e3b4dbcee66dea64c5 CIPHER=c12c9f2f5e42f18a8ecba8e7209613d7 DECRYPTED=42e3e956c6efe0f264c60cca0ebcd2c5 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3396225000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 69: INPUT=cef7eeb2571753621212f63fd6733af5 KEY=94958e038fea698999be3464b961e45d CIPHER=2521bf984058f1235051ed514b1b0c02 DECRYPTED=cef7eeb2571753621212f63fd6733af5 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3445445000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 70: INPUT=a7d844d54714ddf449ec4781e29ce6ef KEY=b666002fba18b8de0d66e5bfebfcc7b7 CIPHER=e53caf37daf8331c049ba09f09a64201 DECRYPTED=a7d844d54714ddf449ec4781e29ce6ef MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3494665000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 71: INPUT=d97f67858474750250523d68e819e477 KEY=467aa9bc7ae9235a8ecbcf7b13be49c9 CIPHER=33915689e01ef6f78aec895b32cce3b3 DECRYPTED=d97f67858474750250523d68e819e477 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3543885000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 72: INPUT=8f1e1392e0e2d1a4e017952f44fdf2b6 KEY=afc2b383cfe7441acbe6e2a8e1cec751 CIPHER=2605eefd2280c15635d9d9fee4596fc3 DECRYPTED=8f1e1392e0e2d1a4e017952f44fdf2b6 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3593105000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 73: INPUT=507181726ba1dafd4f3402c222e88bf4 KEY=415455dfb615d5289aaabd706d9fa5b2 CIPHER=a02c41a44a151fe449cfe14e37d42c97 DECRYPTED=507181726ba1dafd4f3402c222e88bf4 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3642325000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 74: INPUT=902b12e0bc9a10bb2f2cf05d95c6110e KEY=ab18a55d49d80a045b8d67481be783ba CIPHER=55e925377c114bcae78a9f276e633778 DECRYPTED=902b12e0bc9a10bb2f2cf05d95c6110e MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3691545000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 75: INPUT=d69592f6fda772f36cda7aef5376eeac KEY=5ac6165d99b2b13b3d2368d15715796d CIPHER=9a74b05b7fe8bb8917ef7b3ef1468f42 DECRYPTED=d69592f6fda772f36cda7aef5376eeac MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3740765000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 76: INPUT=c2685470d420306397ab17d55f6862dd KEY=354e83c443f85abf5d5c43e871040678 CIPHER=e04f8298e335d274e31731da6fe13a17 DECRYPTED=c2685470d420306397ab17d55f6862dd MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3789985000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 77: INPUT=f2046cd58c40905a5738709f7c5c3d4a KEY=855516b0d7e3ab51f3b298b5b4297407 CIPHER=81fc8f4aa24f2cfb1c16c6a985c9a209 DECRYPTED=f2046cd58c40905a5738709f7c5c3d4a MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3839205000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 78: INPUT=3e93e49702259777a9aecd5270921f50 KEY=5c78db6ca5ba6426cee4c79994ee5ed2 CIPHER=7767e8c26e4ed46f34e524312ab860a8 DECRYPTED=3e93e49702259777a9aecd5270921f50 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3888425000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 79: INPUT=c7bc184dd206d8f72a1fb31b53eb1985 KEY=2baf9ce8de6ceed1356b0e4ac0eee77b CIPHER=1ac6893dff308ec391001c8dbc28a1a0 DECRYPTED=c7bc184dd206d8f72a1fb31b53eb1985 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3937645000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 80: INPUT=c2477bcf8aef2750aea71a12f14ae0e0 KEY=07807f2b04c67839b3e686f9040b7bc5 CIPHER=4b6c3d4f45ec54d46e0c6cea9d579e1e DECRYPTED=c2477bcf8aef2750aea71a12f14ae0e0 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 3986865000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 81: INPUT=9c70623496e3efcf88553202ecb9c408 KEY=532d6c94294deaab1700d447bc8e62e3 CIPHER=d6a726bc60f29f3b9e9ebb5b471bcba6 DECRYPTED=9c70623496e3efcf88553202ecb9c408 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4036085000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 82: INPUT=8138382741affc197bbce2ef1bcf52ff KEY=c3898cd7b071ae1e33f7b4276b15e55e CIPHER=7b2ac899e5d31ac801111335df937096 DECRYPTED=8138382741affc197bbce2ef1bcf52ff MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4085305000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 83: INPUT=1e07d9f0420cc6ec80f45b04790f070e KEY=a43ff4d90e3bc8eb93f4fc788304b2e5 CIPHER=e40b17ea55901feab9696e34aa5eff9f DECRYPTED=1e07d9f0420cc6ec80f45b04790f070e MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4134525000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 84: INPUT=f9d3d9e7df006a909812749906a6c4f9 KEY=1908f745fbeac215d6ae4be1e59ee508 CIPHER=3bae77d6f4c8d9516439ebbd913e32e4 DECRYPTED=f9d3d9e7df006a909812749906a6c4f9 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4183745000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 85: INPUT=f8849f3407277a25e4166c94191bf296 KEY=8e692772fa6174114884f2600fdbb984 CIPHER=4101f4d5649b75081b2f967d2360883f DECRYPTED=f8849f3407277a25e4166c94191bf296 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4232965000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 86: INPUT=a1550eff11d739fa2be8534e11b1f24e KEY=d0fc93f212dca4d34e9679f0b4af1da4 CIPHER=7576335b8f387d5bf5f5853101bd68b9 DECRYPTED=a1550eff11d739fa2be8534e11b1f24e MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4282185000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 87: INPUT=553acd989db0b05cfcd5c5a1c85935b1 KEY=33033a06dc39d4c73289b57780cdbbe4 CIPHER=7fdda8bda334ab4173ab5846fa1e9a1e DECRYPTED=553acd989db0b05cfcd5c5a1c85935b1 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4331405000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 88: INPUT=0f735361c6f77c2e0727ba77fd4d6a23 KEY=512d66c7434aff9d8b9369e133486c76 CIPHER=92db8191100b6ee696d7c0ec3e3ca1aa DECRYPTED=0f735361c6f77c2e0727ba77fd4d6a23 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4380625000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 89: INPUT=3a1bb869efc162a2b13d2e688af4a610 KEY=d8e3886b94392f1c8a8409d17c7badce CIPHER=5d567417b95cc0c8c5a24ec15ed3bd50 DECRYPTED=3a1bb869efc162a2b13d2e688af4a610 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4429845000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 90: INPUT=391fcc93d134567524a1aa882fe4ec70 KEY=ff3c1de5ec90f705bc75e99d298f6efe CIPHER=a29902b208caf064d30703b138df59f9 DECRYPTED=391fcc93d134567524a1aa882fe4ec70 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4479065000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 91: INPUT=b526a6f95ecf76a5b36a5ba8fbfbd347 KEY=b3fd024e652db91493e552730ccefa66 CIPHER=ea9f29528626a95e98821ae13efd9b48 DECRYPTED=b526a6f95ecf76a5b36a5ba8fbfbd347 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4528285000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 92: INPUT=66411781d293aef94ed776bfa018115f KEY=e447a8863bbb658db6572f082576dcb3 CIPHER=a81a4cc255490937bb3bc774abd004a9 DECRYPTED=66411781d293aef94ed776bfa018115f MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4577505000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 93: INPUT=68677f6f76d149eaa268e59c65bc64d1 KEY=cde0380296e3b332f035ed70fee2bc1d CIPHER=ad06079f9e16e439f465622087001c00 DECRYPTED=68677f6f76d149eaa268e59c65bc64d1 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4626725000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 94: INPUT=b1a0d844ffa9af1083328c9586a8fd65 KEY=b9862d07f8f89194b386fad1f7417b5f CIPHER=5f4b7dcd6430a2bd982b04c0fe55c714 DECRYPTED=b1a0d844ffa9af1083328c9586a8fd65 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4675945000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 95: INPUT=96be4d64bd4ebf4d3e4269de1c4b9c22 KEY=963293654f94780ad23e50401efdd73b CIPHER=db5582c58ed645de24886adf30006ae9 DECRYPTED=96be4d64bd4ebf4d3e4269de1c4b9c22 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4725165000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 96: INPUT=0d719632c94ef4c9ed2c3b6222498602 KEY=43b02786af5840e64fdebbc48c688577 CIPHER=d834dce02b75005bfb7e5e82ecea1639 DECRYPTED=0d719632c94ef4c9ed2c3b6222498602 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4774385000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 97: INPUT=5a909a207343678ae9f72233bb99d98b KEY=95b7c23fd3f28c27ccb38e9c116a55ac CIPHER=2e68471f3e2db460cc0c24d6375dc783 DECRYPTED=5a909a207343678ae9f72233bb99d98b MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4823605000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 98: INPUT=be33ffacf905f6afbdd69da7a22b1856 KEY=e516a00613d9692de1661c337eedc523 CIPHER=7ed32b365299e09bf9710caac70083ed DECRYPTED=be33ffacf905f6afbdd69da7a22b1856 MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4872825000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 99: INPUT=6db50b495755e9c7a7c2e2d1888f5cbd KEY=00016b118108e9a01ba8507e25548d0d CIPHER=80bd9c71e636d31dcaef74afb311c288 DECRYPTED=6db50b495755e9c7a7c2e2d1888f5cbd MATCH=PASS
+# 
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(515) @ 4922045000: uvm_test_top.env.scoreboard [UART_MATCH] Matched UART line 100: INPUT=ee74fba35114c743f664b41d7c03a9ae KEY=2ffbcb9587a15af1331abd4ef2daadf7 CIPHER=3519089cbecfe7e1dc7b123052cd56f5 DECRYPTED=ee74fba35114c743f664b41d7c03a9ae MATCH=PASS
+# 
+# UVM_INFO verilog_src/uvm-1.1d/src/base/uvm_objection.svh(1267) @ 4923100000: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(396) @ 4923100000: uvm_test_top.env.coverage [FUNC_COV] Portable AES-CTR functional coverage: 100.00% (114/114 bins) from 100 randomized transactions
+# UVM_INFO D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\verification\uvm_e2e\uvm_e2e_pkg.sv(529) @ 4923100000: uvm_test_top.env.scoreboard [FUNC_COV] Portable UART end-to-end result coverage: 100.00%, matches=100 mismatches=0
+# 
+# --- UVM Report Summary ---
+# 
+# ** Report counts by severity
+# UVM_INFO :  106
+# UVM_WARNING :    0
+# UVM_ERROR :    0
+# UVM_FATAL :    0
+# ** Report counts by id
+# [FUNC_COV]     2
+# [Questa UVM]     2
+# [RNTST]     1
+# [TEST_DONE]     1
+# [UART_MATCH]   100
+# ** Note: $finish    : C:/intelFPGA_lite/questa_fse/win64/../verilog_src/uvm-1.1d/src/base/uvm_root.svh(430)
+#    Time: 4923100 ns  Iteration: 55  Instance: /uvm_e2e_tb_top
+# End time: 21:12:07 on Jun 15,2026, Elapsed time: 0:00:25
+# Errors: 0, Warnings: 0
