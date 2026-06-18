@@ -1,0 +1,128 @@
+Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+Start time: 21:12:29 on Jun 15,2026
+vlog -sv "+define+SIMULATION" -work work_tmp D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\riscv_aes_advancements.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\pc_reg.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\if_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\instr_mem.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\id_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\reg_file.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\imm_gen.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\control_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\hazard_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\forwarding_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\ex_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\alu.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\mem_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\load_store_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\data_mem.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\00_aes128_top.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\01_aes_sbox_rom.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\02_aes_sbox_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\03_aes_mix_columns_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\04_aes_key_expand_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes128_lowpower.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_tx.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\sensor_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\ip\sensor_spi_ip\sensor_spi_ip.v D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\sensor_spi_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\simple_intc.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\dma_lite.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\power_mgmt_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\wb_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\riscv_core_tb.sv 
+-- Compiling module riscv_aes_advancements
+-- Compiling module pc_reg
+-- Compiling module if_stage
+-- Compiling module instr_mem
+-- Compiling module id_stage
+-- Compiling module reg_file
+-- Compiling module imm_gen
+-- Compiling module control_unit
+-- Compiling module hazard_unit
+-- Compiling module forwarding_unit
+-- Compiling module ex_stage
+-- Compiling module alu
+-- Compiling module mem_stage
+-- Compiling module load_store_unit
+-- Compiling module data_mem
+-- Compiling module aes_mmio
+-- Compiling module AES128_updated_new
+-- Compiling module AES_SBOX_ROM
+-- Compiling module AES_SBOX_SEQ
+-- Compiling module AES_MIXCOL_SEQ
+-- Compiling module AES_KEYEXP_SEQ
+-- Compiling module aes128_lowpower
+-- Compiling module uart_tx
+-- Compiling module uart_mmio
+-- Compiling module sensor_mmio
+-- Compiling module sensor_spi_ip
+-- Compiling module sensor_spi_mmio
+-- Compiling module simple_intc
+-- Compiling module dma_lite
+-- Compiling module power_mgmt_mmio
+-- Compiling module wb_stage
+-- Compiling module riscv_core_tb
+
+Top level modules:
+	sensor_mmio
+	riscv_core_tb
+End time: 21:12:30 on Jun 15,2026, Elapsed time: 0:00:01
+Errors: 0, Warnings: 0
+Reading pref.tcl
+
+# 2023.3
+
+# vsim -c -t 1ps -voptargs="+acc" work_tmp.riscv_core_tb "+FULL_SOC_SCENARIO_ONLY" -do "run -all; quit" 
+# Start time: 21:12:32 on Jun 15,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Warning: (vopt-10587) Some optimizations are turned off because the +acc switch is in effect. This will cause your simulation to run slowly. Please use -access/-debug to maintain needed visibility.
+# ** Note: (vopt-143) Recognized 1 FSM in module "AES128_updated_new(fast)".
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.riscv_core_tb(fast)
+# Loading work.riscv_aes_advancements(fast)
+# Loading work.pc_reg(fast)
+# Loading work.if_stage(fast)
+# Loading work.instr_mem(fast)
+# Loading work.id_stage(fast)
+# Loading work.reg_file(fast)
+# Loading work.imm_gen(fast)
+# Loading work.control_unit(fast)
+# Loading work.hazard_unit(fast)
+# Loading work.forwarding_unit(fast)
+# Loading work.ex_stage(fast)
+# Loading work.alu(fast)
+# Loading work.mem_stage(fast)
+# Loading work.load_store_unit(fast)
+# Loading work.data_mem(fast)
+# Loading work.aes_mmio(fast)
+# Loading work.aes128_lowpower(fast)
+# Loading work.AES128_updated_new(fast)
+# Loading work.AES_SBOX_SEQ(fast)
+# Loading work.AES_SBOX_ROM(fast)
+# Loading work.AES_MIXCOL_SEQ(fast)
+# Loading work.AES_KEYEXP_SEQ(fast)
+# Loading work.sensor_spi_mmio(fast)
+# Loading work.sensor_spi_ip(fast)
+# Loading work.uart_mmio(fast)
+# Loading work.uart_tx(fast)
+# Loading work.simple_intc(fast)
+# Loading work.dma_lite(fast)
+# Loading work.power_mgmt_mmio(fast)
+# Loading work.wb_stage(fast)
+# run -all
+# 
+# Running standalone scenario: Secure Health-Monitoring IoT transaction
+# 
+# === Full-SoC CPU pipeline integration test ===
+# [FULL-SOC] CPU_PIPELINE: program reached completion marker through IF/ID/EX/MEM/WB -> got=0x00000055 expected=0x00000055 -> PASS
+# [FULL-SOC] SENSOR_READ: CPU read sensor sample through MMIO -> got=0x12345678 expected=0x12345678 -> PASS
+# [FULL-SOC] DMA_COPY: DMA copied CPU-stored sensor sample -> got=0x12345678 expected=0x12345678 -> PASS
+# [FULL-SOC] SPI_ACTIVITY: SPI transaction generated serial clock edges -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] AES_CTR_CT0: AES-CTR encrypted sensor word -> got=0x62809322 expected=0x62809322 -> PASS
+# [FULL-SOC] UART_DATA: UART accepted AES ciphertext low byte -> got=0x00000022 expected=0x00000022 -> PASS
+# [FULL-SOC] UART_DONE: UART ciphertext transmission completed -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] IRQ_PENDING: AES/UART/sensor/DMA pending bits captured -> got=0x0000000f expected=0x0000000f -> PASS
+# [FULL-SOC] IRQ_LINE: combined enabled interrupt line asserted -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] AES_ACTIVITY: CPU-observed AES active counter is nonzero -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] UART_ACTIVITY: CPU-observed UART active counter is nonzero -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] DMA_ACTIVITY: CPU-observed DMA active counter is nonzero -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] SENSOR_ACTIVITY: CPU-observed sensor active counter is nonzero -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] SLEEP: CPU requested low-power sleep after transmission -> got=0x00000001 expected=0x00000001 -> PASS
+# [FULL-SOC] SLEEP_CYCLES: sleep activity counter incremented -> got=0x00000001 expected=0x00000001 -> PASS
+# 
+# ================================================
+# RV32I-style directed verification summary: PASS=15 FAIL=0
+# Lightweight IoT Security Processor + Custom ISA verification summary: PASS=15 FAIL=0
+# ================================================
+# 
+# ALL TESTS PASSED
+# ** Note: $finish    : D:/mtech/sem 4/midesm presetation/riscv_aes_advancements/risc_aes_custom_ISA/riscv_core_tb.sv(1394)
+#    Time: 45175 ns  Iteration: 0  Instance: /riscv_core_tb
+# End time: 21:12:41 on Jun 15,2026, Elapsed time: 0:00:09
+# Errors: 0, Warnings: 1
