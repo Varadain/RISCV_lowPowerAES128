@@ -1,6 +1,18 @@
 // -----------------------------------------------------------------------------
 // Top-level AES-128 sequential encryption core.
 // File order starts here so readers see the external interface and FSM first.
+//
+// Hardware-reuse idea:
+//   A fully unrolled AES may instantiate one large datapath for every round.
+//   This core instead stores the current 128-bit state and repeatedly calls one
+//   SubBytes unit, one MixColumns unit, and one key-expansion unit. The result is
+//   lower hardware duplication and lower simultaneous switching, at the cost of
+//   additional clock cycles per encrypted block.
+//
+// Handshake:
+//   - Pulse start for one clock while the core is idle.
+//   - busy remains high while all ten AES-128 rounds execute.
+//   - done pulses near completion and ciphertext holds the encrypted block.
 // -----------------------------------------------------------------------------
 
 module AES128_updated_new (
@@ -14,6 +26,8 @@ module AES128_updated_new (
     output reg  [127:0] ciphertext
 );
 
+// FSM states are split into START and WAIT pairs because the reusable helper
+// units also use start/done handshakes.
 localparam S_IDLE       = 4'd0;
 localparam S_SUB_START  = 4'd1;
 localparam S_SUB_WAIT   = 4'd2;
@@ -23,6 +37,8 @@ localparam S_KEY_START  = 4'd5;
 localparam S_KEY_WAIT   = 4'd6;
 localparam S_DONE       = 4'd7;
 
+// Quartus preserve/keep attributes make the reusable datapath and its internal
+// round activity easier to inspect in synthesis and waveform tools.
 (* preserve = 1 *) reg [3:0]   state;
 (* preserve = 1 *) reg [127:0] state_reg;
 (* preserve = 1 *) reg [127:0] round_key;
@@ -35,6 +51,7 @@ wire         sbox_done;
 wire         mix_done;
 wire         key_done;
 
+// One-clock request pulses sent to the three reusable helper blocks.
 reg sbox_start;
 reg mix_start;
 reg key_start;
@@ -58,11 +75,19 @@ endfunction
 (* keep = 1 *) wire [127:0] state_after_roundkey;
 (* keep = 1 *) wire         final_round;
 
+// AES begins with AddRoundKey before round 1.
 assign initial_addroundkey  = plaintext ^ key;
+
+// ShiftRows is combinational here and consumes the completed SubBytes result.
 assign state_after_shiftrows = shift_rows(sb_out);
+
+// After key expansion, XOR the transformed state with the new round key.
 assign state_after_roundkey = state_reg ^ new_key;
+
+// AES-128 has ten rounds; round 10 omits MixColumns.
 assign final_round          = (round == 4'd10);
 
+// The same helper instances are reused for every AES round.
 AES_SBOX_SEQ   u_sbox (.clk(clk), .reset(reset), .start(sbox_start), .in_block(state_reg), .out_block(sb_out),  .done(sbox_done));
 AES_MIXCOL_SEQ u_mix  (.clk(clk), .reset(reset), .start(mix_start),  .in_block(state_reg), .out_block(mix_out), .done(mix_done));
 AES_KEYEXP_SEQ u_key  (.clk(clk), .reset(reset), .start(key_start),  .round(round), .in_key(round_key), .out_key(new_key), .done(key_done));
@@ -90,6 +115,7 @@ always @(posedge clk or posedge reset) begin
                 busy <= 1'b0;
                 done <= 1'b0;
                 if (start) begin
+                    // Latch the transaction and perform the initial key XOR.
                     state_reg <= initial_addroundkey;
                     round_key <= key;
                     round     <= 4'd1;
@@ -99,46 +125,55 @@ always @(posedge clk or posedge reset) begin
             end
 
             S_SUB_START: begin
+                // Ask the byte-serial SubBytes block to process state_reg.
                 sbox_start <= 1'b1;
                 state      <= S_SUB_WAIT;
             end
 
             S_SUB_WAIT: begin
                 if (sbox_done) begin
+                    // SubBytes is complete; apply ShiftRows immediately.
                     state_reg <= state_after_shiftrows;
                     state     <= S_KEY_START;
                     if (!final_round) begin
+                        // Rounds 1-9 continue through MixColumns.
                         state <= S_MIX_START;
                     end
                 end
             end
 
             S_MIX_START: begin
+                // Start the one-column-per-cycle MixColumns unit.
                 mix_start <= 1'b1;
                 state     <= S_MIX_WAIT;
             end
 
             S_MIX_WAIT: begin
                 if (mix_done) begin
+                    // Save the mixed state before generating the round key.
                     state_reg <= mix_out;
                     state     <= S_KEY_START;
                 end
             end
 
             S_KEY_START: begin
+                // Generate the key required by the current AES round.
                 key_start <= 1'b1;
                 state     <= S_KEY_WAIT;
             end
 
             S_KEY_WAIT: begin
                 if (key_done) begin
+                    // Complete this round with AddRoundKey.
                     round_key <= new_key;
                     state_reg <= state_after_roundkey;
 
                     if (final_round) begin
+                        // Round 10 result is the final AES ciphertext.
                         ciphertext <= state_after_roundkey;
                         state      <= S_DONE;
                     end else begin
+                        // Reuse the same hardware for the next round.
                         round <= round + 4'd1;
                         state <= S_SUB_START;
                     end
@@ -146,6 +181,8 @@ always @(posedge clk or posedge reset) begin
             end
 
             S_DONE: begin
+                // Completion indication is asserted for one state visit. The
+                // ciphertext register remains valid after returning to IDLE.
                 done  <= 1'b1;
                 busy  <= 1'b0;
                 state <= S_IDLE;
