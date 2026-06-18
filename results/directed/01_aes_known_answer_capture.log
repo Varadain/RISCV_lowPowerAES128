@@ -1,0 +1,71 @@
+# vsim -t 1ps -wlf results/01_aes_known_answer_capture.wlf -voptargs="+acc" work.riscv_core_tb "+AES_KAT_ONLY" 
+# Start time: 22:59:16 on Jun 15,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Warning: (vopt-10587) Some optimizations are turned off because the +acc switch is in effect. This will cause your simulation to run slowly. Please use -access/-debug to maintain needed visibility.
+# ** Note: (vopt-143) Recognized 1 FSM in module "AES128_updated_new(fast)".
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.riscv_core_tb(fast)
+# Loading work.riscv_aes_advancements(fast)
+# Loading work.pc_reg(fast)
+# Loading work.if_stage(fast)
+# Loading work.instr_mem(fast)
+# Loading work.id_stage(fast)
+# Loading work.reg_file(fast)
+# Loading work.imm_gen(fast)
+# Loading work.control_unit(fast)
+# Loading work.hazard_unit(fast)
+# Loading work.forwarding_unit(fast)
+# Loading work.ex_stage(fast)
+# Loading work.alu(fast)
+# Loading work.mem_stage(fast)
+# Loading work.load_store_unit(fast)
+# Loading work.data_mem(fast)
+# Loading work.aes_mmio(fast)
+# Loading work.aes128_lowpower(fast)
+# Loading work.AES128_updated_new(fast)
+# Loading work.AES_SBOX_SEQ(fast)
+# Loading work.AES_SBOX_ROM(fast)
+# Loading work.AES_MIXCOL_SEQ(fast)
+# Loading work.AES_KEYEXP_SEQ(fast)
+# Loading work.sensor_spi_mmio(fast)
+# Loading work.sensor_spi_ip(fast)
+# Loading work.uart_mmio(fast)
+# Loading work.uart_tx(fast)
+# Loading work.simple_intc(fast)
+# Loading work.dma_lite(fast)
+# Loading work.power_mgmt_mmio(fast)
+# Loading work.wb_stage(fast)
+# 
+# === AES-128 NIST MMIO tests ===
+# [AES] DONE: iterative reusable AES completed -> got=0x00000001 expected=0x00000001 -> PASS
+# [AES] BUSY: busy deasserted after completion -> got=0x00000000 expected=0x00000000 -> PASS
+# [AES] CT0: ciphertext[31:0] -> got=0x70b4c55a expected=0x70b4c55a -> PASS
+# [AES] CT1: ciphertext[63:32] -> got=0xd8cdb780 expected=0xd8cdb780 -> PASS
+# [AES] CT2: ciphertext[95:64] -> got=0x6a7b0430 expected=0x6a7b0430 -> PASS
+# [AES] CT3: ciphertext[127:96] -> got=0x69c4e0d8 expected=0x69c4e0d8 -> PASS
+# 
+# ================================================
+# RV32I-style directed verification summary: PASS=6 FAIL=0
+# Lightweight IoT Security Processor + Custom ISA verification summary: PASS=6 FAIL=0
+# ================================================
+# 
+# ALL TESTS PASSED
+# ** Note: $finish    : D:/mtech/sem 4/midesm presetation/riscv_aes_advancements/risc_aes_custom_ISA/riscv_core_tb.sv(1394)
+#    Time: 3145 ns  Iteration: 0  Instance: /riscv_core_tb
+# End time: 22:59:19 on Jun 15,2026, Elapsed time: 0:00:03
+# Errors: 0, Warnings: 1
