@@ -1,0 +1,168 @@
+Questa Intel Starter FPGA Edition-64 vlog 2023.3 Compiler 2023.07 Jul 17 2023
+Start time: 21:09:53 on Jun 15,2026
+vlog -sv "+define+SIMULATION" -work work_tmp D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\riscv_aes_advancements.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\pc_reg.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\if_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\instr_mem.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\id_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\reg_file.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\imm_gen.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\control_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\hazard_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\forwarding_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\ex_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\alu.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\mem_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\load_store_unit.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\data_mem.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\00_aes128_top.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\01_aes_sbox_rom.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\02_aes_sbox_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\03_aes_mix_columns_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\rtl\aes128_reusable\04_aes_key_expand_seq.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\aes128_lowpower.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_tx.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\uart_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\sensor_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\ip\sensor_spi_ip\sensor_spi_ip.v D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\sensor_spi_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\simple_intc.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\dma_lite.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\power_mgmt_mmio.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\wb_stage.sv D:\mtech\sem 4\midesm presetation\riscv_aes_advancements\risc_aes_custom_ISA\riscv_core_tb.sv 
+-- Compiling module riscv_aes_advancements
+-- Compiling module pc_reg
+-- Compiling module if_stage
+-- Compiling module instr_mem
+-- Compiling module id_stage
+-- Compiling module reg_file
+-- Compiling module imm_gen
+-- Compiling module control_unit
+-- Compiling module hazard_unit
+-- Compiling module forwarding_unit
+-- Compiling module ex_stage
+-- Compiling module alu
+-- Compiling module mem_stage
+-- Compiling module load_store_unit
+-- Compiling module data_mem
+-- Compiling module aes_mmio
+-- Compiling module AES128_updated_new
+-- Compiling module AES_SBOX_ROM
+-- Compiling module AES_SBOX_SEQ
+-- Compiling module AES_MIXCOL_SEQ
+-- Compiling module AES_KEYEXP_SEQ
+-- Compiling module aes128_lowpower
+-- Compiling module uart_tx
+-- Compiling module uart_mmio
+-- Compiling module sensor_mmio
+-- Compiling module sensor_spi_ip
+-- Compiling module sensor_spi_mmio
+-- Compiling module simple_intc
+-- Compiling module dma_lite
+-- Compiling module power_mgmt_mmio
+-- Compiling module wb_stage
+-- Compiling module riscv_core_tb
+
+Top level modules:
+	sensor_mmio
+	riscv_core_tb
+End time: 21:09:53 on Jun 15,2026, Elapsed time: 0:00:00
+Errors: 0, Warnings: 0
+Reading pref.tcl
+
+# 2023.3
+
+# vsim -c -t 1ps -voptargs="+acc" work_tmp.riscv_core_tb "+DIRECTED_CPU_ONLY" -do "run -all; quit" 
+# Start time: 21:09:56 on Jun 15,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# ** Warning: (vopt-10587) Some optimizations are turned off because the +acc switch is in effect. This will cause your simulation to run slowly. Please use -access/-debug to maintain needed visibility.
+# ** Note: (vopt-143) Recognized 1 FSM in module "AES128_updated_new(fast)".
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=0, Warnings=1.
+# //  Questa Intel Starter FPGA Edition-64
+# //  Version 2023.3 win64 Jul 17 2023
+# //
+# //  Copyright 1991-2023 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.riscv_core_tb(fast)
+# Loading work.riscv_aes_advancements(fast)
+# Loading work.pc_reg(fast)
+# Loading work.if_stage(fast)
+# Loading work.instr_mem(fast)
+# Loading work.id_stage(fast)
+# Loading work.reg_file(fast)
+# Loading work.imm_gen(fast)
+# Loading work.control_unit(fast)
+# Loading work.hazard_unit(fast)
+# Loading work.forwarding_unit(fast)
+# Loading work.ex_stage(fast)
+# Loading work.alu(fast)
+# Loading work.mem_stage(fast)
+# Loading work.load_store_unit(fast)
+# Loading work.data_mem(fast)
+# Loading work.aes_mmio(fast)
+# Loading work.aes128_lowpower(fast)
+# Loading work.AES128_updated_new(fast)
+# Loading work.AES_SBOX_SEQ(fast)
+# Loading work.AES_SBOX_ROM(fast)
+# Loading work.AES_MIXCOL_SEQ(fast)
+# Loading work.AES_KEYEXP_SEQ(fast)
+# Loading work.sensor_spi_mmio(fast)
+# Loading work.sensor_spi_ip(fast)
+# Loading work.uart_mmio(fast)
+# Loading work.uart_tx(fast)
+# Loading work.simple_intc(fast)
+# Loading work.dma_lite(fast)
+# Loading work.power_mgmt_mmio(fast)
+# Loading work.wb_stage(fast)
+# run -all
+# 
+# === R-type tests ===
+# [R-TYPE] ADD: x3 = x1 + x2; 20 + 6 = 26 -> got=0x0000001a expected=0x0000001a -> PASS
+# [R-TYPE] SUB: x4 = x1 - x2; 20 - 6 = 14 -> got=0x0000000e expected=0x0000000e -> PASS
+# [R-TYPE] SLL: x5 = x1 << x2[4:0]; 20 << 6 = 1280 -> got=0x00000500 expected=0x00000500 -> PASS
+# [R-TYPE] SLT: x6 = (x2 < x1) signed; 6<20 => 1 -> got=0x00000001 expected=0x00000001 -> PASS
+# [R-TYPE] SLTU: x7 = (x2 < x1) unsigned; 6<20 =>1 -> got=0x00000001 expected=0x00000001 -> PASS
+# [R-TYPE] XOR: x8 = x1 ^ x2; 0x14 ^ 0x06 = 0x12 -> got=0x00000012 expected=0x00000012 -> PASS
+# [R-TYPE] SRL: x9 = x1 >> x2[4:0]; 20 >> 6 = 0 -> got=0x00000000 expected=0x00000000 -> PASS
+# [R-TYPE] SRA: x10 = x1 >>> x2[4:0]; 20>>>6 = 0 -> got=0x00000000 expected=0x00000000 -> PASS
+# [R-TYPE] OR: x11 = x1 | x2; 0x14 | 0x06 = 0x16 -> got=0x00000016 expected=0x00000016 -> PASS
+# [R-TYPE] AND: x12 = x1 & x2; 0x14 & 0x06 = 0x04 -> got=0x00000004 expected=0x00000004 -> PASS
+# 
+# === I-type tests ===
+# [I-TYPE] ADDI: x1 = x0 + 9; 0 + 9 = 9 -> got=0x00000009 expected=0x00000009 -> PASS
+# [I-TYPE] SLTI: x2 = (x1 < 7) signed; 9<7 => 0 -> got=0x00000000 expected=0x00000000 -> PASS
+# [I-TYPE] SLTIU: x3 = (x1 < 7) unsigned; 9<7 => 0 -> got=0x00000000 expected=0x00000000 -> PASS
+# [I-TYPE] XORI: x4 = x1 ^ 0xF0; 0x09^0xF0 = 0xF9 -> got=0x000000f9 expected=0x000000f9 -> PASS
+# [I-TYPE] ORI: x5 = x1 | 0x3; 0x09|0x03 = 0x0B -> got=0x0000000b expected=0x0000000b -> PASS
+# [I-TYPE] ANDI: x6 = x1 & 0x3; 0x09&0x03 = 0x01 -> got=0x00000001 expected=0x00000001 -> PASS
+# [I-TYPE] SLLI: x7 = x1 << 2; 9 << 2 = 36 -> got=0x00000024 expected=0x00000024 -> PASS
+# [I-TYPE] SRLI: x8 = x1 >> 1; 9 >> 1 = 4 -> got=0x00000004 expected=0x00000004 -> PASS
+# [I-TYPE] SRAI: x9 = x1 >>> 1; 9 >>> 1 = 4 -> got=0x00000004 expected=0x00000004 -> PASS
+# 
+# === S-type/I-type load-store tests ===
+# [I-TYPE] LB: x2 = signext(mem8[0]);  0xDD -> 0xFFFFFFDD -> got=0xffffffdd expected=0xffffffdd -> PASS
+# [I-TYPE] LH: x3 = signext(mem16[0]); 0xCCDD -> 0xFFFFCCDD -> got=0xffffccdd expected=0xffffccdd -> PASS
+# [I-TYPE] LW: x4 = mem32[0]; 0xAABBCCDD -> got=0xaabbccdd expected=0xaabbccdd -> PASS
+# [I-TYPE] LBU: x5 = zeroext(mem8[0]); 0xDD -> 0x000000DD -> got=0x000000dd expected=0x000000dd -> PASS
+# [I-TYPE] LHU: x6 = zeroext(mem16[0]);0xCCDD->0x0000CCDD -> got=0x0000ccdd expected=0x0000ccdd -> PASS
+# [S-TYPE] SB: mem8 [4]  = x7[7:0];  0x55 -> got=0x00000055 expected=0x00000055 -> PASS
+# [S-TYPE] SH: mem16[8]  = x7[15:0]; 0x0055 -> got=0x00000055 expected=0x00000055 -> PASS
+# [S-TYPE] SW: mem32[12] = x7;       0x00000055 -> got=0x00000055 expected=0x00000055 -> PASS
+# 
+# === B-type tests ===
+# [B-TYPE] BEQ: x1==x2? 1==2 false -> fall-through -> got=0x00000001 expected=0x00000001 -> PASS
+# [B-TYPE] BNE: x1!=x2? 1!=2 true  -> branch -> got=0x00000000 expected=0x00000000 -> PASS
+# [B-TYPE] BLT: x1<x2 signed? 1<2 true -> branch -> got=0x00000000 expected=0x00000000 -> PASS
+# [B-TYPE] BGE: x1>=x2 signed? 1>=2 false -> got=0x00000001 expected=0x00000001 -> PASS
+# [B-TYPE] BLTU: x1<x2 unsigned? 1<2 true -> branch -> got=0x00000000 expected=0x00000000 -> PASS
+# [B-TYPE] BGEU: x1>=x2 unsigned? 1>=2 false -> got=0x00000001 expected=0x00000001 -> PASS
+# 
+# === U-type and J-type tests ===
+# [U-TYPE] LUI: x1 = 0x12345 << 12 = 0x12345000 -> got=0x12345000 expected=0x12345000 -> PASS
+# [U-TYPE] AUIPC: x2 = PC(0x4) + 0x00010<<12 = 0x00010004 -> got=0x00010004 expected=0x00010004 -> PASS
+# [J-TYPE] JAL: x3 = return addr (PC+4) = 12 -> got=0x0000000c expected=0x0000000c -> PASS
+# [J-TYPE] JALR: x6 = return addr (PC+4) = 24 -> got=0x00000018 expected=0x00000018 -> PASS
+# 
+# === SYSTEM/FENCE/PSEUDO tests ===
+# [SYSTEM] ECALL: environment call; sentinel x29 remains 7 -> got=0x00000007 expected=0x00000007 -> PASS
+# [SYSTEM] EBREAK: breakpoint; sentinel x29 remains 7 -> got=0x00000007 expected=0x00000007 -> PASS
+# [FENCE] FENCE: memory ordering barrier; sentinel x31=5 -> got=0x00000005 expected=0x00000005 -> PASS
+# [FENCE] FENCE.I: instruction barrier; sentinel x31=5 -> got=0x00000005 expected=0x00000005 -> PASS
+# [I-TYPE] NOP: addi x0,x0,0 leaves x0=0 -> got=0x00000000 expected=0x00000000 -> PASS
+# [I-TYPE] MV: x8 = x5 + 0; 2 -> 2 -> got=0x00000002 expected=0x00000002 -> PASS
+# [I-TYPE] LI: x9 = 9 -> got=0x00000009 expected=0x00000009 -> PASS
+# [J-TYPE] J: jump skips x27 write; x27 stays 0 -> got=0x00000000 expected=0x00000000 -> PASS
+# [J-TYPE] J: jump target executes x28=1 -> got=0x00000001 expected=0x00000001 -> PASS
+# [I-TYPE] NOP2: addi x11,x10,0 with x10=0 -> x11=0 -> got=0x00000000 expected=0x00000000 -> PASS
+# 
+# ================================================
+# RV32I-style directed verification summary: PASS=47 FAIL=0
+# Lightweight IoT Security Processor + Custom ISA verification summary: PASS=47 FAIL=0
+# ================================================
+# 
+# ALL TESTS PASSED
+# ** Note: $finish    : D:/mtech/sem 4/midesm presetation/riscv_aes_advancements/risc_aes_custom_ISA/riscv_core_tb.sv(1394)
+#    Time: 3125 ns  Iteration: 0  Instance: /riscv_core_tb
+# End time: 21:09:59 on Jun 15,2026, Elapsed time: 0:00:03
+# Errors: 0, Warnings: 1
