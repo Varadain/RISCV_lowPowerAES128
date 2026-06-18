@@ -1,0 +1,33 @@
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_TOOL_NAME "Qsys"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_TOOL_VERSION "23.1"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_TOOL_ENV "Qsys"
+set_global_assignment -library "sensor_spi_ip" -name SOPCINFO_FILE [file join $::quartus(qip_path) "sensor_spi_ip.sopcinfo"]
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name SLD_INFO "QSYS_NAME sensor_spi_ip HAS_SOPCINFO 1"
+set_global_assignment -library "sensor_spi_ip" -name MISC_FILE [file join $::quartus(qip_path) "sensor_spi_ip.cmp"]
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_TARGETED_DEVICE_FAMILY "Unknown"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_GENERATED_DEVICE_FAMILY "{Device Agnostic}"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_QSYS_MODE "UNKNOWN"
+set_global_assignment -name SYNTHESIS_ONLY_QIP ON
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_NAME "c2Vuc29yX3NwaV9pcA=="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_DISPLAY_NAME "U1BJICg0IFdpcmUgU2VyaWFsKSBJbnRlbCBGUEdBIElQ"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_REPORT_HIERARCHY "Off"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_INTERNAL "Off"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_AUTHOR "SW50ZWwgQ29ycG9yYXRpb24="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_VERSION "MjMuMQ=="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "Y2xvY2tQaGFzZQ==::MA==::Q2xvY2sgcGhhc2U="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "Y2xvY2tQb2xhcml0eQ==::MA==::Q2xvY2sgcG9sYXJpdHk="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "ZGF0YVdpZHRo::OA==::V2lkdGg="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "ZGlzYWJsZUF2YWxvbkZsb3dDb250cm9s::ZmFsc2U=::RGlzYWJsZSBmbG93IGNvbnRyb2wgb24gQXZhbG9uIHNsYXZlIGludGVyZmFjZQ=="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "aW5zZXJ0RGVsYXlCZXR3ZWVuU2xhdmVTZWxlY3RBbmRTQ2xr::ZmFsc2U=::U3BlY2lmeSBkZWxheQ=="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "aW5zZXJ0U3luYw==::ZmFsc2U=::SW5zZXJ0IFN5bmNocm9uaXplcnM="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "bHNiT3JkZXJlZEZpcnN0::ZmFsc2U=::U2hpZnQgZGlyZWN0aW9u"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "bWFzdGVyU1BJ::dHJ1ZQ==::VHlwZQ=="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "bnVtYmVyT2ZTbGF2ZXM=::MQ==::TnVtYmVyIG9mIHNlbGVjdCAoU1Nfbikgc2lnbmFscyAob25lIGZvciBlYWNoIHNsYXZlKQ=="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "dGFyZ2V0Q2xvY2tSYXRl::MTAwMDAwMA==::U1BJIGNsb2NrIChTQ0xLKSByYXRl"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "YXZhbG9uU3BlYw==::Mi4w::YXZhbG9uU3BlYw=="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "aW5wdXRDbG9ja1JhdGU=::NTAwMDAwMDA=::aW5wdXRDbG9ja1JhdGU="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "YWN0dWFsQ2xvY2tSYXRl::MTAwMDAwMC4w::QWN0dWFsIGNsb2NrIHJhdGU="
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "bGVnYWN5U2lnbmFsc0FsbG93::ZmFsc2U=::bGVnYWN5U2lnbmFsc0FsbG93"
+set_global_assignment -entity "sensor_spi_ip" -library "sensor_spi_ip" -name IP_COMPONENT_PARAMETER "c2xhdmVEYXRhQnVzV2lkdGg=::MTY=::c2xhdmVEYXRhQnVzV2lkdGg="
+
+set_global_assignment -library "sensor_spi_ip" -name VERILOG_FILE [file join $::quartus(qip_path) "sensor_spi_ip.v"]
