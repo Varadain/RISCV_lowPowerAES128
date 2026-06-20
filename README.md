@@ -1,26 +1,11 @@
-# 500 Viva and Cross-Examination Questions
+# 510 Viva and Cross-Examination Questions
 
 ## Project
 
 **Design and Verification of a Lightweight RISC-V-Based IoT Security Processor with Iterative Hardware-Reusable AES 128**
 
-This document is a progressive viva guide. Read the fact sheet first, then practice answering each question aloud in 30-60 seconds. For advanced questions, use this response pattern:
-
-1. State the engineering fact.
-2. Relate it to this RTL.
-3. Cite the measured or simulated evidence.
-4. Acknowledge the limitation.
-5. State the realistic improvement.
-
-## Honest Contribution Positioning
-
-Do not reduce your ownership to "a tool generated the project." Your defensible engineering ownership is the problem selection, architecture direction, AES reuse objective, RISC-V integration requirements, application framing, review of iterations, test intent, interpretation of reports, and acceptance of final evidence. Automation and coding-assistant support accelerated repetitive implementation, debugging, regression scripting, report extraction, and document preparation.
-
-If directly asked about tool assistance, a truthful answer is:
-
 > I defined and reviewed the architecture, interfaces, verification objectives, application, and result interpretation. I used EDA tools and coding automation to accelerate implementation, debugging, regression execution, and documentation. I validated the final behavior against independent references, waveforms, transcripts, and synthesis reports, and I can trace each major claim to its evidence.
 
-Do not falsely deny assistance where disclosure is required. Technical mastery and responsibility are more convincing than claiming every line was typed manually.
 
 ## Exact Result Fact Sheet
 
@@ -44,6 +29,11 @@ Do not falsely deny assistance where disclosure is required. Technical mastery a
 | Genus cell count | 83,352 baseline versus 2,694 proposed; 96.77% reduction |
 | Genus cell area | 202,949.64 versus 11,841.48 um^2; 94.17% reduction |
 | Genus total power | 21.9 mW versus 0.853 mW; 96.10% reduction |
+| Complete-SoC Genus library | GPDK045 HVT, slow 0.9 V, 125 C |
+| Complete-SoC Genus area | 50,968 cells; 135,947.599 um^2 mapped cell area |
+| Complete-SoC Genus timing | 20 ns target; +2.315 ns setup slack; TNS 0; 0 violating paths |
+| Complete-SoC Genus power | 1.43753 mW vectorless total; 0.002084 mW leakage |
+| Complete-SoC Genus area concentration | MEM-stage hierarchy is 92.13% of mapped cell area |
 | Quartus version/device | 23.1std.1 Build 993; Cyclone V 5CGXFC7C7F23C8 |
 | Quartus utilization | 13,257/56,480 ALMs (23%); 11,154 registers; 106/268 pins (40%) |
 | Clock/timing | 20 ns constraint, 50 MHz; +2.577 ns setup and +0.371 ns hold slack |
@@ -65,6 +55,7 @@ Do not falsely deny assistance where disclosure is required. Technical mastery a
 | Questa waveform set | Known-answer, CPU, peripheral, custom ISA, random, UVM, coverage, and full-SoC captures. | For every waveform say stimulus, key transition, observed result, and conclusion. |
 | AES area and power charts | Baseline versus proposed Genus results. | Keep these standalone 55 nm ASIC results separate from the integrated FPGA. |
 | SoC utilization, timing, and power | Quartus ALMs/registers, positive slack, and vectorless power. | Disclose target device and low-confidence power assumption. |
+| Genus complete-SoC HVT charts and schematic | HVT cell mix, area hierarchy, timing budget, power composition, and mapped schematic. | Conclude that synthesis and 50 MHz setup timing are good, but clearly state pre-layout and vectorless limitations. |
 | RTL/netlist views | Complete SoC plus EX and MEM expansion. | Use structural evidence only; do not call it functional proof. |
 | 128-bit automotive telemetry record | PT3-PT0 field packing. | Show how real sensor fields become one AES block. |
 | Automotive threat model | Interception, replay, modification, and key extraction. | Match each threat to current protection, remaining gap, and upgrade. |
@@ -2223,9 +2214,51 @@ Propose formal verification, authenticated encryption, activity-based power, boa
 
 A mature answer can say 'that is outside the present scope' and then describe exactly how it would be addressed.
 
+## Supplementary Complete-SoC Genus HVT Cross-Questions
+
+**501. What is the final conclusion from the combined AES plus RISC-V Genus synthesis?**
+
+The result is good for a synthesis-stage research prototype. The complete SoC elaborates and maps without unresolved references, meets the 50 MHz setup constraint with +2.315 ns slack, and uses only HVT cells. It is not final ASIC sign-off because placement, routed parasitics, clock-tree synthesis, activity-based power, and multi-corner hold analysis are still pending.
+
+**502. Which exact numbers support that positive conclusion?**
+
+Genus reports 50,968 mapped leaf cells, 135,947.599 square micrometres of mapped cell area, +2.315 ns worst setup slack, zero total negative slack, zero violating setup paths, 1.43753 mW vectorless total power, and 0.002084 mW leakage power.
+
+**503. Why was an HVT library selected?**
+
+High-threshold-voltage cells reduce subthreshold leakage and are suitable for energy-constrained designs where maximum frequency is not the only objective. The tradeoff is increased propagation delay compared with SVT or LVT cells.
+
+**504. Does the HVT result prove that the complete SoC is low power?**
+
+It provides encouraging low-leakage synthesis evidence, not complete proof. HVT mapping produces a very small reported leakage component, but the power analysis is vectorless and pre-layout. Activity-derived SAIF or VCD, clock-tree power, routed capacitance, and preferably silicon or board measurement are required for a stronger claim.
+
+**505. Why is internal power 90.29 percent even though HVT cells were used?**
+
+HVT primarily reduces leakage. Internal power remains high relative to leakage because the design contains 10,848 sequential cells, register-based storage, clocked pipeline state, AES state registers, counters, and peripheral registers. Reducing internal power requires activity reduction, memory macros, clock-enable refinement, and physical power optimization.
+
+**506. Why does the MEM-stage hierarchy occupy 92.13 percent of mapped cell area?**
+
+The hierarchy contains data memory synthesized from registers, the AES subsystem, MMIO address decoding, peripheral read multiplexing, sensor/SPI, UART, DMA-lite, interrupt logic, and power management. It is therefore the integration hub rather than a small conventional pipeline stage.
+
+**507. Is the 56.55 MHz value a sign-off Fmax result?**
+
+No. It is a constraint-equivalent estimate calculated from the 20 ns period and +2.3152 ns setup slack. It is useful for interpretation, but sign-off Fmax requires physical implementation and multi-corner timing analysis with extracted interconnect and propagated clocks.
+
+**508. Can the 1.43753 mW Genus estimate be compared directly with the 519.72 mW Quartus estimate?**
+
+No. Genus reports a pre-layout ASIC-style cell estimate using GPDK045 HVT cells, while Quartus reports fitted Cyclone V FPGA thermal power including FPGA static and I/O contributions. The technologies, power models, physical assumptions, and result meanings are different.
+
+**509. What is the biggest weakness revealed by the combined Genus reports?**
+
+The largest structural weakness is area concentration in the MEM-stage hierarchy, particularly register-based storage and the wide peripheral integration network. The largest evidence limitation is that power and timing are pre-layout estimates rather than activity-based and post-route sign-off results.
+
+**510. What should be done next to improve and validate the combined SoC?**
+
+Infer or instantiate SRAM macros, reduce unnecessary debug buses, partition the MMIO interconnect, annotate realistic full-SoC activity, run Innovus placement and routing, perform Tempus slow-corner setup and fast-corner hold analysis, and compare the optimized result against the present HVT baseline.
+
 ## Final 20-Minute Revision Strategy
 
-1. Memorize the exact fact sheet and never mix Genus standalone-AES results with Quartus integrated-SoC results.
+1. Memorize the exact fact sheet and never mix standalone 55 nm Genus AES results, complete-SoC GPDK045 HVT Genus results, and Quartus integrated-FPGA results.
 2. Practice the five-stage pipeline, MMIO map, custom opcode, AES-CTR equation, and sensor-to-UART flow without notes.
 3. For every waveform, say stimulus, transition, observed result, and conclusion.
 4. For every result, say tool, design scope, technology/device, constraint, value, and limitation.
@@ -2243,4 +2276,5 @@ A mature answer can say 'that is outside the present scope' and then describe ex
 7. The UVM closure run reports 100 transactions, 100 UART matches, 114/114 planned portable bins, and zero UVM errors.
 8. The standalone Genus study reports 94.17% lower AES area and 96.10% lower AES total power than the baseline under the stated 55 nm flow.
 9. The integrated Cyclone V implementation uses 13,257 ALMs and 11,154 registers and meets the 50 MHz constraint with positive setup and hold slack.
-10. The prototype provides confidentiality, but production deployment still requires authenticated encryption, nonce/replay management, secure key storage, a qualified network interface, and complete interrupt/safety handling.
+10. The complete-SoC HVT Genus run maps 50,968 cells, meets 50 MHz setup timing with +2.315 ns slack, and is promising but still pre-layout and vectorless.
+11. The prototype provides confidentiality, but production deployment still requires authenticated encryption, nonce/replay management, secure key storage, a qualified network interface, and complete interrupt/safety handling.
