@@ -21,6 +21,7 @@
 The script is written for approximately 27 to 28 minutes of normal speaking. The remaining time is a buffer for slide changes, pauses, or short questions.
 
 ---
+PROJECT_PRESENTATION_30_MINUTE_SCRIPT.md
 
 # Slide 1: Title
 
