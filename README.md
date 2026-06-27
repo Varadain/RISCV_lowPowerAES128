@@ -1,12 +1,12 @@
-[Custom opcode decoding](control_unit.sv#L235-L247)
+[Custom opcode decoding](rtl/control_unit.sv#L235-L247)
 
-[Custom instruction execution](mem_stage.sv#L130-L137)
+[Custom instruction execution](rtl/mem_stage.sv#L130-L137)
 
-[AES custom-command handling](aes_mmio.sv#L165-L185)
+[AES custom-command handling](rtl/aes_mmio.sv#L165-L185)
 
-[Custom operand forwarding](ex_stage.sv#L210-L219)
+[Custom operand forwarding](rtl/ex_stage.sv#L210-L219)
 
-[Custom ISA verification](riscv_core_tb.sv#L1015-L1055)
+[Custom ISA verification](tb/riscv_core_tb.sv#L1015-L1055)
 
 [Reusable AES core](rtl/AES128_updated_new.sv#L1-L100)
 # 510 Viva and Cross-Examination Questions
