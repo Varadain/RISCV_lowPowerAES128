@@ -1,605 +1,494 @@
-# 30-Minute Project Presentation Script
+# 30-Minute Thesis Presentation Speaker Script
 
-## Presentation Title
+**Presentation:** Design and Verification of a Lightweight RISC-V-Based IoT Security Processor with Iterative Hardware-Reusable AES 128  
+**Presenter:** Varada Inamdar, MIS 712438020  
+**Deck:** `RISC_V_AES_Thesis_Presentation_30_Minutes_Revised.pptx`  
+**Target duration:** 30 minutes, followed by questions
 
-**Design and Verification of a Lightweight RISC-V-Based IoT Security Processor with Iterative Hardware-Reusable AES 128**
+## How to Use This Script
 
-## Recommended Timing
+- Text in normal paragraphs is written to be spoken.
+- Text in square brackets is a delivery or pointing cue and is not spoken.
+- Aim for a steady presentation pace of approximately 130 to 135 words per minute; slow briefly when reading hexadecimal values.
+- Do not rush the results slides. If time is short, reduce detail on Slides 18 and 20, not on the verification or limitations slides.
+- Keep the three synthesis evidence domains separate: standalone AES in TSMC 55 nm, integrated FPGA SoC in Quartus, and integrated ASIC-style SoC in GPDK045 HVT.
 
-| Section | Time |
-|---|---:|
-| Opening and problem motivation | 3 minutes |
-| Security and AES background | 4 minutes |
-| Reusable AES architecture and comparison | 4 minutes |
-| RISC-V security-processor architecture | 5 minutes |
-| MMIO, custom ISA and peripheral flow | 4 minutes |
-| Verification methodology and evidence | 5 minutes |
-| FPGA and ASIC results | 3 minutes |
-| Limitations, future work and conclusion | 2 minutes |
-| **Total** | **30 minutes** |
+## Timing Checkpoints
 
-The script is written for approximately 27 to 28 minutes of normal speaking. The remaining time is a buffer for slide changes, pauses, or short questions.
-
----
-PROJECT_PRESENTATION_30_MINUTE_SCRIPT.md
-
-# Slide 1: Title
-
-## Time: 0:00-1:00
-
-Good morning respected faculty members, examiners, and everyone present.
-
-My dissertation is titled **"Design and Verification of a Lightweight RISC-V-Based IoT Security Processor with Iterative Hardware-Reusable AES 128."**
-
-This work brings together two related research objectives. The first objective is to design a compact and power-efficient AES-128 hardware architecture by reusing the same round datapath. The second objective is to integrate that AES engine with a five-stage RISC-V processor and verify a complete secure sensor-data path.
-
-The final system includes the RISC-V pipeline, AES in ECB and CTR modes, sensor and SPI interfaces, UART transmission, DMA-lite, an interrupt controller, activity counters, sleep control, and a small custom security instruction extension.
-
-The main application considered in this presentation is secure telemetry from an autonomous-vehicle sensor node.
+| Time | Expected position |
+|---:|---|
+| 5 minutes | Completing Slide 4 |
+| 10 minutes | Completing Slide 8 |
+| 15 minutes | Completing Slide 12 |
+| 20 minutes | Completing Slide 16 |
+| 25 minutes | Completing Slide 20 |
+| 30 minutes | Completing Slide 25 |
 
 ---
 
-# Slide 2: Motivation and Practical Problem
+## Slide 1: Title
 
-## Time: 1:00-3:00
+**Time: 0:00 to 0:45**
 
-Modern autonomous vehicles, robots, industrial controllers, and IoT nodes depend on distributed sensors. These sensors generate acceleration, angular velocity, wheel speed, equipment-health, diagnostic, and environmental information.
+Good morning respected examiners, faculty members, and everyone present. I am Varada Inamdar from VLSI Design, and today I am presenting my M.Tech thesis titled, **Design and Verification of a Lightweight RISC-V-Based IoT Security Processor with Iterative Hardware-Reusable AES 128**, completed under the guidance of Dr. Ashwini Kulkarni.
 
-This information may travel from a sensor node to a central controller or gateway. If it is transmitted as plaintext, an observer can read sensitive operational information. In a more serious case, an attacker may replay or modify the communication.
+This work began with a focused hardware question: can AES-128 be implemented with substantially lower area and switching activity by reusing one round datapath? It then developed into a processor-level question: can that reusable AES engine become part of a practical RISC-V security system that acquires sensor data, encrypts it, transmits it, and verifies the complete operation?
 
-A software implementation of AES can protect the data, but it keeps the processor active for many instructions and consumes execution time and energy. At the other extreme, a fully unrolled hardware AES implementation duplicates multiple round units. It gives high throughput, but it increases logic area and simultaneous switching.
+The presentation therefore follows one continuous path: reusable AES research, RISC-V integration, end-to-end verification, and implementation evidence from both FPGA and ASIC-oriented synthesis.
 
-My work studies a middle path. I use a dedicated AES accelerator so that encryption is not executed as a long software routine, but I reuse one AES round datapath instead of duplicating ten rounds.
-
-The practical question behind the project is:
-
-> Can a compact AES architecture be integrated into a small RISC-V processor so that sensor data is acquired, encrypted, transmitted, and verified end to end, while keeping the implementation modular and measurable?
-
-The project therefore focuses on three ideas:
-
-1. Hardware reuse for reducing AES implementation cost.
-2. Processor-level integration through MMIO and custom instructions.
-3. Layered verification from the cryptographic primitive to the complete sensor-to-UART transaction.
+[Pause briefly, then advance.]
 
 ---
 
-# Slide 3: Foundations of Security and Cryptography
+## Slide 2: Motivation
 
-## Time: 3:00-4:30
+**Time: 0:45 to 2:05**
 
-This figure summarizes the security foundation of the project.
+The motivation comes from a practical edge-computing problem. Consider an autonomous vehicle or an advanced driver-assistance unit. It continuously produces telemetry such as acceleration, angular velocity, wheel speed, diagnostic state, and event information. If this information is transmitted in plaintext, an attacker on the communication path may observe it, replay an old record, or alter a record before it reaches the gateway.
 
-The three classical security goals are confidentiality, integrity, and availability.
+Encryption is therefore useful, but an edge node has limited area, power, memory, and timing budget. A software-only AES implementation uses many processor instructions and keeps the CPU active for longer. At the other extreme, a fully unrolled hardware AES places several round structures in parallel. It provides high throughput, but duplicates logic and increases capacitance and switching activity.
 
-Confidentiality means unauthorized users should not read the sensor data. Integrity means unauthorized modification should be detected. Availability means the system should remain usable when required.
+My design question was not simply, "Can I add AES to RISC-V?" The more useful question was, "How little active hardware is sufficient for the required secure telemetry rate?" This led to an iterative AES accelerator, where one round datapath is reused under finite-state-machine control, and then to a lightweight SoC that surrounds it with sensor, DMA, UART, interrupt, and power-management functions.
 
-The AES-CTR path implemented in this work primarily provides **confidentiality**.
-
-The figure also separates passive and active attacks. Passive attacks include eavesdropping and traffic analysis. Active attacks include modification, replay, impersonation, and denial of service.
-
-Encryption is one security mechanism. It is not a complete security system by itself. Authentication, access control, secure key management, replay protection, and auditing are also required in a practical deployment.
-
-I selected symmetric cryptography because it is efficient for repeated encryption of embedded sensor records. The same secret key is available at the transmitting node and receiving gateway. Public-key cryptography may still be used to establish or exchange a session key, but AES is better suited for bulk sensor-data protection.
-
-This distinction is important: the present processor is a confidentiality-focused research prototype, not a complete automotive security product.
+[Point from "security pressure" to "edge constraints," then to "design need."]
 
 ---
 
-# Slide 4: AES-128 Operation
+## Slide 3: Research Contribution
 
-## Time: 4:30-6:00
+**Time: 2:05 to 3:00**
 
-AES is a 128-bit block cipher. AES-128 uses a 128-bit key and performs ten rounds.
+The contribution has three connected layers.
 
-The plaintext is first combined with the original key using AddRoundKey.
+First, at the cryptographic hardware layer, I use one AES round datapath repeatedly across the ten AES-128 rounds. SubBytes, ShiftRows, MixColumns, AddRoundKey, and key expansion are controlled sequentially instead of being duplicated ten times.
 
-Rounds one to nine perform:
+Second, at the processor layer, I integrate this engine with a five-stage RV32I-style pipeline. The accelerator is accessible through memory-mapped registers, and selected security operations are also exposed through custom RISC-V instructions. Around it, the system includes a sensor or SPI interface, UART, DMA-lite, interrupt control, and activity monitoring.
 
-1. SubBytes,
-2. ShiftRows,
-3. MixColumns,
-4. AddRoundKey.
+Third, at the verification layer, I move from primitive verification to application verification. The project includes known-answer tests, directed CPU and peripheral tests, randomized tests, a UVM environment with an independent C-DPI reference model, functional coverage, and a complete sensor-to-UART scenario.
 
-The tenth round omits MixColumns, as required by the AES specification.
-
-SubBytes provides nonlinearity. ShiftRows changes byte positions. MixColumns provides diffusion across each column. AddRoundKey combines the state with the generated round key.
-
-The known-answer vector used for verification is:
-
-- Key: `000102030405060708090A0B0C0D0E0F`
-- Plaintext: `00112233445566778899AABBCCDDEEFF`
-- Expected ciphertext: `69C4E0D86A7B0430D8CDB78070B4C55A`
-
-This vector is important because it verifies the complete combination of byte ordering, key expansion, all AES transformations, MMIO register ordering, and final ciphertext reconstruction.
+Thus, the thesis extends a standalone AES architecture into a verified security processor rather than presenting only an isolated cipher block.
 
 ---
 
-# Slide 5: Why CTR Mode Was Selected
+## Slide 4: Automotive Threat Model
 
-## Time: 6:00-7:00
+**Time: 3:00 to 4:20**
 
-The AES primitive is preserved in ECB mode for the standard known-answer test. However, ECB is not suitable for repeated structured sensor data because equal plaintext blocks produce equal ciphertext blocks.
+[Point from the sensors across the data path to the trusted gateway.]
 
-For the application flow, I use AES-CTR.
+This diagram defines the security boundary clearly. The sensor values are legitimate plaintext at the source. They pass through the RISC-V security processor and leave the prototype through UART. In a production vehicle, UART would be replaced by a qualified interface such as CAN-FD or Automotive Ethernet.
 
-CTR operation is:
+Four threats are shown. Interception exposes the telemetry. Replay injects an old valid message. Modification changes the message in transit. Key extraction compromises future communication.
 
-```text
-Keystream = AES_encrypt(nonce || counter)
-Ciphertext = plaintext XOR keystream
-```
+The implemented AES-CTR path directly addresses confidentiality against interception. Counter progression also gives the system the state needed for replay handling, but replay protection is not complete until the receiver checks freshness. CTR by itself does not provide authentication, so it does not prevent deliberate ciphertext modification. Production deployment would therefore use authenticated encryption, such as GCM, or combine CTR with a MAC. Similarly, the prototype stores the key in registers for controlled RTL study; production hardware requires protected key storage and side-channel hardening.
 
-Decryption uses the same AES encryption primitive:
-
-```text
-Plaintext = ciphertext XOR keystream
-```
-
-CTR is useful here for three reasons:
-
-1. Encryption and decryption reuse the AES encryption hardware.
-2. Records can be processed independently.
-3. No block-padding operation is required for stream-like data.
-
-The counter is incremented after each block.
-
-The important limitation is that the same nonce-counter combination must never be reused with the same key. CTR also does not provide authentication. A production system should therefore use AES-GCM or add a MAC such as GMAC or HMAC.
+This distinction is important: I am presenting an RTL and FPGA proof of concept with a defined upgrade path, not claiming that the current UART prototype is already an automotive-qualified security module.
 
 ---
 
-# Slide 6: Traditional Versus Proposed AES Architecture
+## Slide 5: Cryptography Choice
 
-## Time: 7:00-9:00
+**Time: 4:20 to 5:40**
 
-This figure compares software AES, a fully unrolled hardware architecture, and the proposed reusable hardware architecture.
+AES is the standardized 128-bit block cipher primitive. The design supports the original ECB behavior for known-answer testing and adds CTR mode for streaming sensor records.
 
-Software AES requires little dedicated cryptographic hardware, but the CPU executes many instructions and remains active during encryption.
+For block number `i`, the processor supplies a nonce and counter. These are concatenated to form a 128-bit counter input, shown here as `X_i = Nonce parallel Counter_i`. The AES engine encrypts this input using the secret key to produce the keystream `K_i`. The plaintext record is then XORed with that keystream: `C_i = P_i XOR K_i`.
 
-A fully unrolled AES architecture instantiates multiple round stages. It provides high throughput and low latency, but its area and switching activity are high.
+At the receiver, the same key, nonce, and counter regenerate exactly the same keystream. A second XOR recovers the plaintext because `C_i XOR K_i = P_i`.
 
-The proposed architecture uses a single reusable datapath. The state and round key are stored in registers. A round counter and finite-state machine control repeated use of SubBytes, ShiftRows, MixColumns, AddRoundKey, and key-expansion logic.
+[Point to CTR in the mode comparison.]
 
-The initial round is performed first. The same datapath is then used for rounds one through nine. In the final round, MixColumns is bypassed.
-
-The main advantage is lower duplicated logic and lower simultaneous activity.
-
-The main disadvantage is multi-cycle latency.
-
-This is acceptable for the selected application because control telemetry, health records, event packets, and moderate-rate sensor information usually arrive more slowly than a high-bandwidth camera pixel stream.
-
-For workloads requiring higher throughput, the architecture can be extended using partial unrolling or multiple reusable AES lanes.
+CTR was selected because encryption and decryption use the same AES encryption primitive, records do not require padding, and independent counters allow record-wise processing. ECB is retained only to verify the primitive against the NIST vector; it is unsuitable for actual telemetry because identical plaintext blocks produce identical ciphertext blocks. GCM is the intended production extension because it adds authentication, but CTR keeps the current hardware and verification scope compact and transparent.
 
 ---
 
-# Slide 7: Standalone AES Results
+## Slide 6: Iterative AES Microarchitecture
 
-## Time: 9:00-11:00
+**Time: 5:40 to 7:05**
 
-The standalone AES comparison was performed using Cadence Genus and a 55-nanometre low-power standard-cell library.
+This slide shows the central architectural decision. A software implementation has small dedicated hardware cost but consumes many CPU cycles. A fully unrolled AES implementation duplicates the round logic and gives low block latency, but at high area and activity. The proposed architecture occupies the middle ground: dedicated hardware is present, but the same round datapath is reused.
 
-These values belong only to the standalone baseline and proposed AES comparison. They must not be mixed with the complete FPGA processor results.
+At start, plaintext is XORed with the original key. For rounds one to nine, the state passes through SubBytes, ShiftRows, MixColumns, and AddRoundKey. The final round omits MixColumns, as required by AES-128. A round counter and finite-state machine select the correct transformation and round key. The state and key registers preserve intermediate values between cycles.
 
-The baseline AES uses **83,352 cells**, while the proposed reusable AES uses **2,694 cells**. This is a reduction of approximately **96.77 percent**.
+The reuse reduces replicated combinational logic and the amount of hardware switching simultaneously. The cost is increased latency because rounds are performed over time rather than in parallel. This is a deliberate trade-off for telemetry systems, where the data rate is moderate and energy and area are more important than multi-gigabit throughput.
 
-The baseline area is **202,949.64 square micrometres**, while the proposed area is **11,841.48 square micrometres**. This is approximately **94.17 percent lower area**.
-
-The baseline total power is **21.9 milliwatts**, while the proposed total power is approximately **0.853 milliwatts**. This is approximately **96.10 percent lower total power** under the reported synthesis conditions.
-
-These results support the hardware-reuse objective. They do not mean that every future implementation will have exactly the same percentage. The values depend on the library, constraints, activity assumptions, and synthesis flow.
-
-The defensible conclusion is that, under the same reported 55-nanometre Genus environment, the iterative architecture significantly reduces AES hardware area and estimated power in exchange for latency.
+The comparison shown here is from the standalone AES study: cell count reduces from 83,352 to 2,694, area from 202,949.64 to 11,841.48 square micrometres, and total estimated power from 21.9 to 0.853 milliwatts.
 
 ---
 
-# Slide 8: Complete Security-Processor Architecture
+## Slide 7: Standalone AES Results in Cadence Genus, TSMC 55 nm
 
-## Time: 11:00-13:00
+**Time: 7:05 to 8:15**
 
-This figure shows the complete system architecture.
+These results quantify the reusable AES contribution under one consistent synthesis environment. Both the baseline and proposed AES architectures were evaluated using Cadence Genus with a TSMC 55 nanometre low-power RVT library under the stated conditions.
 
-At the input, a sensor or SPI interface provides telemetry. The five-stage RISC-V processor controls data movement and peripheral configuration.
+[Point to each reduction bar in order.]
 
-The processor pipeline contains:
+The proposed design uses 2,694 cells instead of 83,352, which is a 96.77 percent cell-count reduction. Area decreases by 94.17 percent, from 202,949.64 to 11,841.48 square micrometres. Total estimated power decreases by 96.10 percent, from 21.9 to 0.853 milliwatts.
 
-- Instruction Fetch,
-- Instruction Decode,
-- Execute,
-- Memory,
-- Writeback.
+For the proposed core, the reported critical data-path delay is 3.102 nanoseconds. With a 10-nanosecond clock constraint, the worst setup slack is positive at 6.806 nanoseconds, so the design meets that synthesis timing constraint.
 
-Hazard and forwarding units maintain pipeline correctness.
-
-The memory stage is also the central internal peripheral-integration point. It selects normal data memory or one of the memory-mapped peripherals.
-
-The major security and communication blocks are:
-
-- iterative AES-128 with ECB and CTR modes,
-- sensor and SPI interface,
-- UART transmitter,
-- interrupt controller,
-- DMA-lite,
-- power and activity counters.
-
-Debug outputs expose the current PC, AES completion, AES ciphertext, UART TX pin, interrupt line, sleep status, and a selected activity counter.
-
-These outputs help simulation and FPGA observation and prevent the integrated design from behaving like a closed black box.
+These figures support a specific conclusion: hardware reuse is highly effective for reducing the standalone AES implementation cost. They do not yet describe the complete RISC-V SoC, and I will keep that distinction throughout the remaining results.
 
 ---
 
-# Slide 9: RISC-V Pipeline and Data Movement
+## Slide 8: Complete System Architecture
 
-## Time: 13:00-15:00
+**Time: 8:15 to 9:50**
 
-I will briefly explain how an instruction moves through the processor.
+[Trace the diagram from left to right.]
 
-The IF stage uses the program counter to fetch an instruction.
+The complete architecture begins with a vehicle sensor or SPI peripheral. A five-stage RV32I-style processor executes the control program. The stages are instruction fetch, decode, execute, memory, and writeback, with hazard detection and forwarding to preserve pipeline correctness.
 
-The ID stage extracts opcode, source registers, destination register, function fields, and immediate value. It also reads the register file and generates control signals.
+The security subsystem contains the AES wrapper, iterative AES-128 primitive, CTR-mode logic, UART transmitter, DMA-lite engine, interrupt controller, and power-management counters. The CPU can read a sensor sample, place or move it into a 128-bit record, program the AES key, nonce, counter, and plaintext registers, start encryption, and wait for completion. The ciphertext can then be written to UART for transmission. Completion events are collected by the interrupt controller, and the activity counters record CPU, AES, UART, DMA, and sleep behavior.
 
-The EX stage performs arithmetic, logical operations, branch comparison, and effective-address calculation.
+The main functional path is therefore: acquire data, buffer or move it, encrypt it, transmit ciphertext, observe completion, and enter an idle state.
 
-The MEM stage performs either normal RAM access or peripheral access.
-
-The WB stage writes an ALU result, loaded value, PC-plus-four value, or custom-instruction result back to the register file.
-
-The forwarding unit reuses results from later pipeline stages without always waiting for writeback. The hazard unit stalls load-use dependencies and flushes instructions after taken control-flow changes.
-
-The directed verification checks R-type, I-type, load/store, branch, upper-immediate, jump, system, fence, pseudo, and custom operations.
-
-Signal-activity checks also prove that pipeline stall and flush signals actually assert during the regression.
+For the prototype, UART makes the serial behavior easy to verify at RTL. The blocks are modular, so an automotive bus controller can replace UART without changing the AES primitive. This modularity is one reason the system uses MMIO as its primary integration mechanism.
 
 ---
 
-# Slide 10: MMIO Address Map
+## Slide 9: RISC-V Integration Through the MEM Stage
 
-## Time: 15:00-16:30
+**Time: 9:50 to 11:10**
 
-The processor controls most peripherals through memory-mapped I/O.
+The largest system-level RTL change is in the memory stage. Normal load and store instructions already calculate an address in the execute stage. I reuse that path as a lightweight internal interconnect.
 
-The address ranges are:
+If the address is ordinary memory, the access goes to data RAM. If the upper address matches a peripheral window, the MEM stage selects exactly one MMIO block. The map is: `0x300` for AES and AES-CTR, `0x400` for sensor or SPI, `0x500` for UART, `0x600` for the interrupt controller, `0x700` for DMA-lite, and `0x800` for power and activity control.
 
-| Address | Peripheral |
-|---|---|
-| `0x0000_0300` | AES and AES-CTR |
-| `0x0000_0400` | Sensor and SPI |
-| `0x0000_0500` | UART |
-| `0x0000_0600` | Interrupt controller |
-| `0x0000_0700` | DMA-lite |
-| `0x0000_0800` | Power and activity control |
+Each peripheral receives read-enable, write-enable, address offset, and write data. A read-data multiplexer returns only the selected peripheral value, with a defined default for unmapped locations. This avoids multiple blocks driving the read path.
 
-The CPU uses ordinary load and store instructions to access these registers.
-
-The AES range contains key, plaintext, ciphertext, nonce, counter, control, and status registers.
-
-The MEM-stage address decoder ensures that only one peripheral is selected for a transaction. A controlled multiplexer returns the selected read value. Addresses outside the peripheral ranges continue to use normal data memory.
-
-This approach avoids rewriting the processor pipeline around a new bus. Its limitation is scalability. If the system grows to many bus masters and peripherals, a standard AMBA, Wishbone, or TileLink interconnect would be more appropriate.
+The pipeline itself is not rewritten. Fetch, decode, execute, memory, and writeback remain recognizable, while MMIO extends the existing load-store behavior. The debug outputs expose PC, AES completion, ciphertext, UART, interrupt, sleep, and activity information so that the integrated hardware remains observable in simulation and FPGA synthesis.
 
 ---
 
-# Slide 11: Custom Security ISA
+## Slide 10: Custom Security ISA
 
-## Time: 16:30-18:00
+**Time: 11:10 to 12:45**
 
-In addition to MMIO, the project includes a small custom instruction extension.
+MMIO remains the complete and portable control method. The custom ISA is an additional research path used to examine tighter processor-accelerator interaction.
 
-It uses the RISC-V custom-0 opcode:
+[Point to the 32-bit field layout.]
 
-```text
-0001011
-```
+The instructions use the RISC-V `custom-0` opcode, binary `0001011`. The standard R-type positions are retained: source registers `rs1` and `rs2`, destination register `rd`, and `funct3` to select the command. In this implementation, `funct3` selects `CSEC_XOR`, `CSEC_AES_STATUS`, `CSEC_AES_START`, `CSEC_AES_CT0`, or `CSEC_AES_CLEAR`.
 
-The `funct3` field selects commands such as:
+The instruction is fetched normally. In decode, the control unit recognizes the custom opcode and generates a custom-command field. The execute stage forwards source operands in the same way as other dependent instructions. In the memory stage, the command interacts with the AES control and status path. A returned status or ciphertext word travels through writeback into `rd`.
 
-- custom XOR,
-- AES status read,
-- AES start,
-- ciphertext word read,
-- AES done clear.
-
-The instruction still travels through the normal pipeline.
-
-The IF stage fetches it. The ID stage recognizes the custom opcode. The EX stage forwards operands. The MEM stage communicates with the AES wrapper. The WB stage returns a custom result when required.
-
-AES itself is not claimed to become a single-cycle operation. It remains a multi-cycle accelerator. The custom instruction starts or controls the accelerator, while busy and done status preserve correct sequencing.
-
-MMIO is retained because it is flexible and software-visible. The custom ISA provides a more compact instruction-level control path. Keeping both interfaces allows comparison without sacrificing compatibility.
+For example, `CSEC_AES_STATUS` reads accelerator status without an explicit software load instruction, while `CSEC_AES_CT0` returns the least-significant ciphertext word. The implementation is intentionally modest: it demonstrates an ISA-level control path without forcing a 128-bit register-file redesign. MMIO is still used for full key, nonce, counter, and block programming.
 
 ---
 
-# Slide 12: Sensor-to-Encrypted-Output Flow
+## Slide 11: Concrete Automotive Telemetry Scenario
 
-## Time: 18:00-20:00
+**Time: 12:45 to 14:00**
 
-The selected application is an autonomous-vehicle sensor-security gateway.
+This slide makes the data path concrete. The sensor does not provide an AES nonce, counter, or key. It provides physical measurements. The processor packs those measurements into a 128-bit plaintext record.
 
-A practical 128-bit plaintext record can contain:
+[Point from `PT3` down to `PT0`.]
 
-- a 32-bit timestamp or record identifier,
-- acceleration values,
-- angular-velocity values,
-- wheel speed,
-- diagnostic flags,
-- sensor-health status.
+In this example, the upper word stores a timestamp. The next word contains X, Y, and Z acceleration values plus an event class. The next contains three gyroscope components plus a quality field. The lowest word contains wheel speed, diagnostic information, and a health byte. Together these four 32-bit words form one AES plaintext block.
 
-The processing flow is:
+The key is provisioned by the trusted system, while the nonce identifies the communication context and the counter identifies the block. AES encrypts nonce and counter to form a keystream, and the telemetry record is XORed with it. Only ciphertext is transmitted.
 
-1. The sensor sample is read through sensor MMIO or SPI.
-2. The CPU stores or formats the sample.
-3. DMA-lite can move the required word or record.
-4. The CPU programs the AES key, nonce, counter, and plaintext registers.
-5. AES-CTR produces ciphertext.
-6. Ciphertext bytes are written to UART.
-7. The interrupt controller captures completion events.
-8. Activity counters record CPU, AES, UART, DMA, sensor, and sleep cycles.
-9. The processor can request sleep after completing the transaction.
-
-At the receiver, the same key, nonce, and counter regenerate the CTR keystream. XORing the ciphertext with that keystream recovers the original plaintext.
-
-The key is not transmitted with the ciphertext. It must be provisioned securely at both endpoints.
-
-UART is used only as a simple demonstration interface. A deployable vehicle design would use CAN-FD or Automotive Ethernet.
+At the trusted gateway, the receiver uses the same key and the corresponding nonce-counter value to recover the original record. It can then unpack timestamp, acceleration, gyroscope, wheel-speed, and diagnostic fields. This is the practical meaning of the sensor-to-encrypted-output path implemented in the thesis.
 
 ---
 
-# Slide 13: Verification Strategy
+## Slide 12: Layered Verification Methodology
 
-## Time: 20:00-22:00
+**Time: 14:00 to 15:05**
 
-The verification strategy is layered.
+Verification was organized in layers so that a failure could be localized instead of hidden inside one long scenario.
 
-The first layer is the AES known-answer test. It proves the cryptographic primitive after MMIO integration.
+Layer one verifies the AES primitive using the NIST known-answer vector. Layer two verifies supported processor behavior, including arithmetic, immediate, load-store, branch, jump, system, fence, and pseudo operations. Layer three verifies AES MMIO, sensor and SPI, UART, interrupts, DMA, power management, and custom commands. Layer four adds deterministic randomized smoke testing.
 
-The second layer is directed processor verification. It proves the supported instruction behavior.
+Layer five uses UVM with randomized plaintext, key, nonce, and counter, plus an independent C-DPI AES-CTR reference. Layer six measures the planned functional-coverage bins and end-to-end result coverage. Layer seven runs a complete processor-controlled scenario from sensor acquisition through encryption, UART, interrupt observation, counters, and sleep.
 
-The third layer is directed peripheral verification. It checks AES-CTR, sensor, SPI, UART, interrupt, DMA, power counters, and custom commands.
-
-The fourth layer is deterministic randomized smoke testing. It changes operands, sensor data, DMA values, and UART bytes so the design does not only pass fixed constants.
-
-The fifth layer is UVM end-to-end verification with an independent C-DPI AES-CTR model.
-
-The sixth layer is functional coverage.
-
-The seventh layer is a complete scenario:
-
-```text
-Sensor -> CPU/RAM -> DMA -> AES-CTR -> UART -> IRQ/Power -> Sleep
-```
-
-Layering the tests makes debugging practical. If the full scenario fails, the earlier unit and peripheral tests help identify whether the problem is in the AES core, CPU, register interface, UART, or integration sequence.
+This progression is deliberate. A final scenario proves integration, but the earlier layers tell us why it works and make debugging practical. The verification evidence therefore covers the primitive, instructions, interfaces, randomized data space, and full application flow.
 
 ---
 
-# Slide 14: UVM and Independent C Reference
+## Slide 13: UVM End-to-End Architecture
 
-## Time: 22:00-24:00
+**Time: 15:05 to 16:35**
 
-The UVM environment randomizes:
+[Follow the upper path from sequence to scoreboard.]
 
-- 128-bit plaintext,
-- 128-bit AES key,
-- 64-bit nonce,
-- 64-bit counter.
+The UVM sequence creates randomized 128-bit plaintext, AES key, nonce, and counter values. The driver programs the AES and UART MMIO interfaces. The RTL AES-CTR block produces ciphertext, and the UART transmitter serializes a textual transaction record using the physical TX line.
 
-The sequence creates reproducible transactions using a known seed.
+The UART monitor does not simply inspect the transmit register. It reconstructs bytes from the serial line, checks the UART framing, assembles the complete line, and sends the observed result to the scoreboard.
 
-The driver programs the RTL AES interface.
+In parallel, a C-DPI model independently computes the expected AES-CTR ciphertext and decrypts it again. The scoreboard requires three agreements: RTL ciphertext must equal the C reference, the reference decryption must recover the original plaintext, and the UART monitor must reconstruct the expected output line.
 
-An independently compiled C-DPI reference model performs AES-128 and CTR processing using separate C code. It calculates the expected ciphertext and decrypts the result.
+The coverage collector measures input distributions, selected crosses, match status, and UART result behavior.
 
-The RTL ciphertext must equal the C reference ciphertext.
-
-The decrypted value must equal the original randomized plaintext.
-
-The RTL UART then serializes the output. A passive UART monitor samples the physical `uart_tx` waveform, reconstructs bytes and complete lines, and sends the observed record to the scoreboard.
-
-This is stronger than checking an internal UART register because the serialized output path is included in the comparison.
-
-The coverage collector measures input categories, low nibbles, nonce-counter crosses, and match outcomes.
-
-The final coverage run reports:
-
-- **100 randomized transactions**,
-- **100 UART matches**,
-- **114 out of 114 portable coverage bins**,
-- **zero UVM errors**.
-
-One limitation is that this UVM environment concentrates on the AES and UART end-to-end path. The complete CPU, DMA, interrupt, and power flow is additionally proven through directed and scenario-based verification.
+One scope detail is important: this UVM environment verifies the AES-MMIO and UART end-to-end component path. It is not the proof of complete CPU execution. CPU-pipeline integration is covered by the directed regression and the full-SoC scenario shown later. Together, the environments cover both component depth and system breadth.
 
 ---
 
-# Slide 15: Waveform Evidence
+## Slide 14: AES-128 NIST Known-Answer Waveform
 
-## Time: 24:00-25:30
+**Time: 16:35 to 17:45**
 
-When reading the waveform, I use four steps:
+This is the wrapper-level AES known-answer test captured in Questa. The key is `000102030405060708090A0B0C0D0E0F`, and the plaintext is `00112233445566778899AABBCCDDEEFF`.
 
-1. Identify the input stimulus.
-2. Observe the main control transition.
-3. Check the output against the expected result.
-4. State the verification conclusion.
+[Point to start, busy, round count, state, and ciphertext in that order.]
 
-For the AES known-answer waveform, reset is released, the key and plaintext are loaded, start is asserted, busy becomes active, the round counter advances, and done asserts at completion.
+After reset, the test initializes the AES wrapper inputs and pulses start. Busy asserts while the round counter progresses through the ten AES rounds. The state and round-key buses change as the reusable datapath processes each round. At completion, busy deasserts, done asserts, and the ciphertext becomes `69C4E0D86A7B0430D8CDB78070B4C55A`, matching the NIST expected result.
 
-At done, the ciphertext is:
+The screenshot focuses on the cryptographic time window, so the displayed pass counter may still show its pre-check value at the cursor. The companion self-checking log executes immediately afterward and reports six checks passed, zero failed, and `ALL TESTS PASSED`. The six checks cover completion, busy behavior, and the four 32-bit ciphertext words.
 
-```text
-69C4E0D86A7B0430D8CDB78070B4C55A
-```
-
-The transcript confirms six checks: done, busy, and four ciphertext words.
-
-The CPU waveforms show PC movement, execution controls, memory operations, stalls, and flushes.
-
-The peripheral waveforms show AES-CTR, sensor/SPI, UART, interrupts, DMA, activity counters, and custom instruction interaction.
-
-The UVM waveforms show randomized inputs, RTL and reference ciphertext, recovered plaintext, UART reconstruction, scoreboard matches, and coverage progression.
-
-The full-SoC waveforms connect sensor input to encrypted output, event status, activity, and final sleep behavior.
+This waveform proves correct primitive sequencing and output for the selected standard vector.
 
 ---
 
-# Slide 16: Directed and Scenario Results
+## Slide 15: Full-SoC Scenario Waveform
 
-## Time: 25:30-26:30
+**Time: 17:45 to 18:55**
 
-The complete integrated directed regression reports:
+The previous slide isolated the AES wrapper. This waveform exercises the integrated application path.
 
-```text
-107 passes
-0 failures
-```
+[Point from sensor read to DMA, AES, UART, IRQ, and sleep.]
 
-This result includes processor instructions, AES ECB and CTR behavior, peripheral operations, signal activity, custom security commands, randomized smoke checks, and integrated paths.
+The CPU enables the required control registers, reads the modeled sensor value, and starts the SPI-side activity. DMA-lite performs the staged word transfer. The processor then programs the AES key, nonce, counter, plaintext, and CTR mode. AES busy asserts and the round engine runs. When done asserts, the resulting ciphertext becomes available; the shown lower plaintext word `0x12345678` produces the observed lower ciphertext word `0x62809322` for the programmed key and counter context.
 
-The full-SoC scenario contains **15 explicit pass criteria**.
+The software flow writes ciphertext data to UART, observes completion through status and pending-interrupt behavior, reads the activity counters, and finally enters sleep. The self-checking full-scenario test contains fifteen explicit checks, and the result is fifteen passed and zero failed.
 
-These results are not a mathematical proof that no bug exists. They show that the defined requirements and scenarios pass under the tested conditions.
-
-Additional confidence could be obtained from formal assertions, code coverage, constrained-random CPU instruction generation, mutation testing, and gate-level simulation.
+This is the system-level proof that the blocks are not merely instantiated together: their control and data movement form a coherent sensor-security transaction.
 
 ---
 
-# Slide 17: Quartus FPGA Results
+## Slide 16: Regression and Coverage Summary
 
-## Time: 26:30-28:00
+**Time: 18:55 to 20:10**
 
-The complete RISC-V security processor was compiled using Quartus Prime **23.1 Standard Edition, Build 993**.
+This slide summarizes the verification evidence without combining unlike test counts.
 
-The target device is Cyclone V:
+The complete integrated directed regression reports 107 checks passed and zero failed. That regression covers the processor instruction groups, AES modes, peripherals, custom ISA behavior, signal activity, randomized smoke operations, and the full system scenario.
 
-```text
-5CGXFC7C7F23C8
-```
+The dedicated UVM end-to-end run is reported separately. With 25 randomized transactions, the scoreboard records 25 UART matches, zero mismatches, and 96 of 114 planned portable coverage bins, or 84.21 percent. A longer 100-transaction coverage run then reaches 114 of 114 bins, with 100 matches and zero mismatches.
 
-The integrated design uses:
+[Point to the final coverage values in the waveform.]
 
-- **13,257 out of 56,480 ALMs**, or 23 percent,
-- **11,154 registers**,
-- **106 out of 268 pins**, or 40 percent,
-- zero DSP blocks,
-- zero reported block-memory bits,
-- zero PLLs.
+The portable coverage collector was used because the installed Questa Intel FPGA Starter Edition did not provide the licensed native SystemVerilog covergroup feature. It measures the same planned distributions and crosses in ordinary SystemVerilog. Therefore, I report it explicitly as portable functional coverage, not as simulator-native covergroup coverage.
 
-The clock constraint is **20 nanoseconds**, corresponding to **50 megahertz**.
-
-The reported worst setup slack is **positive 2.577 nanoseconds**, and the worst hold slack is **positive 0.371 nanoseconds**. Therefore, the design meets the reported 50-megahertz post-fit timing requirement.
-
-The approximate critical delay under this constraint is:
-
-```text
-20 - 2.577 = 17.423 nanoseconds
-```
-
-The Quartus power result is a vectorless, low-confidence estimate:
-
-- total: **519.72 milliwatts**,
-- static: **350.49 milliwatts**,
-- dynamic: **147.14 milliwatts**,
-- I/O: **22.09 milliwatts**.
-
-This is not measured board power. A stronger result would use workload-derived SAIF or VCD activity and physical current measurement.
-
-Also, the high pin count comes partly from debug visibility. Physical pin assignments and a reduced board-level interface are required before FPGA board deployment.
+The main conclusion is that deterministic checking, independent-reference comparison, UART reconstruction, and planned randomized-space closure all agree with the RTL behavior.
 
 ---
 
-# Slide 18: Limitations and Production Upgrade
+## Slide 17: Integrated FPGA Results in Quartus
 
-## Time: 28:00-29:00
+**Time: 20:10 to 21:25**
 
-The main limitations of the present implementation are:
+These are the complete AES-plus-RISC-V processor results from Quartus Prime Standard 23.1, targeting the Cyclone V device `5CGXFC7C7F23C8`.
 
-1. CTR provides confidentiality but not authentication.
-2. Nonce-counter reuse must be prevented.
-3. AES keys are currently stored in visible registers.
-4. UART is a demonstration interface.
-5. The interrupt output is verified, but full privileged CSR and trap handling is not implemented.
-6. The AES architecture has higher latency than a fully unrolled core.
-7. Quartus power is vectorless and low confidence.
-8. The design is not automotive safety or cybersecurity certified.
+The fitted design uses 13,257 ALMs, approximately 23 percent of the selected device, and 11,154 registers. The report shows no DSP blocks or embedded RAM blocks inferred for this implementation. The wide debug interface contributes to 106 I/O pins.
 
-The production upgrade path is:
+With a 20-nanosecond, or 50-megahertz, clock constraint, the post-fit worst setup slack is positive at 2.577 nanoseconds. The worst hold slack is also positive at 0.371 nanoseconds, so the reported timing constraints are met with no setup or hold violations.
 
-- AES-CTR to AES-GCM or CTR plus HMAC,
-- key registers to secure key storage or PUF-derived keys,
-- UART to CAN-FD or Automotive Ethernet,
-- debug interrupt to full RISC-V CSR and trap handling,
-- add replay protection and monotonic counters,
-- add secure boot and authenticated firmware loading,
-- add fault injection, side-channel analysis, watchdogs, and safety mechanisms.
-
-These limitations do not invalidate the prototype. They define the boundary between a verified research implementation and a deployable secure automotive controller.
+The Quartus power estimate is 519.72 milliwatts, consisting primarily of 350.49 milliwatts static and 147.14 milliwatts dynamic power, with about 22.09 milliwatts of I/O power. This is a vectorless estimate marked low confidence because no workload-derived VCD or SAIF activity was supplied. It is useful as an implementation estimate, but it is not measured board power.
 
 ---
 
-# Slide 19: Conclusion
+## Slide 18: Quartus RTL Netlist Evidence
 
-## Time: 29:00-30:00
+**Time: 21:25 to 22:20**
 
-To conclude, this work connects a low-power AES research contribution with a complete processor-level security system.
+These Quartus RTL Viewer images confirm that synthesis retains the intended hierarchy and connectivity.
 
-The reusable AES architecture significantly reduces standalone AES implementation cost in the reported 55-nanometre Genus comparison:
+[Briefly indicate the complete, MEM-stage, and EX-stage views.]
 
-- 96.77 percent fewer cells,
-- 94.17 percent lower area,
-- 96.10 percent lower total power.
+The top-level view shows the processor stages and peripheral integration. The memory-stage view is particularly important because it contains the RAM path, load-store formatting, MMIO decode, AES, UART, sensor-SPI, DMA, interrupt, and power-management branches. The execute-stage view shows the ALU, operand selection, forwarding, and branch-related path.
 
-The AES engine is integrated with a five-stage RISC-V processor using both MMIO and custom security instructions.
-
-The complete system includes sensor/SPI input, DMA-lite, AES-CTR encryption, UART output, interrupts, activity counters, and sleep control.
-
-Verification is performed through known-answer tests, directed CPU and peripheral tests, randomized smoke testing, UVM with an independent C model, functional coverage, and a complete application scenario.
-
-The integrated regression reports 107 passes with zero failures, while the UVM closure run reports 100 UART matches and 114 out of 114 planned portable coverage bins.
-
-The complete design is successfully fitted to a Cyclone V FPGA and meets the reported 50-megahertz timing constraint.
-
-The final contribution is therefore not only an AES core. It is a modular and verified security-processor prototype that demonstrates how hardware reuse, processor control, encrypted sensor flow, and layered verification can be combined for resource-conscious edge systems.
-
-Thank you.
+I use these figures as structural evidence, not as a claim that every primitive gate was manually inspected. Their purpose is to show that the expected modules were elaborated and connected rather than optimized into an unintended or disconnected structure. Functional correctness comes from simulation, while implementation feasibility and structure come from synthesis and fitting.
 
 ---
 
-# Likely Questions Immediately After the Presentation
+## Slide 19: Complete SoC in Cadence Genus, GPDK045 HVT
 
-## Why did you choose CTR instead of GCM?
+**Time: 22:20 to 23:40**
 
-CTR allows the existing AES encryption primitive to be reused for both encryption and decryption, keeps the wrapper compact, and is convenient for independent telemetry records. It provides confidentiality only. GCM is the correct future upgrade when authentication is required.
+This is a second implementation view of the complete SoC, using Cadence Genus 23.14 and the GPDK045 high-threshold-voltage standard-cell library at the stated slow corner of 0.9 volts and 125 degrees Celsius.
 
-## Is the design really automotive ready?
+The mapped design contains 50,968 leaf cells: 40,120 combinational cells and 10,848 sequential cells. The reported pre-layout area is 135,947.6 square micrometres.
 
-No. It is an RTL and FPGA proof of concept using an automotive sensor-security application. Production use requires CAN-FD or Automotive Ethernet, authenticated encryption, secure key storage, replay protection, safety mechanisms, and certification.
+[Point to the timing allocation bar.]
 
-## Why is the power reduction so high?
+For the 20-nanosecond clock constraint, the data-path portion is 17.169 nanoseconds. Including the reported setup and uncertainty terms, the worst setup slack remains positive at 2.315 nanoseconds, with total negative slack equal to zero. The corresponding constraint-equivalent estimate is about 56.55 megahertz, but this is not a post-layout signoff frequency.
 
-The baseline and proposed AES were compared under the same reported 55-nanometre Genus environment. The proposed design removes duplicated round hardware and reduces simultaneous switching. The exact percentage depends on synthesis conditions, so I report it only for that controlled comparison.
-
-## Why are there two sets of synthesis results?
-
-Cadence Genus compares the standalone baseline and reusable AES architectures using a 55-nanometre ASIC library. Quartus evaluates the complete AES plus RISC-V system on a Cyclone V FPGA. They answer different research questions and are not mixed.
-
-## Does 100 percent coverage mean there are no bugs?
-
-No. It means all 114 bins in the defined portable functional-coverage model were exercised. Additional coverage models, assertions, formal verification, code coverage, and fault-oriented tests can still find bugs.
-
-## Did the custom instruction perform complete AES in one cycle?
-
-No. AES remains multi-cycle. The custom instructions provide compact accelerator control and status or result access. Busy and done signals preserve correct sequencing.
-
-## What exactly is your core contribution?
-
-The core contribution is the iterative hardware-reusable AES architecture and its integration into a modular RISC-V security processor with AES-CTR, MMIO, custom security instructions, peripherals, and layered end-to-end verification.
+The vectorless synthesis power estimate is 1.43753 milliwatts: approximately 1.29801 milliwatts internal, 0.13743 milliwatts switching, and 0.002084 milliwatts leakage. The very low leakage is consistent with HVT mapping, while the longer data path reflects the speed trade-off. These numbers require post-layout parasitics and workload activity before signoff conclusions.
 
 ---
 
-# Delivery Notes
+## Slide 20: Cadence Genus Mapped Netlist
 
-- Speak slowly when stating numerical results.
-- Pause after the problem statement and after the main contribution.
-- Do not read every label inside a figure. Explain its engineering message.
-- Always identify whether a result comes from Genus, Quartus, or Questa.
-- Say "estimated" for vectorless power.
-- Say "RV32I-style" rather than claiming formal RISC-V compliance.
-- Say "proof of concept" rather than "production automotive processor."
-- When challenged, answer using: fact, evidence, limitation, improvement.
+**Time: 23:40 to 24:30**
+
+This image is the Genus GUI schematic of the mapped complete processor. At this scale it is intentionally dense because it represents 50,968 standard-cell instances and the connectivity between them.
+
+The useful interpretation is structural. The design was read, elaborated, synthesized, and mapped using HVT cells, while seventeen hierarchy groups were retained for traceability. The dense central routing reflects the shared processor buses, control fanout, and the MEM-stage peripheral interconnect. The large schematic should not be mistaken for a placed-and-routed physical layout; cell placement, clock-tree synthesis, routing parasitics, and final signoff are outside this synthesis-stage image.
+
+Together with the QoR, timing, and power reports, this netlist provides evidence that the full RTL is mappable to a standard-cell library rather than being only simulation code.
+
+---
+
+## Slide 21: Correct Interpretation of the Three Result Domains
+
+**Time: 24:30 to 25:30**
+
+This slide prevents a common but serious reporting error. The three result groups answer different questions and should not be directly divided against one another.
+
+The standalone AES comparison uses Cadence Genus with TSMC 55 nanometre RVT cells. Because baseline and reusable AES use the same scope, library, and conditions, that is the valid evidence for the 94.17 percent area reduction and 96.10 percent power reduction.
+
+The Quartus result covers the complete FPGA SoC and answers whether the integrated design fits and meets timing on the selected Cyclone V device.
+
+The GPDK045 HVT Genus result also covers the complete SoC, but in a different library and synthesis environment. It answers whether the integrated RTL can be mapped to HVT standard cells and meet the 50-megahertz constraint at that synthesis corner.
+
+I therefore do not compare 13,257 FPGA ALMs with 50,968 ASIC cells, or 519.72 milliwatts in an FPGA estimate with 1.43753 milliwatts in a vectorless ASIC-library estimate. The technologies, scopes, activity assumptions, and implementation stages are different.
+
+---
+
+## Slide 22: Low-Power Interpretation
+
+**Time: 25:30 to 26:40**
+
+The architectural reasoning follows the dynamic-power relation `P_dynamic = alpha times C times V squared times f`.
+
+The RTL does not control fabrication voltage, and the comparison frequency is constrained by the chosen synthesis setup. The main architectural levers are therefore switching activity `alpha` and effective switched capacitance `C`.
+
+The reusable AES reduces capacitance by removing duplicated round hardware. It reduces simultaneous activity because only the required round datapath and state updates operate in each cycle. Hardware acceleration also avoids a long software sequence of loads, substitutions, shifts, XORs, and key-expansion operations on the CPU. Around the accelerator, clock-enable style controls suppress unnecessary register updates when AES, UART, sensor, or DMA are idle; no unsafe generated clocks are used.
+
+However, RTL structure alone does not prove final energy. Accurate dynamic-power comparison requires representative switching activity from VCD or SAIF, followed by post-placement clock-tree and parasitic analysis across process, voltage, and temperature corners. The current evidence supports the architectural reduction and synthesis estimates; silicon-level energy remains future validation.
+
+---
+
+## Slide 23: Limitations and Production Upgrade Path
+
+**Time: 26:40 to 28:00**
+
+[Point across each prototype-to-production row.]
+
+The current system is intentionally a research prototype, and its limitations define the next engineering steps.
+
+First, AES-CTR provides confidentiality but not integrity. CTR ciphertext is malleable, and the same key must never reuse the same nonce-counter combination. Production communication should therefore move to authenticated encryption, such as AES-GCM, or use a separate MAC with strict freshness checking.
+
+Second, the key is held in visible control registers. Production hardware needs secure provisioning, protected nonvolatile or physically isolated key storage, zeroization, debug restrictions, and resistance to side-channel and fault attacks.
+
+Third, UART is a convenient demonstration interface. Automotive deployment requires CAN-FD or Automotive Ethernet, message authentication, error handling, and network timing analysis.
+
+Fourth, the present interrupt line is observable and its pending behavior is verified, but the processor does not yet implement complete privileged CSR, trap-vector, and return handling.
+
+Finally, an automotive product requires safety and cybersecurity engineering, including ISO 26262 and ISO/SAE 21434 processes, fault injection, watchdog and redundancy strategy, secure boot, authenticated firmware update, and qualification across operating corners. This slide is therefore not an apology for the prototype; it is the technically honest path from thesis RTL to deployable hardware.
+
+---
+
+## Slide 24: Conclusion
+
+**Time: 28:00 to 29:15**
+
+To conclude, this work makes five connected contributions.
+
+First, it demonstrates an iterative AES-128 architecture that reuses one round datapath and, in the controlled standalone TSMC 55 nanometre study, substantially reduces cell count, area, and estimated power relative to the baseline.
+
+Second, it integrates that AES primitive into a five-stage RV32I-style processor with CTR-mode support, sensor and SPI access, UART, DMA-lite, interrupt collection, sleep control, and activity counters.
+
+Third, it provides both conventional MMIO control and a compact custom security ISA path while preserving the existing load-store pipeline organization.
+
+Fourth, verification moves beyond a ciphertext-only check. It covers processor instructions, peripheral behavior, randomized AES-CTR transactions, an independent C-DPI reference model, physical UART reconstruction, planned coverage closure, and a fifteen-check full-SoC scenario.
+
+Fifth, the implementation is supported by distinct evidence: standalone AES synthesis, complete FPGA fitting and timing, and complete HVT standard-cell mapping.
+
+The main engineering result is a traceable path from a hardware-reusable cipher core to a verified lightweight security processor, with its benefits and limitations stated separately and quantitatively.
+
+---
+
+## Slide 25: Thank You
+
+**Time: 29:15 to 30:00**
+
+Thank you for your time and attention.
+
+The central idea I would like to leave with you is that low-power security does not always require removing hardware or executing everything in software. It can also be achieved by using dedicated hardware carefully: reusing the expensive datapath, activating it only when needed, and integrating it through a simple, verifiable processor interface.
+
+I will be happy to answer questions on the AES architecture, RISC-V integration, verification environment, synthesis results, or the production upgrade path.
+
+[Stop. Look at the panel. Do not continue filling the silence.]
+
+---
+
+# Short Viva Preparation After the Talk
+
+These answers are not part of the timed presentation. Use them if the panel asks follow-up questions.
+
+## 1. What is the single most important novelty?
+
+The strongest standalone architectural contribution is reuse of one AES round datapath across all AES-128 rounds, demonstrated against the baseline under the same TSMC 55 nm synthesis conditions. The thesis-level contribution is extending that core into a verified RISC-V security processor with both MMIO and custom-instruction control.
+
+## 2. Why choose CTR instead of ECB?
+
+ECB was retained only for the NIST known-answer test. CTR avoids pattern leakage, supports arbitrary-length records without padding, permits independent counter blocks, and uses only the AES encryption primitive for both encryption and decryption. CTR does not authenticate data, so GCM or CTR plus a MAC is needed for production.
+
+## 3. Does the sensor supply the nonce and key?
+
+No. The sensor supplies physical readings. The processor packs those readings into the plaintext. The key comes from trusted provisioning. The nonce identifies the security context or session, and the counter advances for each encrypted block.
+
+## 4. What happens if the nonce and counter are reused?
+
+If the same key and nonce-counter input are reused, the same keystream is generated. XORing the two ciphertexts then reveals the XOR of the two plaintexts, which can expose both messages. The combination must therefore be unique for every block under a given key.
+
+## 5. Why retain MMIO after adding custom instructions?
+
+MMIO is complete, modular, and software-portable. It can program all 128-bit key, nonce, counter, and plaintext words. The custom instructions are a compact research extension for common control and result operations; they do not replace the entire register interface.
+
+## 6. Is the UVM test a full CPU test?
+
+No. The UVM environment deeply verifies the AES-MMIO-to-UART component path using randomized transactions and an independent C-DPI model. Full CPU-pipeline participation is verified separately by the directed regression and the full-SoC scenario. This separation makes failure diagnosis clearer.
+
+## 7. Why use a portable coverage collector?
+
+The installed Questa Intel FPGA Starter Edition did not include the `svverification` license required for native covergroups. The project therefore implements the planned bins and crosses in portable SystemVerilog and reports exactly how the metric was collected. The 100-transaction run closes all 114 planned bins.
+
+## 8. Why are Quartus and Genus power values so different?
+
+They are not directly comparable. One is a Cyclone V FPGA estimate and includes FPGA static and I/O behavior. The other is a GPDK045 HVT standard-cell synthesis estimate. Their technologies, libraries, operating conditions, scopes of physical information, and activity assumptions differ.
+
+## 9. Is 56.55 MHz the proven ASIC Fmax?
+
+No. It is a constraint-equivalent estimate derived from the Genus synthesis timing report. Final Fmax requires post-layout extraction, clock-tree effects, parasitics, and multi-corner signoff.
+
+## 10. Why are no DSP or embedded RAM blocks used in Quartus?
+
+AES transformations are logic and XOR dominated, so DSP blocks are unnecessary. In this RTL configuration, the instruction and data storage structures were not inferred as embedded RAM blocks, partly because of their behavioral and verification-oriented access patterns. A production FPGA version could restructure memories for block-RAM inference.
+
+## 11. What exactly does the 107-pass result mean?
+
+It is the final complete integrated directed regression: 107 explicit self-checking conditions passed and zero failed. It is separate from the dedicated UVM transaction counts and the 114-bin coverage metric.
+
+## 12. What is the main performance disadvantage of iterative AES?
+
+Its block latency is higher than a fully unrolled or deeply pipelined implementation because the same round hardware is reused over several cycles. The architecture is appropriate when telemetry rate is moderate and area and energy are more important than maximum throughput.
+
+## 13. Does this design meet automotive production requirements?
+
+No production qualification is claimed. It is an RTL and FPGA proof of concept. Production requires authenticated encryption, secure key storage, replay protection, automotive interfaces, full trap handling, secure boot, fault tolerance, side-channel evaluation, and ISO 26262 and ISO/SAE 21434 processes.
+
+## 14. What would you implement next?
+
+The most valuable next step is authenticated encryption with secure nonce management and protected key storage. At the processor level, I would add privileged CSR and trap support. At the interface level, I would replace UART with CAN-FD or Automotive Ethernet, then perform activity-based post-layout power and fault-security evaluation.
+
+## 15. Which result most directly proves the low-power AES claim?
+
+The controlled baseline-versus-proposed standalone AES comparison in Cadence Genus using the same TSMC 55 nm RVT environment. The integrated Quartus and GPDK045 results establish SoC feasibility, but they are not the source of the standalone percentage reductions.
+
+---
+
+# Final Delivery Checklist
+
+- Open the revised deck and disable automatic slide timing.
+- Keep a backup PDF of the presentation on the same machine.
+- Verify that Slides 14 and 15 remain readable on the projector.
+- Say "estimated power," not "measured power."
+- Say "portable functional coverage," not "native covergroup coverage."
+- Say "RTL/FPGA proof of concept," not "automotive-qualified processor."
+- Keep TSMC 55 nm AES results, Cyclone V FPGA results, and GPDK045 HVT SoC results separate.
+- End at Slide 25 and wait for questions.
