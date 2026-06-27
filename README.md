@@ -1,10 +1,10 @@
-[Custom opcode decoding](rtl/control_unit.sv#L235-L247)
+[Custom opcode decoding](rtl/rt/cpu/control_unit.sv#L235-L247)
 
-[Custom instruction execution](rtl/mem_stage.sv#L130-L137)
+[Custom instruction execution](rtl/rtl/cpu/mem_stage.sv#L130-L137)
 
-[AES custom-command handling](rtl/aes_mmio.sv#L165-L185)
+[AES custom-command handling](rtl/aes/aes_mmio.sv#L165-L185)
 
-[Custom operand forwarding](rtl/ex_stage.sv#L210-L219)
+[Custom operand forwarding](rtl/rtl/rtl/cpu/ex_stage.sv#L210-L219)
 
 [Custom ISA verification](tb/riscv_core_tb.sv#L1015-L1055)
 
