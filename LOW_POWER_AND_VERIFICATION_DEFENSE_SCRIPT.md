@@ -1,6 +1,10 @@
 # External Examiner Defense Script
 
-
+- Low-power RTL and VLSI design
+- ASIC and FPGA synthesis
+- Verification methodology
+- SystemVerilog and UVM
+- Coverage, scoreboards and reference models
 
 The language is deliberately simple, but every claim is technically bounded.
 
@@ -546,7 +550,211 @@ Runtime plusargs select AES KAT, directed CPU, directed peripherals, random smok
 
 The project has strong functional scenario evidence but lacks full code coverage, assertion closure, formal verification, power-aware simulation and fault-oriented security verification.
 
-# Part IV: Live Demonstration Script
+# Part IV: Bugs Found and Debugging Method
+
+## How to Introduce This Section
+
+Say:
+
+> During integration, not every failure was an RTL algorithm bug. I classified each problem as an RTL transaction bug, an interface robustness issue, a testbench synchronization bug or a tool-flow problem. I first reproduced it with the smallest test selector, observed the controlling handshake, corrected one root cause and then ran focused and complete regressions.
+
+## Debugging Summary
+
+| Category | Observed symptom or risk | Root cause | Correction | Regression evidence |
+|---|---|---|---|---|
+| RTL: AES restart handshake | A new AES request could see completion state belonging to the previous operation and capture stale ciphertext | The wrapper completion condition did not sufficiently distinguish a new start pulse from an old `done` event | Clear sticky done on start and accept completion only when busy and `!aes_start_pulse` | Restart-fix log, repeated RTL regressions, multi-transaction UVM |
+| RTL interface: UART completion | Software polling or an interrupt could miss completion | `uart_tx` generates a one-clock `done` pulse | Convert the pulse into sticky `done_latched` status and clear it through CONTROL | Directed UART test and UART UVM monitor |
+| RTL interface: interrupt events | Short AES, UART, sensor or DMA events could disappear before software read them | Raw event pulses were not retained | OR sources into sticky `pending_reg`; use write-one-to-clear | Directed INTC checks and Full-SoC pending value `0xF` |
+| Verification timing assumption | Reusable AES appeared to time out after replacing the earlier faster AES primitive | The old test assumed completion within about 40 cycles, but the reusable core needs about 295 cycles | Poll status with a bounded 500-cycle timeout | AES KAT, CTR, UVM and Full-SoC tests pass with the reusable core |
+| UVM synchronization | A one-transaction run reported `MISSING_UART` and `NO_COVERAGE` although the driver had generated an expected line | The test dropped its run-phase objection before the final serialized UART line was fully reconstructed | Keep the objection raised for 200 additional clocks after the sequence | Old failing log shows two UVM errors; final 25- and 100-transaction runs show zero errors |
+| Questa elaboration flow | `vopt-7063` could not find `dut.u_if_stage.u_instr_mem.rom` | Simulation compiled the synthesis-oriented instruction-memory branch, so the testbench-visible ROM hierarchy was absent | Compile through `compile_rtl.do` with `+define+SIMULATION` | Current directed compilation has zero errors and zero compile warnings |
+| Quartus constraints/tool flow | Missing SDC warning or rejected constraints; early timing also looked negative | Tool-specific SDC syntax was mixed, and pre-fit timing was interpreted as final timing | Keep separate Quartus and Genus SDC files and use post-fit timing for FPGA signoff | Final Quartus setup and hold slacks are positive |
+
+## Bug 1: AES Stale-Done Restart Bug
+
+This is the strongest RTL debugging example.
+
+### Symptom
+
+The AES core produces a short `done` indication. During repeated operations, the wrapper could begin a new transaction while completion state from the previous operation was still visible. The new request could therefore be completed too early or could retain the previous ciphertext.
+
+### Debugging approach
+
+1. Run repeated AES transactions rather than only one NIST vector.
+2. Place `aes_start_pulse`, `busy_reg`, primitive `aes_done`, `done_reg` and `ct_reg` in one waveform.
+3. Compare the cycle of the second start with the cycle in which completion was accepted.
+4. Confirm whether ciphertext changed only after the new primitive operation really finished.
+
+### RTL correction
+
+The current completion condition in [`../aes_mmio.sv`](../aes_mmio.sv) is conceptually:
+
+```systemverilog
+if (clk_en_i && aes_done && busy_reg && !aes_start_pulse) begin
+    ct_reg   <= mode_ctr_reg ? (pt_reg ^ aes_ciphertext) : aes_ciphertext;
+    busy_reg <= 1'b0;
+    done_reg <= 1'b1;
+end
+```
+
+The `!aes_start_pulse` condition prevents an old completion event from being accepted in the same cycle as a new request. Starting a new operation also clears `done_reg`.
+
+### Proof after correction
+
+- [`../verification/uvm_e2e/rtl_after_aes_restart_fix.log`](../verification/uvm_e2e/rtl_after_aes_restart_fix.log)
+- [`../verification/uvm_e2e/rtl_after_fix_repeat_1.log`](../verification/uvm_e2e/rtl_after_fix_repeat_1.log)
+- [`../verification/uvm_e2e/rtl_after_fix_repeat_2.log`](../verification/uvm_e2e/rtl_after_fix_repeat_2.log)
+
+The repeated regressions remained passing, and later UVM runs completed multiple randomized transactions without ciphertext or UART mismatch.
+
+## Bug 2: UART Done Pulse Could Be Missed
+
+### Symptom
+
+The physical UART transmitter asserts `done_o` for one clock. A software polling loop does not necessarily read the STATUS register in that exact clock, and an event-driven path could also miss the pulse.
+
+### Root cause
+
+A pulse-level hardware handshake was exposed directly to slower software-visible control.
+
+### RTL correction
+
+[`../uart_mmio.sv`](../uart_mmio.sv) latches the pulse:
+
+```systemverilog
+if (tx_done_pulse) begin
+    done_latched <= 1'b1;
+end
+```
+
+The sticky flag remains asserted until software writes CONTROL[1]. UART status and interrupt logic use `done_latched`, not the raw pulse.
+
+### Verification
+
+The directed test checks both completion and return to idle. UVM goes further by reconstructing the actual serial characters and comparing the complete line.
+
+## Bug 3: Interrupt Event Loss
+
+### Symptom
+
+Peripheral completion events may last one cycle, while CPU software may read the interrupt controller many cycles later.
+
+### Root cause
+
+Using raw pulses directly would make interrupt visibility depend on exact CPU timing.
+
+### RTL correction
+
+[`../simple_intc.sv`](../simple_intc.sv) retains every event:
+
+```systemverilog
+pending_reg <= pending_reg | irq_sources;
+```
+
+Software clears selected bits using write-one-to-clear. If an event arrives in the clear cycle, the logic ORs sources before applying the clear mask, giving deterministic behavior.
+
+### Verification
+
+The directed test checks the sensor pending bit and combined IRQ. The Full-SoC scenario observes all four pending sources as `0x0000000F`.
+
+## Bug 4: Testbench Timeout Did Not Match Reusable AES Latency
+
+### Symptom
+
+The original AES environment expected a much faster completion. After integrating the byte-sequential reusable core, a short timeout could report failure even when the RTL was progressing correctly.
+
+### Root cause
+
+The verification assumption belonged to the older AES architecture. The current primitive needs 295 simulation cycles.
+
+### Debugging approach
+
+The FSM state, round count, helper start/done signals and top-level busy signal were observed. They showed forward progress rather than a deadlock.
+
+### Correction
+
+The directed and UVM polling loops now use a bounded 500-cycle timeout. This remains finite, so a genuine hang still fails the test.
+
+## Bug 5: UVM Test Ended Before UART Monitor Finished
+
+This is a testbench bug, not an RTL bug.
+
+### Original failure
+
+The retained log [`../verification/uvm_e2e/uvm_e2e_seed_101_one.log`](../verification/uvm_e2e/uvm_e2e_seed_101_one.log) reported:
+
+```text
+MISSING_UART: 1 expected UART line was not observed
+NO_COVERAGE: No UART lines were matched
+UVM_ERROR: 2
+```
+
+### Root cause
+
+The sequence finished after sending its requests, but UART serialization and monitor reconstruction were still running. The test dropped its objection, so UVM moved to `check_phase` too early.
+
+### Correction
+
+The current test in [`../verification/uvm_e2e/uvm_e2e_pkg.sv`](../verification/uvm_e2e/uvm_e2e_pkg.sv) waits before dropping the objection:
+
+```systemverilog
+phase.raise_objection(this);
+seq.start(env.seqr);
+repeat (200) @(env.driver.vif.clk);
+phase.drop_objection(this);
+```
+
+### Proof
+
+The final 25-transaction run reports 25 matches and zero mismatches. The 100-transaction run reports 100 matches, zero mismatches and 114/114 planned bins.
+
+## Tool-Flow Problem: Instruction ROM Hierarchy
+
+This was not a processor RTL logic failure.
+
+### Symptom
+
+Questa optimization failed because the testbench referred to:
+
+```text
+dut.u_if_stage.u_instr_mem.rom
+```
+
+but the compiled instruction-memory configuration did not contain that simulation array.
+
+### Correction
+
+All RTL simulation scripts compile with:
+
+```text
++define+SIMULATION
+```
+
+This preserves the testbench-visible ROM while leaving Quartus synthesis behavior unchanged.
+
+## Seven-Step Debugging Method to Say in the Viva
+
+1. Reproduce the failure using the smallest test selector.
+2. Record the seed, expected value, actual value and first failure time.
+3. Trace the transaction backward from the scoreboard or failed register.
+4. Observe request, busy, done, data-valid and state signals in one waveform.
+5. Classify the cause as RTL, testbench, constraint or tool-flow related.
+6. Correct one root cause and rerun the focused test.
+7. Run repeated seeds and the complete regression to check for side effects.
+
+## Tough Question: Which Bug Was Actually Found by UVM?
+
+Answer:
+
+> Repeated end-to-end testing helped expose AES restart sensitivity, while an early one-transaction UVM run also exposed a verification race: the test ended before the UART monitor reconstructed the line. I separated the two. The AES handshake was an RTL integration correction; the missing-UART error was fixed in the UVM objection timing. After both corrections, repeated RTL runs, four UVM seeds, the 25-transaction regression and the 100-transaction coverage run passed.
+
+## Tough Question: Did Random Testing Find a CPU Arithmetic Bug?
+
+Answer:
+
+> No CPU arithmetic bug is claimed from the retained random-smoke results. The directed CPU suite established instruction behavior, while randomization was more useful for varying cryptographic data and repeating cross-transaction peripheral behavior. I would rather state that accurately than claim that every verification layer discovered a unique bug.
+
+# Part V: Live Demonstration Script
 
 ## Directed Peripheral Test
 
@@ -599,7 +807,7 @@ Run:
 
 Point to `PASS=15 FAIL=0`, then trace sensor/SPI to RAM/DMA, AES-CTR, UART, interrupt, counters and sleep.
 
-# Part V: Statements to Avoid
+# Part VI: Statements to Avoid
 
 Do not say:
 
@@ -635,4 +843,3 @@ Before entering the room, recite these eight facts:
 6. UVM: 25 matches and zero mismatches; separate coverage run reaches 114/114 with 100 transactions.
 7. Full-SoC scenario: 15 pass and zero fail.
 8. Main limitations: vectorless power, no authentication, register-based keys, no UPF/signoff power and incomplete assertion/code-coverage closure.
-
