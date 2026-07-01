@@ -4,7 +4,7 @@
 
 **Design and Verification of a Lightweight RISC-V-Based IoT Security Processor with Iterative Hardware-Reusable AES 128**
 
-This plan is designed for one serious preparation day. It does not ask you to memorize every RTL line. It teaches you the project in the order an examiner is likely to question it:
+This plan is designed for one serious preparation day. 
 
 ```text
 Problem -> design choice -> RTL implementation -> verification -> results -> limitations
@@ -20,6 +20,22 @@ How did you verify it?
 Which result proves each claim?
 What is still missing?
 ```
+
+## External Examiner Profile
+
+The external examiner is a low-power-design specialist and a verification engineer. Prepare with this weighting:
+
+| Preparation area | Weight | What the examiner may challenge |
+|---|---:|---|
+| Low-power architecture and methodology | 40% | Hardware reuse, switching activity, clock enable, leakage, power estimation confidence, fair comparison and energy/latency trade-off |
+| Verification architecture and completeness | 40% | Reference-model independence, scoreboard operation, coverage meaning, test isolation, corner cases, assertions, negative testing and remaining verification gaps |
+| RISC-V, MMIO and application integration | 20% | Pipeline impact, 32-to-128-bit assembly, custom ISA versus MMIO, DMA, interrupt and practical deployment |
+
+Use the examiner-focused speaking script during the presentation rehearsal:
+
+[`presentation/EXTERNAL_EXAMINER_LOW_POWER_AND_VERIFICATION_DEFENSE_SCRIPT.md`](presentation/EXTERNAL_EXAMINER_LOW_POWER_AND_VERIFICATION_DEFENSE_SCRIPT.md)
+
+The key defense rule is to separate evidence by scope. The controlled 55 nm Genus comparison supports the reusable-AES area and power claim. Quartus supports integrated FPGA utilization and timing, but its vectorless power estimate has low confidence. Activity counters measure active cycles, not watts. UVM verifies the randomized AES-CTR/UART path, while the directed Full-SoC scenario verifies the processor and all integrated peripherals together.
 
 ---
 
