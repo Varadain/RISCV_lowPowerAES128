@@ -1,14 +1,6 @@
 # External Examiner Defense Script
 
-## Examiner Profile
 
-This version is prepared for an external examiner who is experienced in:
-
-- Low-power RTL and VLSI design
-- ASIC and FPGA synthesis
-- Verification methodology
-- SystemVerilog and UVM
-- Coverage, scoreboards and reference models
 
 The language is deliberately simple, but every claim is technically bounded.
 
