@@ -1,225 +1,99 @@
-# IEEE ISAIA 2026 Oral Presentation Speaker Script
+# IEEE ISAIA 2026 Oral Presentation Read Aloud Script
 
 ## Paper details
 
 **Title:** A Lightweight RISC-V Security Processor with AES-CTR Acceleration and Custom ISA Support for IoT Edge Nodes  
 **Authors:** Varada Inamdar and Ashwini Kulkarni  
 **Affiliation:** COEP Technological University, Pune, India  
-**Presentation format:** 10-minute oral presentation followed by 2 minutes for questions
+**Target delivery time:** 10 minutes
 
-This is a descriptive, speak-aloud script. Speak naturally rather than reading every word exactly. The timing leaves a small buffer before questions.
-
----
-
-## Slide 1 - Title
-
-**Time: 0:00 to 0:35**
-
-Good evening, respected session chairs, fellow researchers, and participants. We are Varada Inamdar and Ashwini Kulkarni from COEP Technological University, Pune, India.
-
-Today, we are presenting our work titled *A Lightweight RISC-V Security Processor with AES-CTR Acceleration and Custom ISA Support for IoT Edge Nodes*.
-
-The main idea of this work is to protect IoT data close to where it is generated. We integrate AES-CTR encryption with a lightweight RISC-V processor and provide a small custom instruction and register interface for software control.
-
-During this presentation, I will explain the motivation, the processor architecture, the AES-CTR data path, the verification approach, and the FPGA implementation results.
-
-**Transition:** Let us first look at why protection at the edge is important.
+Read the paragraphs below in order. The slide headings and timings are only for navigation and are not part of the spoken presentation.
 
 ---
 
-## Slide 2 - Edge-data protection
+## Slide 1 - Title  0:00 to 0:35
 
-**Time: 0:35 to 1:15**
+Good evening, respected session chairs, fellow researchers, and participants. We are Varada Inamdar and Ashwini Kulkarni from COEP Technological University, Pune, India. Today, we present a lightweight RISC-V security processor with AES-CTR acceleration and custom ISA support for IoT edge nodes. The objective is to protect sensor data locally while retaining a familiar embedded processor and software-control model. I will briefly cover the motivation, architecture, encryption data path, custom ISA, verification, and implementation results.
 
-IoT nodes often collect data in places where transmission happens immediately after sensing. If protection is delayed until the data reaches a gateway, cloud server, or larger processor, the data may remain exposed at the edge. Software-only encryption also consumes instruction cycles for data movement and control.
+## Slide 2 - Edge-data protection  0:35 to 1:10
 
-Our approach is to bring the encryption path closer to the source of the data. The sensor data enters the edge node, the processor controls encryption locally, and protected telemetry can then be transmitted through the available communication interface.
+IoT nodes often capture data and transmit it immediately. If protection is delayed until the data reaches a gateway or cloud service, sensitive information can remain exposed at the edge. Software-only encryption also adds instruction cycles for block handling, data movement, and control. Our approach moves encryption closer to the sensor interface. Data is acquired through the edge node, protected by the local AES-CTR path, and then made available for secure telemetry.
 
-**Point to the flow:** raw sensor data, local encryption, then protected telemetry.
+## Slide 3 - Design objective  1:10 to 1:55
 
-**Transition:** The design therefore makes three focused architectural choices.
+The design has three main elements. First, it retains an RV32I five-stage pipeline with fetch, decode, execute, memory access, and writeback. Second, it adds an iterative AES-128 accelerator operating in CTR mode, which suits a compact edge-device implementation. Third, it provides both memory-mapped registers and a compact custom instruction path for accelerator control. The security and peripheral functions connect at the MEM-stage interconnect, so the main processor pipeline remains stable.
 
----
+## Slide 4 - Integrated security processor  1:55 to 3:00
 
-## Slide 3 - Design objective
+This slide shows the integrated security processor. The top lane is the RV32I pipeline. Existing forwarding, load-use stall handling, and branch-flush behavior remain part of the processor control logic. The middle lane is the security path. A custom security instruction reaches the MEM-stage interconnect and drives the AES-128 CTR accelerator. The MMIO register block provides access to control, busy and done status, nonce, counter, and ciphertext data.
 
-**Time: 1:15 to 2:00**
+The lower lane contains the edge-node services. SPI supports sensor input, UART supports communication, DMA-lite supports data movement, and the activity-control block records system activity. The AES and CTR region begins at address 0x0000_0300, followed by sensor and SPI at 0x0000_0400, UART at 0x0000_0500, interrupts at 0x0000_0600, DMA-lite at 0x0000_0700, and power or activity control at 0x0000_0800.
 
-The first decision was to retain a familiar RV32I five-stage processor core. This gives the design a conventional instruction-processing structure with fetch, decode, execute, memory access, and writeback stages.
+## Slide 5 - AES-CTR encryption path  3:00 to 4:05
 
-The second decision was to include an AES-128 accelerator operating in CTR mode. Rather than moving all encryption work into software, the processor can control a dedicated hardware block for the cryptographic operation.
+AES-128 uses a 128-bit key. In CTR mode, AES encrypts a counter block instead of encrypting plaintext directly. In this implementation, the counter block is formed from a 64-bit nonce and a 64-bit counter. Encrypting this block generates a 128-bit keystream. The plaintext is combined with that keystream through XOR, producing the ciphertext. When the transaction completes, the controller clears the busy state, asserts the done state, and increments the counter for the next block.
 
-The third decision was to expose the security path through a compact custom ISA and memory-mapped control interface. This means that software can explicitly start an operation, observe its status, read the result, and clear the interface when the transaction completes.
+CTR mode supports independent counter blocks and does not require padding, which makes it suitable for stream-like sensor data. The key security requirement is that a nonce-counter value must never repeat with the same AES key.
 
-These choices add security support without replacing the embedded programming model.
+## Slide 6 - Custom ISA and MMIO control interface  4:05 to 4:55
 
-**Transition:** The next slide shows how these elements connect in the complete system.
+The custom extension uses the RISC-V custom-0 opcode, binary 0001011, with the funct3 field selecting the requested operation. The implemented security commands are CSEC_AES_START, CSEC_AES_STATUS, CSEC_AES_CT0, and CSEC_AES_CLEAR. The start command launches an AES-CTR transaction. The status command returns the busy, done, and mode bits. The CT0 command returns ciphertext word zero, and the clear command resets the done state.
 
----
+The AES and CTR register window begins at 0x0000_0300. The custom instruction path reuses the same internal AES MMIO wrapper, so it shortens the control sequence without creating a separate cryptographic datapath.
 
-## Slide 4 - Integrated security processor
+## Slide 7 - RTL verification sequence  4:55 to 5:55
 
-**Time: 2:00 to 3:05**
+This waveform shows the AES control transaction. The processor issues a start command, the accelerator enters the busy state, the encryption completes, and the result can then be read or cleared. The directed Questa regression completed with 83 passing checks and no functional failures. It covered RV32I arithmetic, loads and stores, control hazards, AES-128 ECB known-answer testing, AES-CTR counter behavior, SPI, UART, interrupts, DMA-lite, activity counters, and custom security instructions. The observed AES ciphertext words matched the expected known-answer values, and the custom ciphertext read returned the expected result.
 
-This slide presents the project architecture.
+## Slide 8 - Implementation flow  5:55 to 6:35
 
-At the top, we have the RV32I five-stage pipeline. Instructions move from instruction fetch, or IF, through decode, execute, memory access, and writeback. This pipeline remains the main compute foundation of the system.
+The complete design was described in SystemVerilog RTL. It includes the RISC-V processor, iterative AES-CTR accelerator, custom control logic, and the SPI, UART, interrupt, DMA-lite, and activity-counter blocks. We synthesized the design with Intel Quartus Prime 23.1 for a Cyclone V FPGA target. The analysis-and-synthesis run completed with zero errors and zero warnings. The netlist view provides structural evidence that the processor, AES wrapper, and peripheral subsystem were integrated in the implementation flow.
 
-The middle lane shows the security path. The custom ISA control block receives the required command from the processor. It communicates with the AES-128 CTR accelerator, which performs the encryption operation. The MMIO registers then provide software-visible access to status and data.
+## Slide 9 - Cyclone V implementation snapshot  6:35 to 7:25
 
-The bottom lane contains the peripheral services needed by an IoT edge node. SPI supports sensor input, UART supports communication or telemetry, and the DMA-lite block supports data movement. The arrows are intentionally left to right, which makes the pipeline, control, and peripheral relationships easy to follow.
+For the Cyclone V analysis-and-synthesis run, the design uses 12,825 estimated ALMs, 10,461 dedicated registers, and 106 pins. The design uses a 20-nanosecond SDC clock constraint, corresponding to a 50 MHz target frequency. The largest resource share is in the MEM-stage security and peripheral subsystem because it contains the interconnect and AES MMIO wrapper. The AES-128 primitive itself accounts for 1,478 estimated ALMs and 389 registers.
 
-**Point in order:** pipeline, custom ISA to AES-CTR to MMIO, then SPI, UART, and DMA-lite.
+These values should be interpreted as technology-mapped RTL resource estimates. They do not yet represent post-fit timing, board-level power, or a full firmware-level latency comparison. Those measurements are planned as the next evaluation stage.
 
-**Transition:** Next, I will explain the AES-CTR data flow used by the accelerator.
+## Slide 10 - System-level contribution  7:25 to 8:15
 
----
+The contribution is the system-level integration of lightweight processing, local encryption, and explicit software control. The RV32I pipeline remains the compute foundation. The iterative AES-CTR block provides local data protection. The custom instruction path and MMIO registers expose accelerator control to software.
 
-## Slide 5 - AES-CTR encryption path
+Importantly, the custom instruction does not bypass the verified AES peripheral. It reuses the same AES wrapper through the MEM stage. This keeps MMIO and custom-ISA behavior consistent while reducing the software control sequence for selected operations. The work uses standard AES-128 in CTR mode; the contribution is the processor and accelerator integration.
 
-**Time: 3:05 to 4:20**
+## Slide 11 - Conclusion and next steps  8:15 to 9:15
 
-AES is a block cipher, and AES-128 uses a 128-bit key. In CTR mode, the input to AES is a counter value rather than the plaintext itself.
+To conclude, this work demonstrates a compact RISC-V security processor for IoT edge nodes. It retains a five-stage RV32I core, integrates an iterative AES-128 CTR accelerator, provides MMIO and custom-0 ISA control, and supports SPI, UART, interrupts, DMA-lite, and activity observation. The Questa regression reported 83 passes with no failures, and the Cyclone V synthesis run completed without errors or warnings.
 
-The processor or control logic supplies a counter. The AES-128 block encrypts that counter and produces a keystream. The keystream is then combined with the plaintext through an XOR operation. The result is the ciphertext that can be stored or transmitted.
+The next steps are post-fit FPGA timing closure, board-level power and throughput measurement, fault-resilience evaluation, and a firmware-level comparison between MMIO and custom-instruction AES control.
 
-CTR mode is useful in an edge-data setting because counter blocks can be processed independently and the data path does not require padding. This suits continuous or stream-like sensor data.
+## Slide 12 - Questions  9:15 to 10:00
 
-However, there is one important security requirement: the same counter value must never be reused with the same AES key. A deployed implementation needs a clear key-provisioning and counter-management policy to preserve the security properties of CTR mode.
-
-**Point to the diagram:** Counter, AES-128, Keystream, XOR, Ciphertext. Then point to Plaintext entering the XOR stage from below.
-
-**Transition:** The accelerator needs a simple software-visible way to control this operation.
+Thank you for your attention. The central message of this work is that lightweight RISC-V processing and local AES-CTR acceleration can be integrated through a clear hardware-software control model for IoT edge nodes. We welcome your questions.
 
 ---
 
-## Slide 6 - Custom ISA and MMIO control interface
+## Q and A backup
 
-**Time: 4:20 to 5:10**
+### Why AES-CTR instead of AES-CBC
 
-This slide shows the compact software control sequence.
+CTR mode creates a keystream by encrypting nonce-counter blocks. It supports independent blocks and does not require padding. The nonce-counter value must never repeat under the same AES key.
 
-AES_START launches an encryption transaction. AES_STATUS lets the processor observe whether the accelerator is still busy or whether it has completed. AES_READ allows software to fetch the result. Finally, AES_CLEAR returns the control interface to an idle state for the next transaction.
+### What does the custom ISA add
 
-The AES and AES-CTR control window begins at address 0x0000_0300. This memory-mapped structure gives embedded software a predictable interface. The security operation remains explicit to the programmer rather than becoming an opaque peripheral action.
+It uses the RISC-V custom-0 opcode to start the accelerator, return status, read ciphertext word zero, and clear the done state. It reuses the verified AES MMIO wrapper, so it reduces control overhead without adding a second cryptographic datapath.
 
-**Point to each command while naming it. Then point to the MMIO address.**
+### Do the synthesis values prove power or performance
 
-**Transition:** We then verified the command and status sequence at RTL level.
+No. They are analysis-and-synthesis resource estimates under a 20-nanosecond constraint. Post-fit timing, board-level power, and firmware-level latency require separate measurement.
 
----
+### How are AES keys protected
 
-## Slide 7 - RTL verification sequence
-
-**Time: 5:10 to 6:00**
-
-This waveform provides verification evidence for the custom security control path.
-
-The transaction begins when the driver issues a start command. The accelerator then enters a busy state while the AES operation is in progress. When the operation completes, the completion status becomes visible to the software. The processor can then read the result or clear the interface.
-
-We used directed simulation to check the custom instruction transactions, AES control and status behavior, and the interaction of the control path with the surrounding interface logic. The important point is that we verify both the final result and the sequencing of the control signals.
-
-**Use the bottom labels as a guide:** Start, Busy, Complete, and Read or Clear.
-
-**Transition:** After RTL verification, we synthesized the design for the FPGA target.
-
----
-
-## Slide 8 - Implementation flow
-
-**Time: 6:00 to 6:45**
-
-The design was described in SystemVerilog RTL. It includes the RISC-V processor, the AES-CTR accelerator, the custom control logic, and the supporting peripheral interfaces.
-
-We used the Intel Quartus Prime synthesis flow and targeted a Cyclone V FPGA device. The netlist on the left is the synthesized implementation view. The flow on the right summarizes the progression from RTL to synthesis and then to resource and timing reports.
-
-This slide provides implementation evidence. It does not claim final product-level power or throughput performance. Those measurements remain part of the next evaluation stage.
-
-**Transition:** The next slide gives the resource snapshot from this synthesis run.
-
----
-
-## Slide 9 - Cyclone V implementation snapshot
-
-**Time: 6:45 to 7:25**
-
-For the reported Cyclone V synthesis run, the design uses 12,825 estimated ALMs, 10,461 registers, and 106 pins.
-
-These numbers describe the hardware footprint of the current prototype. They show that the design has progressed beyond an architectural concept to a synthesized implementation.
-
-At the same time, these figures should be interpreted carefully. They are resource-report values. They are not direct measurements of encryption throughput, energy consumption, or comparative security strength. Those measurements need a separate benchmark and hardware-evaluation campaign.
-
-**State each number once, pause, then state the limitation clearly.**
-
-**Transition:** The contribution of this work is the system-level integration of these elements.
-
----
-
-## Slide 10 - System-level contribution
-
-**Time: 7:25 to 8:15**
-
-The contribution can be understood through three connected aspects.
-
-First, the RV32I pipeline provides a compact and recognizable compute foundation. Second, AES-CTR provides local protection near the source of sensor data. Third, the custom ISA and MMIO registers provide explicit software control over the security operation.
-
-Together, these elements connect computation, encryption, and edge I/O in a single processor architecture. The work is not proposing a new AES algorithm. Instead, it demonstrates a practical integration path for a standard cryptographic primitive within a lightweight RISC-V edge node.
-
-**Point to Compute, Protect, and Connect while explaining each aspect.**
-
-**Transition:** I will now summarize the conclusion and the next steps.
-
----
-
-## Slide 11 - Conclusion and next steps
-
-**Time: 8:15 to 9:10**
-
-To conclude, this work integrates AES-CTR acceleration and explicit security control within a lightweight RISC-V processor design for IoT edge nodes.
-
-The architecture retains the familiar RV32I pipeline, connects a dedicated AES-128 CTR accelerator through a clear control path, and supports edge-node interfaces such as SPI, UART, and DMA-lite. RTL verification and the Cyclone V synthesis result provide evidence that the architecture can be implemented as a coherent hardware system.
-
-The next steps are to measure power, latency, and throughput on the target platform; evaluate resilience against faults; and extend the software validation. These steps will move the work from a verified and synthesized prototype toward a measured edge-security platform.
-
-**Transition:** Thank you for your attention. I welcome your questions.
-
----
-
-## Slide 12 - Questions
-
-**Time: 9:10 to 10:00**
-
-Thank you. We would be happy to answer questions on the processor architecture, the AES-CTR dataflow, the custom ISA interface, RTL verification, or the FPGA implementation results.
-
-Pause after this sentence. If the session chair asks for a final remark, say: *The central message is that lightweight RISC-V processing and local AES-CTR acceleration can be integrated through a clear hardware-software control model for IoT edge nodes.*
-
----
-
-## Likely questions and concise answers
-
-### Why did you choose AES-CTR instead of AES-CBC
-
-CTR mode creates a keystream by encrypting counter values. It supports independent counter blocks and does not require padding, which suits stream-like edge data. The essential requirement is that a counter must never repeat under the same AES key.
-
-### What is the benefit of the custom ISA
-
-The custom ISA makes the security control sequence explicit to software. It provides a compact way to start the accelerator, check completion, read the result, and clear the interface without treating the encryption block as an opaque component.
-
-### Do the synthesis results prove low power or high throughput
-
-No. The reported values are resource figures from the Cyclone V synthesis run. Power, throughput, and latency require dedicated measurements on the target platform and are identified as future work.
-
-### How are AES keys protected in this design
-
-The present work focuses on integrating the processor and encryption accelerator. A deployed version should include protected key provisioning, secure key storage, access control, and a defined policy for counter management.
-
-### Why did you choose RISC-V
-
-RV32I is a compact and well-defined base ISA that suits architectural experimentation. The design preserves that familiar processor foundation while adding focused security support through hardware acceleration and custom control.
+The work focuses on processor and accelerator integration. A deployed version should add protected key provisioning, secure key storage, access control, and a nonce-counter management policy.
 
 ### Is this a new AES algorithm
 
-No. The work uses the standard AES-128 primitive in CTR mode. The contribution is the integration of the accelerator, custom ISA control, MMIO access, verification flow, and edge-node peripheral support.
+No. The design uses standard AES-128 in CTR mode. The contribution is its integration with the RV32I core, MEM-stage control path, custom ISA, MMIO interface, and IoT-edge peripherals.
 
 ---
 
