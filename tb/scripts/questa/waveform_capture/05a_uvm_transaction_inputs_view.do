@@ -1,6 +1,6 @@
 view wave
 delete wave *
-set DS 05_uvm_e2e_complete_capture
+set DS sim
 add wave -divider {PART 1 - RANDOMIZED TRANSACTION AND AES PROGRAMMING}
 add wave ${DS}:/uvm_e2e_tb_top/clk ${DS}:/uvm_e2e_tb_top/e2e_if/rst_n
 add wave -radix unsigned ${DS}:/uvm_e2e_tb_top/e2e_if/transaction_index

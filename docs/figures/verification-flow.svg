@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="680" viewBox="0 0 1100 680" role="img" aria-labelledby="title desc">
+<title id="title">Independent checks for the AES / UART subsystem</title><desc id="desc">Randomized inputs feed RTL and an independent C AES reference; comparison and UART reconstruction check results.</desc>
+<rect width="1100" height="680" fill="#F5EFE1"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#3E706B"/></marker></defs>
+<text x="50" y="48" fill="#65736A" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="start">LOW-POWER AES / RISC-V</text>
+<text x="50" y="91" fill="#293B3B" font-family="Arial, sans-serif" font-size="29" font-weight="bold" text-anchor="start">Independent checks for the AES / UART subsystem</text>
+<rect x="400" y="145" width="300" height="90" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="416" y="176" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Randomized transaction</text>
+<text x="416" y="203" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Plaintext / key / nonce / counter</text>
+<path d="M470 235 L470 265 L240 265 L240 290" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M630 235 L630 265 L820 265 L820 290" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="100" y="297" width="280" height="95" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="116" y="328" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">RTL AES-CTR</text>
+<text x="116" y="355" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">MMIO programming by driver</text>
+<rect x="680" y="297" width="280" height="95" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="696" y="328" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Independent C reference</text>
+<text x="696" y="355" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">DPI expected cipher / decrypt</text>
+<rect x="420" y="432" width="270" height="95" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="436" y="463" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Cipher / decrypt checks</text>
+<text x="436" y="490" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Expected versus RTL result</text>
+<path d="M380 345 L402 345 L402 460 L413 460" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M820 392 L820 417 L620 417 L620 425" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="100" y="545" width="280" height="90" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="116" y="576" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">UART monitor</text>
+<text x="116" y="603" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Reconstruct actual serial TX</text>
+<rect x="680" y="545" width="280" height="90" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="696" y="576" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Scoreboard / coverage</text>
+<text x="696" y="603" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Compare transcript + bin hits</text>
+<path d="M240 392 L240 538" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="255" y="470" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">RTL UART</text>
+<path d="M380 590 L673 590" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M690 490 L820 490 L820 538" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="50" y="665" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">The UVM top contains AES and UART, not the CPU. The full-SoC CPU scenario is a separate test.</text>
+</svg>

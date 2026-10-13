@@ -1,6 +1,6 @@
 view wave
 delete wave *
-set DS 03_directed_peripheral_capture
+set DS sim
 add wave -divider {DIRECTED PERIPHERALS PART 1 - AES-CTR, SENSOR, AND SPI}
 add wave ${DS}:/riscv_core_tb/clk ${DS}:/riscv_core_tb/rst_n
 add wave -radix hexadecimal ${DS}:/riscv_core_tb/obs_mem_eff_addr ${DS}:/riscv_core_tb/obs_mem_write_data ${DS}:/riscv_core_tb/obs_mem_read_data

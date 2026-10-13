@@ -1,6 +1,6 @@
 view wave
 delete wave *
-set DS 01_aes_known_answer_capture
+set DS sim
 add wave -divider {AES-128 NIST KNOWN-ANSWER TEST - ITERATIVE REUSABLE CORE}
 add wave ${DS}:/riscv_core_tb/clk ${DS}:/riscv_core_tb/rst_n
 add wave -radix hexadecimal ${DS}:/riscv_core_tb/obs_aes_key ${DS}:/riscv_core_tb/obs_aes_plaintext

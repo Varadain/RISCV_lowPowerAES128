@@ -1,0 +1,13 @@
+build/
+__pycache__/
+*.pyc
+*.wlf
+*.vcd
+*.ucdb
+transcript
+modelsim.ini
+work/
+output_files/
+db/
+incremental_db/
+*.qws

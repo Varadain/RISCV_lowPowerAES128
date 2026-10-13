@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="480" viewBox="0 0 1100 480" role="img" aria-labelledby="title desc">
+<title id="title">Keep functional checks, ASIC estimates and FPGA results separate</title><desc id="desc">Three evidence types: standalone AES Genus reports, integrated FPGA fit, and functional simulation.</desc>
+<rect width="1100" height="480" fill="#F5EFE1"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#3E706B"/></marker></defs>
+<text x="50" y="48" fill="#65736A" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="start">LOW-POWER AES / RISC-V</text>
+<text x="50" y="91" fill="#293B3B" font-family="Arial, sans-serif" font-size="29" font-weight="bold" text-anchor="start">Keep functional checks, ASIC estimates and FPGA results separate</text>
+<rect x="50" y="170" width="300" height="180" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="201" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Standalone AES / ASIC</text>
+<text x="66" y="228" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">2,694 mapped cells</text>
+<text x="66" y="253" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">11,841.480 um^2</text>
+<text x="66" y="278" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">0.853125 mW estimated</text>
+<text x="66" y="303" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Genus / original mapped report</text>
+<rect x="400" y="170" width="300" height="180" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="416" y="201" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Integrated system / FPGA</text>
+<text x="416" y="228" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">13,257 ALMs</text>
+<text x="416" y="253" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">11,154 registers</text>
+<text x="416" y="278" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">50 MHz timing target</text>
+<text x="416" y="303" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Quartus / archived Cyclone V fit</text>
+<rect x="750" y="170" width="300" height="180" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="766" y="201" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Functional simulation</text>
+<text x="766" y="228" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Ciphertext and interface checks</text>
+<text x="766" y="253" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">CPU-driven scenario</text>
+<text x="766" y="278" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">AES/UART UVM reference match</text>
+<text x="766" y="303" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">No electrical power measurement</text>
+<text x="50" y="411" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">Different targets and assumptions. These are not interchangeable power-saving measurements.</text>
+</svg>

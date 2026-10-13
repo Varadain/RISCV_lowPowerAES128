@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="630" viewBox="0 0 1100 630" role="img" aria-labelledby="title desc">
+<title id="title">From peripheral completion to software acknowledgement</title><desc id="desc">Six conceptual steps record and mask a peripheral event, expose IRQ status, service the source and clear pending.</desc>
+<rect width="1100" height="630" fill="#F5EFE1"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#3E706B"/></marker></defs>
+<text x="50" y="48" fill="#65736A" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="start">LOW-POWER AES / RISC-V</text>
+<text x="50" y="91" fill="#293B3B" font-family="Arial, sans-serif" font-size="29" font-weight="bold" text-anchor="start">From peripheral completion to software acknowledgement</text>
+<rect x="50" y="155" width="280" height="115" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="186" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">1  Peripheral event</text>
+<text x="66" y="213" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">AES / UART / sensor / DMA</text>
+<text x="66" y="238" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">May be a pulse or held level</text>
+<rect x="410" y="155" width="280" height="115" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="426" y="186" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">2  Sticky pending</text>
+<text x="426" y="213" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">pending OR source bits</text>
+<text x="426" y="238" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Keeps an observed event</text>
+<rect x="770" y="155" width="280" height="115" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="786" y="186" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">3  Enable mask</text>
+<text x="786" y="213" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">IRQ = OR(pending &amp; enable)</text>
+<text x="786" y="238" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Masking does not erase pending</text>
+<rect x="770" y="355" width="280" height="115" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="786" y="386" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">4  Read and handle</text>
+<text x="786" y="413" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Observe pending / IRQ</text>
+<text x="786" y="438" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">No CPU trap-handler path here</text>
+<rect x="410" y="355" width="280" height="115" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="426" y="386" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">5  Clear source flag</text>
+<text x="426" y="413" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Acknowledge the peripheral</text>
+<text x="426" y="438" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Stop a held level retriggering</text>
+<rect x="50" y="355" width="280" height="115" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="386" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">6  Clear INTC bit</text>
+<text x="66" y="413" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Write 1 to IRQ_CLEAR</text>
+<text x="66" y="438" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Recheck for new events</text>
+<path d="M330 213 L403 213" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M690 213 L763 213" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M910 270 L910 348" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M770 413 L697 413" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M410 413 L337 413" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="50" y="540" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">Current logic: (pending | sources) &amp; ~clear_mask. Same-edge clear wins for the selected bit.</text>
+<text x="50" y="578" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">This is a conceptual service sequence, not an implemented ISR or automatic wake-up mechanism.</text>
+</svg>

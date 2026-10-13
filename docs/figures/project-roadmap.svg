@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" viewBox="0 0 1100 470" role="img" aria-labelledby="title desc">
+<title id="title">From one cipher core to a small security processor</title><desc id="desc">Three learning stages: standalone reusable AES, processor integration, and event/activity coordination.</desc>
+<rect width="1100" height="470" fill="#F5EFE1"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#3E706B"/></marker></defs>
+<text x="50" y="48" fill="#65736A" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="start">LOW-POWER AES / RISC-V</text>
+<text x="50" y="91" fill="#293B3B" font-family="Arial, sans-serif" font-size="29" font-weight="bold" text-anchor="start">From one cipher core to a small security processor</text>
+<rect x="50" y="165" width="300" height="175" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">01  Reusable AES</text>
+<text x="66" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">128-bit block and key</text>
+<text x="66" y="248" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Sequential round hardware</text>
+<text x="66" y="273" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Standalone synthesis study</text>
+<text x="66" y="298" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">GCON 2026</text>
+<rect x="400" y="165" width="300" height="175" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="416" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">02  Processor integration</text>
+<text x="416" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Five-stage RV32I-style core</text>
+<text x="416" y="248" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">MMIO + AES-CTR + custom-0</text>
+<text x="416" y="273" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Sensor/SPI and UART</text>
+<text x="416" y="298" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">ISAIA 2026</text>
+<rect x="750" y="165" width="300" height="175" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="766" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">03  System coordination</text>
+<text x="766" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Sticky interrupt status</text>
+<text x="766" y="248" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">DMA-lite word copying</text>
+<text x="766" y="273" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Activity counters + sleep</text>
+<text x="766" y="298" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Later integration / verification</text>
+<path d="M350 251 L393 251" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M700 251 L743 251" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="50" y="398" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">Read in this order. The current branch combines the stages; it is not three separate frozen releases.</text>
+</svg>

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="520" viewBox="0 0 1100 520" role="img" aria-labelledby="title desc">
+<title id="title">AES handshake: accept, work, complete, retain</title><desc id="desc">An illustrative timing diagram shows start, busy and done, and labels input acceptance and retained ciphertext.</desc>
+<rect width="1100" height="520" fill="#F5EFE1"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#3E706B"/></marker></defs>
+<text x="50" y="48" fill="#65736A" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="start">LOW-POWER AES / RISC-V</text>
+<text x="50" y="91" fill="#293B3B" font-family="Arial, sans-serif" font-size="29" font-weight="bold" text-anchor="start">AES handshake: accept, work, complete, retain</text>
+<path d="M200 150 L200 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M270 150 L270 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M340 150 L340 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M410 150 L410 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M480 150 L480 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M550 150 L550 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M620 150 L620 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M690 150 L690 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M760 150 L760 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M830 150 L830 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M900 150 L900 425" stroke="#D5D0C4" stroke-width="1"/>
+<path d="M970 150 L970 425" stroke="#D5D0C4" stroke-width="1"/>
+<text x="50" y="212" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">start</text>
+<path d="M200 223 L270 223 L270 187 L340 187 L340 223 L410 223 L410 223 L480 223 L480 223 L550 223 L550 223 L620 223 L620 223 L690 223 L690 223 L760 223 L760 223 L830 223 L830 223 L900 223 L900 223 L970 223 L970 223" fill="none" stroke="#3E706B" stroke-width="2.5"/>
+<text x="50" y="302" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">busy</text>
+<path d="M200 313 L270 313 L270 277 L340 277 L340 277 L410 277 L410 277 L480 277 L480 277 L550 277 L550 277 L620 277 L620 277 L690 277 L690 277 L760 277 L760 313 L830 313 L830 313 L900 313 L900 313 L970 313 L970 313" fill="none" stroke="#3E706B" stroke-width="2.5"/>
+<text x="50" y="392" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">done</text>
+<path d="M200 403 L270 403 L270 403 L340 403 L340 403 L410 403 L410 403 L480 403 L480 403 L550 403 L550 403 L620 403 L620 403 L690 403 L690 403 L760 403 L760 367 L830 367 L830 403 L900 403 L900 403 L970 403 L970 403" fill="none" stroke="#3E706B" stroke-width="2.5"/>
+<text x="265" y="143" fill="#65736A" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Input accepted</text>
+<text x="570" y="260" fill="#65736A" font-family="Arial, sans-serif" font-size="17" font-weight="normal" text-anchor="start">Many internal cycles</text>
+<text x="760" y="443" fill="#65736A" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Ciphertext retained</text>
+<text x="50" y="492" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">Illustrative, not to scale. MMIO done is sticky; core done clears after its completion state.</text>
+</svg>

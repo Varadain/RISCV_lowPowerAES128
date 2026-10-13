@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="570" viewBox="0 0 1100 570" role="img" aria-labelledby="title desc">
+<title id="title">One datapath, reused across ten AES rounds</title><desc id="desc">Stored state flows through SubBytes, ShiftRows, optional MixColumns and AddRoundKey; the controller reuses this path.</desc>
+<rect width="1100" height="570" fill="#F5EFE1"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#3E706B"/></marker></defs>
+<text x="50" y="48" fill="#65736A" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="start">LOW-POWER AES / RISC-V</text>
+<text x="50" y="91" fill="#293B3B" font-family="Arial, sans-serif" font-size="29" font-weight="bold" text-anchor="start">One datapath, reused across ten AES rounds</text>
+<text x="50" y="130" fill="#65736A" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Initial plaintext XOR key occurs before round 1.</text>
+<rect x="50" y="165" width="160" height="105" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Stored state</text>
+<text x="66" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">128-bit register</text>
+<rect x="260" y="165" width="160" height="105" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="276" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">SubBytes</text>
+<text x="276" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">One byte at a time</text>
+<rect x="470" y="165" width="160" height="105" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="486" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">ShiftRows</text>
+<text x="486" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Byte reordering</text>
+<rect x="680" y="165" width="160" height="105" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="696" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">MixColumns</text>
+<text x="696" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Rounds 1-9 only</text>
+<rect x="890" y="165" width="160" height="105" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="906" y="196" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">AddRoundKey</text>
+<text x="906" y="223" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">XOR round key</text>
+<path d="M210 215 L253 215" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M420 215 L463 215" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M630 215 L673 215" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M840 215 L883 215" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M1050 215 L1070 215 L1070 307 L130 307 L130 275" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="350" y="330" fill="#65736A" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Intermediate state feeds the next round</text>
+<rect x="50" y="375" width="300" height="110" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="406" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Round controller</text>
+<text x="66" y="433" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">START / WAIT handshakes</text>
+<text x="66" y="458" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Rounds 1 to 10</text>
+<rect x="435" y="375" width="310" height="110" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="451" y="406" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Key expansion</text>
+<text x="451" y="433" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Reuse the key-expansion unit</text>
+<text x="451" y="458" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">Its own S-box resources</text>
+<rect x="890" y="375" width="160" height="110" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="906" y="406" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">Ciphertext</text>
+<text x="906" y="433" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">After round 10</text>
+<path d="M745 400 L840 400 L840 284 L970 284 L970 275" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M1030 275 L1030 365" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M200 375 L200 346 L340 346 L340 275" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)" stroke-dasharray="6 5"/>
+<text x="50" y="540" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">Conceptual round flow. Round 10 bypasses MixColumns; see the FSM for exact cycle-by-cycle scheduling.</text>
+</svg>

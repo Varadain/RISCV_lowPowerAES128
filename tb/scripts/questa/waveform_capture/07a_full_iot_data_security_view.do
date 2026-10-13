@@ -1,6 +1,6 @@
 view wave
 delete wave *
-set DS 07_full_iot_scenario_capture
+set DS sim
 add wave -divider {FULL-SOC SCENARIO PART 1 - SENSOR, CPU, DMA, AND AES-CTR}
 add wave ${DS}:/riscv_core_tb/clk ${DS}:/riscv_core_tb/rst_n
 add wave -radix unsigned ${DS}:/riscv_core_tb/verification_phase_id

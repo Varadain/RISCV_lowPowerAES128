@@ -15,7 +15,7 @@
 //
 // The SoC keeps its original AES primitive interface while the implementation
 // is the exact iterative, hardware-reusable AES128_updated_new architecture
-// copied under rtl/aes128_reusable/. No generated/gated clock is used.
+// split across rtl/aes/. No generated/gated clock is used.
 // =============================================================================
 module aes128_lowpower (
     input  logic         clk,

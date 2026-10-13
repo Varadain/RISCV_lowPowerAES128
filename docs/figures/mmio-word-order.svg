@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="530" viewBox="0 0 1100 530" role="img" aria-labelledby="title desc">
+<title id="title">Four 32-bit MMIO stores form one 128-bit AES key</title><desc id="desc">KEY0 is the least significant word and KEY3 is the most significant word of the sample NIST key.</desc>
+<rect width="1100" height="530" fill="#F5EFE1"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#3E706B"/></marker></defs>
+<text x="50" y="48" fill="#65736A" font-family="Arial, sans-serif" font-size="13" font-weight="bold" text-anchor="start">LOW-POWER AES / RISC-V</text>
+<text x="50" y="91" fill="#293B3B" font-family="Arial, sans-serif" font-size="29" font-weight="bold" text-anchor="start">Four 32-bit MMIO stores form one 128-bit AES key</text>
+<rect x="50" y="145" width="400" height="68" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="176" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">KEY3  @ 0x314</text>
+<text x="245" y="192" fill="#293B3B" font-family="Arial, sans-serif" font-size="14" font-weight="normal" text-anchor="start">bits 127:96 = 00010203</text>
+<path d="M450 179 L555 179 L555 310 L620 310" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="50" y="221" width="400" height="68" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="252" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">KEY2  @ 0x310</text>
+<text x="245" y="268" fill="#293B3B" font-family="Arial, sans-serif" font-size="14" font-weight="normal" text-anchor="start">bits 95:64  = 04050607</text>
+<path d="M450 255 L555 255 L555 310 L620 310" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="50" y="297" width="400" height="68" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="328" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">KEY1  @ 0x30c</text>
+<text x="245" y="344" fill="#293B3B" font-family="Arial, sans-serif" font-size="14" font-weight="normal" text-anchor="start">bits 63:32  = 08090a0b</text>
+<path d="M450 331 L555 331 L555 310 L620 310" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="50" y="373" width="400" height="68" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="66" y="404" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">KEY0  @ 0x308</text>
+<text x="245" y="420" fill="#293B3B" font-family="Arial, sans-serif" font-size="14" font-weight="normal" text-anchor="start">bits 31:0   = 0c0d0e0f</text>
+<path d="M450 407 L555 407 L555 310 L620 310" fill="none" stroke="#3E706B" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="630" y="245" width="420" height="135" rx="4" fill="#FFFCF5" stroke="#3E706B" stroke-width="1.5"/>
+<text x="646" y="276" fill="#3E706B" font-family="Arial, sans-serif" font-size="19" font-weight="bold" text-anchor="start">AES key register</text>
+<text x="646" y="303" fill="#293B3B" font-family="Arial, sans-serif" font-size="16" font-weight="normal" text-anchor="start">{ KEY3, KEY2, KEY1, KEY0 }</text>
+<text x="646" y="345" fill="#293B3B" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">000102030405060708090a0b0c0d0e0f</text>
+<text x="50" y="497" fill="#65736A" font-family="Arial, sans-serif" font-size="15" font-weight="normal" text-anchor="start">Lowest register number means least-significant word. PT0..PT3 and CT0..CT3 use the same packing.</text>
+</svg>

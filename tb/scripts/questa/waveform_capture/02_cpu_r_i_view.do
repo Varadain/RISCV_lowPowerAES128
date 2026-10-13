@@ -1,6 +1,6 @@
 view wave
 delete wave *
-set DS 02_directed_cpu_capture
+set DS sim
 add wave -divider {DIRECTED CPU PART 1 - R-TYPE AND I-TYPE ALU PIPELINE FLOW}
 add wave ${DS}:/riscv_core_tb/clk ${DS}:/riscv_core_tb/rst_n
 add wave -radix hexadecimal ${DS}:/riscv_core_tb/obs_if_pc ${DS}:/riscv_core_tb/obs_if_instr ${DS}:/riscv_core_tb/obs_id_instr

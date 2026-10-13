@@ -1,0 +1,17 @@
+Completion excerpts from fresh Questa runs on 13 October 2026.
+Only completion/coverage messages are selected; <REPO> replaces the local checkout path.
+Tool: Questa Intel Starter FPGA Edition 2023.3, Windows 64-bit.
+Commands: scripts/run_simulation.ps1 -Mode AesCore / All / Coverage.
+
+AesCore
+# AES CORE PASS: ciphertext=69c4e0d86a7b0430d8cdb78070b4c55a wait_cycles=294
+# AES CORE PASS: ciphertext=66e94bd4ef8a2c3b884cfa59ca342b2e wait_cycles=294
+# ALL TESTS PASSED: AES core, two known-answer vectors and handshake checks
+All
+# RV32I-style directed verification summary: PASS=107 FAIL=0
+# ALL TESTS PASSED
+Coverage
+# UVM_INFO <REPO>\tb\uvm\uvm_e2e_pkg.sv(436) @ 4923100000: uvm_test_top.env.coverage [FUNC_COV] Portable AES-CTR functional coverage: 100.00% (114/114 bins) from 100 randomized transactions
+# UVM_INFO <REPO>\tb\uvm\uvm_e2e_pkg.sv(577) @ 4923100000: uvm_test_top.env.scoreboard [FUNC_COV] Portable UART end-to-end result coverage: 100.00%, matches=100 mismatches=0
+# UVM_ERROR :    0
+# UVM_FATAL :    0

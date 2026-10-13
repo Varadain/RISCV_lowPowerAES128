@@ -1,6 +1,6 @@
 view wave
 delete wave *
-set DS 04_random_smoke_capture
+set DS sim
 add wave -divider {DETERMINISTIC RANDOMIZED SMOKE - CUSTOM ISA, SENSOR, DMA, UART}
 add wave ${DS}:/riscv_core_tb/clk ${DS}:/riscv_core_tb/rst_n
 add wave -radix hexadecimal ${DS}:/riscv_core_tb/obs_if_pc ${DS}:/riscv_core_tb/obs_if_instr
